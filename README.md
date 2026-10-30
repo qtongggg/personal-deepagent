@@ -15,27 +15,27 @@ This agent moves beyond basic RAG by incorporating **active planning (`write_to_
 
 ```mermaid
 flowchart TD
-    User([User Request + User ID]) --> DeepAgent[LangChain DeepAgent Core Engine]
+    User(["User Request + User ID"]) --> DeepAgent["LangChain DeepAgent Core Engine"]
 
-    subgraph DeepAgent Harness [Built-in deepagents Harness]
-        DeepAgent <--> Planner[Task & To-Do Planner\ntodo_write / todo_read]
-        DeepAgent <--> VFS[Virtual Workspace Filesystem\nwrite_file / read_file\n- notes.md\n- comparison_draft.md]
+    subgraph Harness ["Built-in deepagents Harness"]
+        DeepAgent <--> Planner["Task & To-Do Planner<br/>todo_write / todo_read"]
+        DeepAgent <--> VFS["Virtual Workspace Filesystem<br/>write_file / read_file<br/>- notes.md<br/>- comparison_draft.md"]
     end
 
-    subgraph Pluggable Skills [Agent Skill Suite]
-        DeepAgent <--> Skill1[Skill 1: Master Catalog Tool\nDuckDB / Pandas on catalog.csv]
-        DeepAgent <--> Skill2[Skill 2: Vector Knowledge Retriever\nChroma / Hybrid Dense + BM25]
-        DeepAgent <--> Skill3[Skill 3: Long-Term Memory (Mem0)\nsearch_memory + add_memory]
+    subgraph Skills ["Agent Skill Suite"]
+        DeepAgent <--> Skill1["Skill 1: Master Catalog Tool<br/>DuckDB / Pandas on catalog.csv"]
+        DeepAgent <--> Skill2["Skill 2: Vector Knowledge Retriever<br/>Chroma / Hybrid Dense + BM25"]
+        DeepAgent <--> Skill3["Skill 3: Long-Term Memory (Mem0)<br/>search_memory + add_memory"]
     end
 
-    DeepAgent --> Sanitizer[Post-Synthesis Sanitizer]
-    subgraph Sanitizer Safeguards [Invariant Safeguards]
-        Sanitizer --> PipeSanitizer[Pipe Sanitizer: | -> — in titles]
-        Sanitizer --> URLVerifier[Verbatim Catalog URL Restorer]
-        Sanitizer --> ReferenceContract[Structured References Contract]
+    DeepAgent --> Sanitizer["Post-Synthesis Sanitizer"]
+    subgraph Safeguards ["Invariant Safeguards"]
+        Sanitizer --> PipeSanitizer["Pipe Sanitizer: | to — in titles"]
+        Sanitizer --> URLVerifier["Verbatim Catalog URL Restorer"]
+        Sanitizer --> ReferenceContract["Structured References Contract"]
     end
 
-    Sanitizer --> Output([Final Scholarly Response with Table & Citations])
+    Sanitizer --> Output(["Final Scholarly Response with Table & Citations"])
 ```
 
 1. **Active Task Planning**: The agent maintains a persistent `to_dos` checklist inside its LangGraph state, ensuring disciplined multi-hop execution without skipping steps.
