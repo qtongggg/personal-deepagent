@@ -97,6 +97,13 @@ def _build_default_catalog_lookup() -> Dict[str, Dict[str, Any]]:
         return {}
 
 
+def _normalize_slug(slug: str) -> str:
+    """Normalize a percent-encoded or non-ascii slug to simple ascii for robust lookup matching."""
+    clean = re.sub(r"%[0-9a-fA-F]{2}", "", slug)
+    ascii_clean = re.sub(r"[^a-zA-Z0-9-]", "", clean).strip("-")
+    return ascii_clean
+
+
 def build_final_response(
     text: str,
     observed_chunks: Optional[List[Dict[str, Any]]] = None,
@@ -107,16 +114,18 @@ def build_final_response(
 
     catalog_data = _build_default_catalog_lookup()
     if not catalog_lookup:
-        # Build URL lookup mapping slugs and doc names to source_url
+        # Build URL lookup mapping slugs, ascii normalized slugs, and doc names to source_url
         catalog_lookup = {}
         for doc_name, item in catalog_data.items():
             url = item.get("source_url")
             if url:
                 catalog_lookup[doc_name] = url
-                # Extract slug from url
                 slug = url.rstrip("/").split("/")[-1]
                 if slug:
                     catalog_lookup[slug] = url
+                    ascii_s = _normalize_slug(slug)
+                    if ascii_s:
+                        catalog_lookup[ascii_s] = url
 
     clean_text = sanitize_table_pipes(text)
     clean_text = restore_verbatim_catalog_urls(clean_text, catalog_lookup)
