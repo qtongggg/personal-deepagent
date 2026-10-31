@@ -71,22 +71,28 @@ def seed_knowledge_chunks(client: Optional[chromadb.ClientAPI] = None, collectio
     client = client or get_chroma_client()
     collection = client.get_or_create_collection(collection_name)
 
-    existing_count = collection.count()
-    if existing_count >= len(DEFAULT_CHUNKS):
-        return existing_count
-
     ids = [c["chunk_id"] for c in DEFAULT_CHUNKS]
-    documents = [c["chunk_content"] for c in DEFAULT_CHUNKS]
+    try:
+        existing_ids = set(collection.get(ids=ids)["ids"])
+    except Exception:
+        existing_ids = set()
+
+    missing_chunks = [c for c in DEFAULT_CHUNKS if c["chunk_id"] not in existing_ids]
+    if not missing_chunks:
+        return collection.count()
+
+    missing_ids = [c["chunk_id"] for c in missing_chunks]
+    documents = [c["chunk_content"] for c in missing_chunks]
     metadatas = [
         {
             "document_name": c["document_name"],
             "header_path": c["header_path"],
             "chunk_id": c["chunk_id"],
         }
-        for c in DEFAULT_CHUNKS
+        for c in missing_chunks
     ]
 
-    collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
+    collection.upsert(ids=missing_ids, documents=documents, metadatas=metadatas)
     return collection.count()
 
 

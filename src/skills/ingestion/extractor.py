@@ -21,7 +21,10 @@ def _heuristic_metadata_extraction(
     # Clean arXiv prefix from title line if present
     if title.lower().startswith("arxiv:") and len(lines) > 1:
         title = lines[1]
-    title = re.sub(r"^[#\s\*]+", "", title).strip()
+    title = re.sub(r"<[^>]+>", "", title)
+    title = re.sub(r"^[#\s\*]+|[#\s\*]+$", "", title).strip()
+    title = re.sub(r"[^\x00-\x7F]+", " ", title).strip()
+    title = re.sub(r"\s{2,}", " ", title).strip()
 
     # Detect year
     year_match = re.search(r"\b(19\d{2}|20\d{2})\b", text)
@@ -50,7 +53,10 @@ def _heuristic_metadata_extraction(
         if date_pattern.search(cleaned_line):
             continue
         if len(cleaned_line) < 80 and not cleaned_line.endswith("."):
-            author = cleaned_line
+            author = re.sub(r"<[^>]+>", "", cleaned_line)
+            author = re.sub(r"[\*#_]+", " ", author).strip()
+            author = re.sub(r"[^\x00-\x7F]+", " ", author).strip()
+            author = re.sub(r"\s{2,}", " ", author).strip()
             break
 
     return DocumentMetadata(

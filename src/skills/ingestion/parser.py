@@ -26,9 +26,9 @@ def clean_markdown_text(raw_md: str) -> str:
     text = re.sub(r"<\/?picture>", "", text)
     text = re.sub(r"\**Start picture.*?\**", "", text, flags=re.IGNORECASE)
 
-    # 2. Separate and prune bibliography and back-matter disclosure sections if present
+    # 2. Separate and prune bibliography and back-matter sections
     parts = re.split(
-        r"\n(?=#{1,3}\s+\**(?:References|Bibliography|Acknowledgements|Author Contributions|Competing Interests|Data Availability|AI Use Disclosure)\**)",
+        r"\n(?=#{1,3}\s*[\*_]*(?:References|Bibliography|Acknowledgements|Author Contributions|Competing Interests|Data Availability|AI Use Disclosure)\b)",
         text,
         flags=re.IGNORECASE,
     )
