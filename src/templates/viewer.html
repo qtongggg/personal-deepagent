@@ -254,6 +254,20 @@
       selectedDocName = select.value;
       if (!selectedDocName) return;
 
+      // Clear any active search/filter text when switching documents
+      document.getElementById("search-input").value = "";
+      document.getElementById("search-clear-btn").classList.add("hidden");
+
+      // Give immediate visual feedback that switching is in progress
+      document.getElementById("chunks-status-text").innerHTML = `Loading chunks for <strong class="text-indigo-900">${escapeHtml(selectedDocName)}</strong>...`;
+      document.getElementById("chunks-container").innerHTML = `
+        <div class="p-12 text-center text-slate-400 text-sm bg-white rounded-xl border border-slate-200">
+          <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-indigo-600 border-t-transparent mb-2"></div>
+          <div>Loading chunks for <strong class="text-indigo-600">${escapeHtml(selectedDocName)}</strong>...</div>
+        </div>
+      `;
+      document.getElementById("section-list").innerHTML = '<div class="text-slate-400 italic text-xs animate-pulse p-2">Updating sections...</div>';
+
       const doc = currentDocuments.find(d => d.document_name === selectedDocName);
       if (doc) {
         document.getElementById("doc-meta-card").classList.remove("hidden");
@@ -271,15 +285,21 @@
       }
 
       // Fetch chunks
-      document.getElementById("chunks-status-text").innerText = `Loading chunks for ${selectedDocName}...`;
       try {
         const res = await fetch(`/api/documents/${encodeURIComponent(selectedDocName)}/chunks`);
-        if (!res.ok) throw new Error("Could not load chunks");
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.detail || "Could not load chunks");
+        }
         currentChunks = await res.json();
         renderSections(currentChunks);
         renderChunks(currentChunks);
       } catch (err) {
-        document.getElementById("chunks-container").innerHTML = `<div class="p-6 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">Error loading chunks: ${escapeHtml(err.message)}</div>`;
+        currentChunks = [];
+        renderSections([]);
+        document.getElementById("chunks-counter-badge").innerText = "0 chunks";
+        document.getElementById("chunks-status-text").innerText = `Failed to load chunks for ${selectedDocName}`;
+        document.getElementById("chunks-container").innerHTML = `<div class="p-6 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-medium">Error loading chunks: ${escapeHtml(err.message)}</div>`;
       }
     }
 
@@ -310,7 +330,7 @@
       const container = document.getElementById("chunks-container");
       container.innerHTML = "";
       document.getElementById("chunks-counter-badge").innerText = `${chunks.length} chunks`;
-      document.getElementById("chunks-status-text").innerText = `Displaying ${chunks.length} chunks for ${selectedDocName}`;
+      document.getElementById("chunks-status-text").innerHTML = `Displaying <strong>${chunks.length}</strong> chunks for <strong class="text-indigo-900">${escapeHtml(selectedDocName)}</strong>`;
 
       if (chunks.length === 0) {
         container.innerHTML = `<div class="p-8 bg-white border border-slate-200 text-slate-400 text-center rounded-xl text-xs">No chunks matching the criteria.</div>`;

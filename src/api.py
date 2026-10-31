@@ -115,8 +115,8 @@ def get_viewer_page() -> HTMLResponse:
 
 
 @app.get("/api/documents", response_model=List[DocumentInfo])
-def get_documents() -> List[DocumentInfo]:
-    """List all stored documents merging catalog metadata with ChromaDB chunk counts."""
+def get_documents(only_with_chunks: bool = True) -> List[DocumentInfo]:
+    """List stored documents. By default, only returns documents with stored chunks in ChromaDB."""
     client = get_chroma_client()
     collection = client.get_or_create_collection("document_knowledge")
 
@@ -138,8 +138,11 @@ def get_documents() -> List[DocumentInfo]:
     except Exception as e:
         logger.warning(f"Could not read catalog.csv: {e}")
 
-    # Combine all document names from both ChromaDB and catalog
-    all_names = sorted(list(set(counts.keys()) | set(catalog_rows.keys())))
+    # Only list documents that actually have chunks in ChromaDB
+    if only_with_chunks:
+        all_names = sorted([name for name, count in counts.items() if count > 0])
+    else:
+        all_names = sorted(list(set(counts.keys()) | set(catalog_rows.keys())))
 
     documents: List[DocumentInfo] = []
     for name in all_names:
