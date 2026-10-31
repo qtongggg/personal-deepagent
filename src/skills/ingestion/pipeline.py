@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import tempfile
+import time
 from typing import Any, Dict, List, Optional
 import urllib.request
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -173,7 +174,10 @@ def ingest_markdown_or_pdf(
     quarantine_log_path: Optional[str] = None,
 ) -> IngestionReport:
     """Orchestrate the complete parse -> extract -> chunk -> evaluate -> self-correct -> commit pipeline."""
+    t_start = time.perf_counter()
+
     # 1. Parse content
+    t0 = time.perf_counter()
     if pdf_path:
         print("[1/5] Converting PDF to clean Markdown...", flush=True)
         markdown_text = parse_pdf_to_clean_markdown(pdf_path)
@@ -181,17 +185,23 @@ def ingest_markdown_or_pdf(
         markdown_text = raw_markdown
     else:
         raise ValueError("Either pdf_path or raw_markdown must be provided.")
+    t_parse = time.perf_counter() - t0
+    print(f"      Parsed and cleaned in {t_parse:.2f}s.", flush=True)
 
     # 2. Extract metadata
+    t0 = time.perf_counter()
     fallback_slug = os.path.splitext(os.path.basename(pdf_path))[0].upper() if pdf_path else None
     print("[2/5] Extracting document metadata...", flush=True)
     metadata = extract_metadata(markdown_text[:3000], fallback_slug=fallback_slug, source_url=source_url, model=model)
-    print(f"      Identified: [{metadata.document_name}] '{metadata.title}' by {metadata.author} ({metadata.year})", flush=True)
+    t_meta = time.perf_counter() - t0
+    print(f"      Identified: [{metadata.document_name}] '{metadata.title}' by {metadata.author} ({metadata.year}) in {t_meta:.2f}s.", flush=True)
 
     # 3. Initial chunking
+    t0 = time.perf_counter()
     print("[3/5] Performing structural Markdown chunking...", flush=True)
     chunks = chunk_markdown(markdown_text, metadata)
-    print(f"      Generated {len(chunks)} candidate chunks.", flush=True)
+    t_chunk = time.perf_counter() - t0
+    print(f"      Generated {len(chunks)} candidate chunks in {t_chunk:.2f}s.", flush=True)
     if not chunks:
         return IngestionReport(
             document_metadata=metadata,
@@ -207,10 +217,12 @@ def ingest_markdown_or_pdf(
 
     for it in range(1, max_iterations + 1):
         iteration = it
+        t0 = time.perf_counter()
         print(f"[4/5] Running Evaluator Agent stress-test (Iteration {it}/{max_iterations})...", flush=True)
         eval_result = evaluate_chunks(chunks, model=model, threshold=threshold)
         final_eval = eval_result
-        print(f"      Iteration {it} Recall Score: {eval_result.recall_score * 100:.1f}% (Pass target: {threshold * 100:.0f}%)", flush=True)
+        t_eval = time.perf_counter() - t0
+        print(f"      Iteration {it} Recall Score: {eval_result.recall_score * 100:.1f}% (Pass target: {threshold * 100:.0f}%) in {t_eval:.2f}s.", flush=True)
 
         if eval_result.passed:
             print("      [PASS] Retrieval verification PASSED!", flush=True)
@@ -222,6 +234,7 @@ def ingest_markdown_or_pdf(
 
     # 5. Terminal gate check
     if final_eval and final_eval.passed:
+        t0 = time.perf_counter()
         print("[5/5] Persisting verified chunks to ChromaDB and data/catalog.csv...", flush=True)
         client = get_chroma_client()
         collection = client.get_or_create_collection("document_knowledge")
@@ -237,6 +250,9 @@ def ingest_markdown_or_pdf(
         ]
         collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
         _append_to_catalog_csv(metadata, catalog_path=catalog_csv_path)
+        t_persist = time.perf_counter() - t0
+        t_total = time.perf_counter() - t_start
+        print(f"      Persisted in {t_persist:.2f}s | Total Pipeline Time: {t_total:.2f}s.", flush=True)
 
         return IngestionReport(
             document_metadata=metadata,

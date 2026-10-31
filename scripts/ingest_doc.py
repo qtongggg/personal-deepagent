@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import tempfile
+import time
 import urllib.request
 
 # Ensure project root is in sys.path
@@ -22,6 +23,7 @@ def download_arxiv_pdf(url: str) -> str:
         pdf_url = url
 
     print(f"Downloading arXiv paper from: {pdf_url} ...")
+    t0 = time.perf_counter()
     temp_file = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
     temp_path = temp_file.name
     temp_file.close()
@@ -33,7 +35,8 @@ def download_arxiv_pdf(url: str) -> str:
     with urllib.request.urlopen(req) as response, open(temp_path, "wb") as out_f:
         out_f.write(response.read())
 
-    print(f"Saved temporary PDF to: {temp_path}")
+    t_dl = time.perf_counter() - t0
+    print(f"Saved temporary PDF to: {temp_path} (downloaded in {t_dl:.2f}s)")
     return temp_path
 
 
@@ -62,7 +65,9 @@ def main():
         print(f"Source: {source}")
         print(f"Pass Threshold: {args.threshold * 100:.0f}%\n")
 
+        overall_start = time.perf_counter()
         report = ingest_pdf_document(pdf_path, source_url=canonical_url, threshold=args.threshold)
+        overall_elapsed = time.perf_counter() - overall_start
 
         print(f"--------------------------------------------------")
         print(f"Ingestion Status : {report.status}")
@@ -73,6 +78,7 @@ def main():
         print(f"Total Chunks     : {report.total_chunks}")
         print(f"Recall Score     : {report.final_recall_score * 100:.1f}%")
         print(f"Iterations Used  : {report.iterations_used}")
+        print(f"Total Run Time   : {overall_elapsed:.2f}s")
         if report.quarantine_reason:
             print(f"Quarantine Reason: {report.quarantine_reason}")
         print(f"--------------------------------------------------")
