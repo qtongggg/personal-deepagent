@@ -41,6 +41,7 @@ def main():
                 "tests/test_ingestion_evaluator.py",
                 "tests/test_ingestion_pipeline_e2e.py",
                 "tests/test_ingestion_review_fixes.py",
+                "tests/test_api.py",
             ],
         ),
         (

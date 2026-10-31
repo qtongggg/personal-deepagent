@@ -8,6 +8,8 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from scripts.ingest import get_chroma_client
 from src.skills.catalog_skill import query_catalog_sql
+from src.skills.ingestion.pipeline import download_url_to_temp_file, ingest_pdf_document
+from src.skills.ingestion.schemas import IngestionReport
 from src.skills.retriever_skill import retrieve_knowledge_chunks
 
 logger = logging.getLogger(__name__)
@@ -46,6 +48,46 @@ class ChunkInfo(BaseModel):
     header_path: str
     chunk_content: str
     word_count: int
+
+
+class IngestRequest(BaseModel):
+    source: str
+    threshold: float = 0.8
+
+
+def run_ingestion_sync(source: str, threshold: float = 0.8) -> IngestionReport:
+    """Execute synchronous document ingestion from URL or local file path."""
+    source_clean = source.strip()
+    is_url = source_clean.startswith("http://") or source_clean.startswith("https://")
+    if is_url:
+        temp_pdf = download_url_to_temp_file(source_clean)
+        try:
+            return ingest_pdf_document(temp_pdf, source_url=source_clean, threshold=threshold)
+        finally:
+            if os.path.exists(temp_pdf):
+                try:
+                    os.remove(temp_pdf)
+                except Exception:
+                    pass
+    else:
+        if not os.path.exists(source_clean):
+            raise HTTPException(status_code=404, detail=f"Local PDF file not found at: {source_clean}")
+        return ingest_pdf_document(source_clean, threshold=threshold)
+
+
+@app.post("/api/ingest", response_model=IngestionReport)
+def ingest_document_endpoint(req: IngestRequest) -> IngestionReport:
+    """Ingest an arXiv URL or local PDF paper into ChromaDB and catalog."""
+    if not req.source or not req.source.strip():
+        raise HTTPException(status_code=400, detail="Document source (URL or path) cannot be empty.")
+    try:
+        report = run_ingestion_sync(req.source, threshold=req.threshold)
+        return report
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ingestion error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/health")

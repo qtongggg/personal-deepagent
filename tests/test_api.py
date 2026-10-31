@@ -68,3 +68,36 @@ def test_root_viewer_html_endpoint(client):
     assert "text/html" in response.headers.get("content-type", "")
     assert "Personal DeepAgent" in response.text
     assert "Chunk Studio" in response.text
+
+
+def test_ingest_endpoint_validation(client):
+    response = client.post("/api/ingest", json={"source": "", "threshold": 0.8})
+    assert response.status_code == 400 or response.status_code == 422
+
+
+def test_ingest_endpoint_mocked(client, monkeypatch):
+    from src.skills.ingestion.schemas import DocumentMetadata, IngestionReport
+
+    def mock_ingest(source, threshold=0.8):
+        return IngestionReport(
+            document_metadata=DocumentMetadata(
+                document_name="MOCK_TEST_DOC",
+                title="Mock Test Document",
+                author="Test Author",
+                year=2025,
+            ),
+            status="SUCCESS",
+            total_chunks=5,
+            final_recall_score=0.92,
+            iterations_used=1,
+        )
+
+    import src.api as api_module
+    monkeypatch.setattr(api_module, "run_ingestion_sync", mock_ingest)
+
+    response = client.post("/api/ingest", json={"source": "https://arxiv.org/abs/2610.99999", "threshold": 0.8})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "SUCCESS"
+    assert data["total_chunks"] == 5
+    assert data["document_metadata"]["document_name"] == "MOCK_TEST_DOC"
