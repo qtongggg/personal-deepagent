@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict, List, Optional
 from langchain_core.tools import tool
-from scripts.ingest import get_chroma_client, seed_knowledge_chunks
+from scripts.ingest import get_chroma_client
 
 
 _CLIENT = None
@@ -13,8 +13,6 @@ def _get_collection(collection_name: str = "document_knowledge"):
     if _COLLECTION is None:
         _CLIENT = get_chroma_client()
         _COLLECTION = _CLIENT.get_or_create_collection(collection_name)
-        # Ensure default chunks exist
-        seed_knowledge_chunks(_CLIENT, collection_name=collection_name)
     return _COLLECTION
 
 
