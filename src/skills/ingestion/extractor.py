@@ -21,13 +21,17 @@ def _heuristic_metadata_extraction(
     # Clean arXiv prefix from title line if present
     if title.lower().startswith("arxiv:") and len(lines) > 1:
         title = lines[1]
+    title = re.sub(r"^[#\s\*]+", "", title).strip()
 
     # Detect year
     year_match = re.search(r"\b(19\d{2}|20\d{2})\b", text)
     year = int(year_match.group(1)) if year_match else datetime.now().year
 
-    # Detect arXiv ID
+    # Detect arXiv ID from text or source_url
     arxiv_match = re.search(r"arXiv:(\d{4}\.\d{4,5})", text, re.IGNORECASE)
+    if not arxiv_match and source_url:
+        arxiv_match = re.search(r"(\d{4}\.\d{4,5})", source_url)
+
     if arxiv_match:
         arxiv_id = arxiv_match.group(1).replace(".", "_")
         slug = f"ARXIV_{arxiv_id}"
@@ -38,11 +42,15 @@ def _heuristic_metadata_extraction(
         canonical_url = source_url
 
     author = "Unknown"
-    for line in lines[1:5]:
-        if any(term in line.lower() for term in ["abstract", "arxiv", "http", "doi", "vol"]):
+    date_pattern = re.compile(r"\b(january|february|march|april|may|june|july|august|september|october|november|december)\b", re.IGNORECASE)
+    for line in lines[1:6]:
+        cleaned_line = re.sub(r"^[#\s\*]+", "", line).strip()
+        if any(term in cleaned_line.lower() for term in ["abstract", "arxiv", "http", "doi", "vol"]):
             continue
-        if len(line) < 80 and not line.endswith("."):
-            author = line
+        if date_pattern.search(cleaned_line):
+            continue
+        if len(cleaned_line) < 80 and not cleaned_line.endswith("."):
+            author = cleaned_line
             break
 
     return DocumentMetadata(
@@ -50,7 +58,7 @@ def _heuristic_metadata_extraction(
         title=title,
         author=author,
         year=year,
-        publisher="arXiv" if "arxiv" in text.lower() else "Unknown",
+        publisher="arXiv" if ("arxiv" in text.lower() or (source_url and "arxiv" in source_url.lower())) else "Unknown",
         document_type="Research Paper",
         source_url=canonical_url,
     )
@@ -92,7 +100,7 @@ def extract_metadata(
 
         return DocumentMetadata(
             document_name=data.get("document_name") or fallback_slug or "DOC_UNKNOWN",
-            title=data.get("title") or "Untitled Document",
+            title=re.sub(r"^[#\s\*]+", "", data.get("title") or "Untitled Document").strip(),
             author=data.get("author") or "Unknown",
             year=int(data.get("year")) if data.get("year") else datetime.now().year,
             publisher=data.get("publisher") or "arXiv",

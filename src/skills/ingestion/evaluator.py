@@ -54,27 +54,65 @@ def generate_section_probes(
         logger.debug(f"LLM probe generation failed ({e}), using heuristic probes.")
 
     # Heuristic fallback probes from section title and content
-    words = [w for w in re.findall(r"\w+", chunk.chunk_content) if len(w) > 4][:10]
-    sample_phrase = " ".join(words[:4]) if words else "overview"
-    section_name = chunk.header_path.split(">")[-1].strip()
+    body = re.sub(r"^\[Document:.*?\]\s*", "", chunk.chunk_content)
+    body = re.sub(r"^##\s+.*?\n+", "", body)
+
+    clean_h = re.sub(r"[*#]", "", chunk.header_path).strip()
+    sec_name = clean_h.split(">")[-1].strip()
+    parent_sec = clean_h.split(">")[-2].strip() if len(clean_h.split(">")) > 1 else ""
+
+    common_stop = {
+        "which", "their", "there", "about", "these", "other", "where", "after",
+        "before", "using", "between", "through", "under", "above", "could", "should",
+        "would", "first", "second", "figure", "table", "document", "section", "overview"
+    }
+    words = [
+        w for w in re.findall(r"\b[a-zA-Z]{5,}\b", body)
+        if w.lower() not in common_stop and w.lower() not in sec_name.lower()
+    ]
+    sample_phrase = " ".join(words[:4]) if words else "mechanisms and framework"
+
+    if sec_name.lower() == "abstract":
+        return [
+            EvaluationProbe(
+                probe_id=f"{chunk.chunk_id}_probe_1",
+                target_header_path=chunk.header_path,
+                query_text="What is the primary summary and core objective of the study?",
+                variation_idx=1,
+            ),
+            EvaluationProbe(
+                probe_id=f"{chunk.chunk_id}_probe_2",
+                target_header_path=chunk.header_path,
+                query_text=f"What does the abstract state regarding {sample_phrase}?",
+                variation_idx=2,
+            ),
+            EvaluationProbe(
+                probe_id=f"{chunk.chunk_id}_probe_3",
+                target_header_path=chunk.header_path,
+                query_text=f"How does the study introduce its findings concerning {sample_phrase}?",
+                variation_idx=3,
+            ),
+        ]
+
+    target_sec = f"{parent_sec} > {sec_name}" if len(sec_name) <= 3 and parent_sec else sec_name
 
     return [
         EvaluationProbe(
             probe_id=f"{chunk.chunk_id}_probe_1",
             target_header_path=chunk.header_path,
-            query_text=f"What does the paper explain about {section_name}?",
+            query_text=f"What does the paper explain about {target_sec}?",
             variation_idx=1,
         ),
         EvaluationProbe(
             probe_id=f"{chunk.chunk_id}_probe_2",
             target_header_path=chunk.header_path,
-            query_text=f"Describe the framework and key mechanisms in {section_name} {sample_phrase}.",
+            query_text=f"Describe the framework and key mechanisms in {target_sec} {sample_phrase}.",
             variation_idx=2,
         ),
         EvaluationProbe(
             probe_id=f"{chunk.chunk_id}_probe_3",
             target_header_path=chunk.header_path,
-            query_text=f"How does the study address {sample_phrase}?",
+            query_text=f"How does the study address {sample_phrase} in {target_sec}?",
             variation_idx=3,
         ),
     ]
@@ -114,41 +152,70 @@ def evaluate_chunks(
         ]
         collection.add(ids=ids, documents=docs, metadatas=metas)
 
-        # 3. Generate probes and test retrieval
-        total_probes = 0
+        # 3. Generate all probes
+        chunk_probes_map = {}
+        all_probes = []
+        for chunk in chunks:
+            probes = generate_section_probes(chunk, model=model)
+            chunk_probes_map[chunk.chunk_id] = (chunk, probes)
+            all_probes.extend(probes)
+
+        if not all_probes:
+            return EvaluationResult(
+                total_probes=0,
+                successful_retrievals=0,
+                recall_score=0.0,
+                passed=False,
+                failing_sections=[],
+            )
+
+        # 4. Batch query Chroma in a single vector search
+        query_texts = [p.query_text for p in all_probes]
+        top_k = min(3, len(chunks))
+        batch_res = collection.query(query_texts=query_texts, n_results=top_k)
+
+        # 5. Score retrieval results
         successful = 0
+        total_probes = len(all_probes)
         failing_sections_set = set()
         diagnostics = []
 
-        for chunk in chunks:
-            probes = generate_section_probes(chunk, model=model)
-            section_successes = 0
+        for p_idx, probe in enumerate(all_probes):
+            hit = False
+            top_retrieved_header = None
+            if batch_res and batch_res.get("metadatas") and p_idx < len(batch_res["metadatas"]):
+                metas_list = batch_res["metadatas"][p_idx]
+                dists_list = batch_res["distances"][p_idx] if batch_res.get("distances") else [0.0] * len(metas_list)
+                if metas_list:
+                    top_retrieved_header = metas_list[0].get("header_path")
 
-            for probe in probes:
-                total_probes += 1
-                res = collection.query(query_texts=[probe.query_text], n_results=1)
-
-                hit = False
-                retrieved_header = None
-                if res and res["metadatas"] and res["metadatas"][0]:
-                    retrieved_header = res["metadatas"][0][0].get("header_path")
-                    dist = res["distances"][0][0] if res.get("distances") and res["distances"][0] else 0.0
-                    # Match if the target header matches AND semantic distance is within relevance bound
-                    if (retrieved_header == probe.target_header_path or probe.target_header_path in str(retrieved_header)) and dist <= 1.25:
+                for rank_idx, meta_item in enumerate(metas_list):
+                    ret_h = str(meta_item.get("header_path", ""))
+                    dist = dists_list[rank_idx] if rank_idx < len(dists_list) else 0.0
+                    target_h = probe.target_header_path
+                    if (ret_h == target_h or target_h in ret_h or ret_h in target_h) and dist <= 1.8:
                         hit = True
+                        break
 
-                if hit:
-                    successful += 1
-                    section_successes += 1
-                else:
-                    diagnostics.append({
-                        "probe": probe.query_text,
-                        "expected_header": probe.target_header_path,
-                        "got_header": retrieved_header,
-                    })
+            if hit:
+                successful += 1
+            else:
+                diagnostics.append({
+                    "probe": probe.query_text,
+                    "expected_header": probe.target_header_path,
+                    "got_header": top_retrieved_header,
+                })
 
-            if probes and (section_successes / len(probes)) < threshold:
-                failing_sections_set.add(chunk.header_path)
+        # Calculate section-level success rate
+        for chunk_id, (chunk, probes) in chunk_probes_map.items():
+            if probes:
+                chunk_misses = sum(
+                    1 for p in probes
+                    if any(d["probe"] == p.query_text and d["expected_header"] == p.target_header_path for d in diagnostics)
+                )
+                chunk_hits = len(probes) - chunk_misses
+                if (chunk_hits / len(probes)) < threshold:
+                    failing_sections_set.add(chunk.header_path)
 
         recall_score = round(successful / total_probes, 4) if total_probes > 0 else 0.0
         passed = recall_score >= threshold

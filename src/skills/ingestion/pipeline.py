@@ -50,22 +50,29 @@ def _refine_chunks_for_self_correction(
 
     for c in chunks:
         words = len(c.chunk_content.split())
-        if c.header_path in failing_set:
-            # Case 1: Oversized chunk (> 800 words) -> split at paragraph boundaries
-            if words > 800 and "\n\n" in c.chunk_content:
-                parts = c.chunk_content.split("\n\n")
-                mid = len(parts) // 2
-                part_1 = "\n\n".join(parts[:mid]).strip()
-                part_2 = "\n\n".join(parts[mid:]).strip()
+        clean_h = re.sub(r"[*#]", "", c.header_path).strip()
+        sec_title = clean_h.split(">")[-1].strip()
+        doc_title = re.sub(r"^[#\s\*]+", "", metadata.title).strip()
+        prefix = f"[Document: {doc_title} | Section: {clean_h}]\n## {sec_title}\n\n"
 
-                prefix = f"[Document: {metadata.title} | Section: {c.header_path}]\n"
+        if c.header_path in failing_set:
+            # Case 1: Split oversized failing chunk (> 250 words) at paragraph boundaries
+            body = re.sub(r"^\[Document:.*?\]\s*", "", c.chunk_content)
+            body = re.sub(r"^##\s+.*?\n+", "", body).strip()
+            paras = [p.strip() for p in body.split("\n\n") if p.strip()]
+
+            if words > 250 and len(paras) >= 2:
+                mid = len(paras) // 2
+                part_1 = "\n\n".join(paras[:mid]).strip()
+                part_2 = "\n\n".join(paras[mid:]).strip()
+
                 refined.append(
                     IngestionChunk(
                         chunk_id=f"{c.chunk_id}_a",
                         document_name=c.document_name,
                         header_path=c.header_path,
-                        chunk_content=part_1 if part_1.startswith("[Document:") else f"{prefix}{part_1}",
-                        word_count=len(part_1.split()),
+                        chunk_content=f"{prefix}{part_1}",
+                        word_count=len(f"{prefix}{part_1}".split()),
                     )
                 )
                 refined.append(
@@ -73,17 +80,14 @@ def _refine_chunks_for_self_correction(
                         chunk_id=f"{c.chunk_id}_b",
                         document_name=c.document_name,
                         header_path=c.header_path,
-                        chunk_content=part_2 if part_2.startswith("[Document:") else f"{prefix}{part_2}",
-                        word_count=len(part_2.split()),
+                        chunk_content=f"{prefix}{part_2}",
+                        word_count=len(f"{prefix}{part_2}".split()),
                     )
                 )
             else:
-                # Case 2: Prepend breadcrumb if not already present
+                # Case 2: Ensure breadcrumb is attached without duplication
                 if not c.chunk_content.startswith("[Document:"):
-                    enhanced_content = (
-                        f"[Document: {metadata.title} | Section: {c.header_path}]\n"
-                        f"{c.chunk_content}"
-                    )
+                    enhanced_content = f"{prefix}{c.chunk_content}"
                 else:
                     enhanced_content = c.chunk_content
 
@@ -175,6 +179,7 @@ def ingest_markdown_or_pdf(
     """Orchestrate the complete parse -> extract -> chunk -> evaluate -> self-correct -> commit pipeline."""
     # 1. Parse content
     if pdf_path:
+        print("[1/5] Converting PDF to clean Markdown...", flush=True)
         markdown_text = parse_pdf_to_clean_markdown(pdf_path)
     elif raw_markdown:
         markdown_text = raw_markdown
@@ -183,10 +188,14 @@ def ingest_markdown_or_pdf(
 
     # 2. Extract metadata
     fallback_slug = os.path.splitext(os.path.basename(pdf_path))[0].upper() if pdf_path else None
+    print("[2/5] Extracting document metadata...", flush=True)
     metadata = extract_metadata(markdown_text[:3000], fallback_slug=fallback_slug, source_url=source_url, model=model)
+    print(f"      Identified: [{metadata.document_name}] '{metadata.title}' by {metadata.author} ({metadata.year})", flush=True)
 
     # 3. Initial chunking
+    print("[3/5] Performing structural Markdown chunking...", flush=True)
     chunks = chunk_markdown(markdown_text, metadata)
+    print(f"      Generated {len(chunks)} candidate chunks.", flush=True)
     if not chunks:
         return IngestionReport(
             document_metadata=metadata,
@@ -202,17 +211,22 @@ def ingest_markdown_or_pdf(
 
     for it in range(1, max_iterations + 1):
         iteration = it
+        print(f"[4/5] Running Evaluator Agent stress-test (Iteration {it}/{max_iterations})...", flush=True)
         eval_result = evaluate_chunks(chunks, model=model, threshold=threshold)
         final_eval = eval_result
+        print(f"      Iteration {it} Recall Score: {eval_result.recall_score * 100:.1f}% (Pass target: {threshold * 100:.0f}%)", flush=True)
 
         if eval_result.passed:
+            print("      [PASS] Retrieval verification PASSED!", flush=True)
             break
 
         if it < max_iterations:
+            print(f"      ! Recall below target. Refining {len(eval_result.failing_sections)} failing sections...", flush=True)
             chunks = _refine_chunks_for_self_correction(chunks, eval_result.failing_sections, metadata)
 
     # 5. Terminal gate check
     if final_eval and final_eval.passed:
+        print("[5/5] Persisting verified chunks to ChromaDB and data/catalog.csv...", flush=True)
         client = get_chroma_client()
         collection = client.get_or_create_collection("document_knowledge")
         ids = [c.chunk_id for c in chunks]

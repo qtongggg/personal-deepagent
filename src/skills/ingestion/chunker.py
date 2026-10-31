@@ -53,7 +53,14 @@ def chunk_markdown(
         if header_match:
             commit_current_section()
             level = len(header_match.group(1))
-            title = header_match.group(2).strip()
+            raw_title = header_match.group(2).strip()
+            # Clean markdown bold/italic/header symbols
+            title = re.sub(r"^\*+|\*+$", "", raw_title).strip()
+            title = re.sub(r"^#+\s*", "", title).strip()
+
+            # If sub-heading is single letter (e.g. 'a', 'b' figure label) and we have parent
+            if len(title) <= 2 and level >= 3 and current_header_stack:
+                title = f"{current_header_stack[-1]} ({title})"
 
             # Adjust stack: slice up to level - 1, then append current title
             current_header_stack = current_header_stack[: level - 1]
@@ -87,20 +94,25 @@ def chunk_markdown(
     chunks: List[IngestionChunk] = []
     chunk_index = 1
 
+    def _build_chunk(c_index: int, c_path: str, c_body: str) -> IngestionChunk:
+        sec_title = c_path.split(">")[-1].strip()
+        doc_title = re.sub(r"^[#\s\*]+", "", metadata.title).strip()
+        prefix = f"[Document: {doc_title} | Section: {c_path}]\n## {sec_title}\n\n"
+        full_body = c_body if c_body.startswith("[Document:") else f"{prefix}{c_body}"
+        return IngestionChunk(
+            chunk_id=f"{metadata.document_name}_chunk_{c_index:03d}",
+            document_name=metadata.document_name,
+            header_path=c_path,
+            chunk_content=full_body,
+            word_count=_count_words(full_body),
+        )
+
     for path, content in coalesced_sections:
         words = _count_words(content)
 
         if words <= max_words:
             # Fits in one chunk
-            chunks.append(
-                IngestionChunk(
-                    chunk_id=f"{metadata.document_name}_chunk_{chunk_index:03d}",
-                    document_name=metadata.document_name,
-                    header_path=path,
-                    chunk_content=content,
-                    word_count=words,
-                )
-            )
+            chunks.append(_build_chunk(chunk_index, path, content))
             chunk_index += 1
         else:
             # Split oversized section by paragraphs
@@ -112,15 +124,7 @@ def chunk_markdown(
                 para_words = _count_words(para)
                 if sub_count + para_words > max_words and sub_chunk_lines:
                     sub_content = "\n\n".join(sub_chunk_lines).strip()
-                    chunks.append(
-                        IngestionChunk(
-                            chunk_id=f"{metadata.document_name}_chunk_{chunk_index:03d}",
-                            document_name=metadata.document_name,
-                            header_path=path,
-                            chunk_content=sub_content,
-                            word_count=_count_words(sub_content),
-                        )
-                    )
+                    chunks.append(_build_chunk(chunk_index, path, sub_content))
                     chunk_index += 1
                     sub_chunk_lines = [para]
                     sub_count = para_words
@@ -130,15 +134,7 @@ def chunk_markdown(
 
             if sub_chunk_lines:
                 sub_content = "\n\n".join(sub_chunk_lines).strip()
-                chunks.append(
-                    IngestionChunk(
-                        chunk_id=f"{metadata.document_name}_chunk_{chunk_index:03d}",
-                        document_name=metadata.document_name,
-                        header_path=path,
-                        chunk_content=sub_content,
-                        word_count=_count_words(sub_content),
-                    )
-                )
+                chunks.append(_build_chunk(chunk_index, path, sub_content))
                 chunk_index += 1
 
     return chunks
