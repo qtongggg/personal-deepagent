@@ -8,7 +8,9 @@ import deepagents
 
 from src.config import get_settings
 from src.prompt import SYSTEM_PROMPT
+from src.utils.models import get_default_model
 from src.skills.catalog_skill import catalog_tool
+from src.skills.ingestion.pipeline import ingest_document_tool
 from src.skills.memory_skill import add_memory_tool, search_memory_tool
 from src.skills.retriever_skill import retriever_tool
 from src.utils.sanitizer import build_final_response
@@ -36,20 +38,7 @@ def todo_read() -> str:
     return "\n".join(f"- {item}" for item in _TODOS)
 
 
-def get_default_model() -> BaseChatModel:
-    settings = get_settings()
-    if settings.OPENAI_API_KEY and settings.OPENAI_API_KEY != "your_openai_api_key_here":
-        from langchain_openai import ChatOpenAI
-        return ChatOpenAI(model=settings.DEFAULT_MODEL, api_key=settings.OPENAI_API_KEY)
-    elif settings.ANTHROPIC_API_KEY and settings.ANTHROPIC_API_KEY != "your_anthropic_api_key_here":
-        from langchain_anthropic import ChatAnthropic
-        return ChatAnthropic(model=settings.DEFAULT_MODEL, api_key=settings.ANTHROPIC_API_KEY)
-    elif settings.GOOGLE_API_KEY and settings.GOOGLE_API_KEY != "your_google_api_key_here":
-        from langchain_google_genai import ChatGoogleGenAI
-        return ChatGoogleGenAI(model=settings.DEFAULT_MODEL, api_key=settings.GOOGLE_API_KEY)
-    else:
-        from langchain_core.language_models.fake_chat_models import FakeListChatModel
-        return FakeListChatModel(responses=["No LLM API key configured. Please set OPENAI_API_KEY."])
+
 
 
 def get_agent_tools() -> List[Any]:
@@ -58,6 +47,7 @@ def get_agent_tools() -> List[Any]:
         retriever_tool,
         search_memory_tool,
         add_memory_tool,
+        ingest_document_tool,
         todo_write,
         todo_read,
     ]

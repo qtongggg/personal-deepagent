@@ -21,7 +21,13 @@ def main():
     print("==================================================")
 
     tiers = [
-        ("Tier L1: Scaffolding, Configuration & Schemas", ["tests/test_config.py"]),
+        (
+            "Tier L1: Scaffolding, Configuration & Schemas",
+            [
+                "tests/test_config.py",
+                "tests/test_ingestion_schemas.py",
+            ],
+        ),
         (
             "Tier L2: Pluggable Skills & Sanitizer Unit Tests",
             [
@@ -29,6 +35,12 @@ def main():
                 "tests/test_retriever_skill.py",
                 "tests/test_memory_skill.py",
                 "tests/test_sanitizer.py",
+                "tests/test_ingestion_extractor.py",
+                "tests/test_ingestion_parser.py",
+                "tests/test_ingestion_chunker.py",
+                "tests/test_ingestion_evaluator.py",
+                "tests/test_ingestion_pipeline_e2e.py",
+                "tests/test_ingestion_review_fixes.py",
             ],
         ),
         (
