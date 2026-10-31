@@ -67,12 +67,16 @@
         </div>
       </div>
 
-      <div class="flex items-center space-x-4 text-xs">
+      <div class="flex items-center space-x-3 text-xs">
         <div class="hidden sm:flex items-center space-x-4 bg-indigo-800/60 px-3 py-1.5 rounded-lg border border-indigo-700/50">
           <div><span class="text-indigo-300">Docs:</span> <strong id="stat-doc-count" class="text-white">-</strong></div>
           <div class="text-indigo-600">|</div>
           <div><span class="text-indigo-300">Chunks:</span> <strong id="stat-chunk-count" class="text-white">-</strong></div>
         </div>
+        <button onclick="loadDocuments()" title="Sync and refresh documents" class="bg-indigo-800 hover:bg-indigo-700 text-indigo-100 hover:text-white px-2.5 py-1.5 rounded-md font-medium border border-indigo-700/60 transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span>Sync</span>
+        </button>
         <button onclick="openIngestModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-md font-semibold shadow transition flex items-center gap-1.5">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           Ingest Paper
@@ -231,6 +235,7 @@
 
         // Populate dropdown
         const select = document.getElementById("doc-select");
+        const previousSelection = selectedDocName;
         select.innerHTML = '<option value="">-- Choose a document --</option>';
         currentDocuments.forEach(d => {
           const opt = document.createElement("option");
@@ -239,8 +244,10 @@
           select.appendChild(opt);
         });
 
-        // Automatically select the first document if available
-        if (currentDocuments.length > 0) {
+        // Preserve current selection if it still exists, otherwise select the first document
+        if (previousSelection && currentDocuments.some(d => d.document_name === previousSelection)) {
+          select.value = previousSelection;
+        } else if (currentDocuments.length > 0) {
           select.value = currentDocuments[0].document_name;
           onDocumentSelected();
         }
@@ -495,6 +502,16 @@
 
     // Init on page load
     window.addEventListener("DOMContentLoaded", loadDocuments);
+
+    // Auto-sync whenever the user switches back from terminal to the browser tab
+    window.addEventListener("focus", () => {
+      loadDocuments();
+    });
+
+    // Background sync check every 15 seconds
+    setInterval(() => {
+      loadDocuments();
+    }, 15000);
   </script>
 </body>
 </html>
