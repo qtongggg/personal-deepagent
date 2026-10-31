@@ -1,5 +1,14 @@
+from typing import Any
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.language_models.fake_chat_models import FakeListChatModel
 from src.config import get_settings
+
+
+class SafeFakeChatModel(FakeListChatModel):
+    """Fallback fake chat model that supports bind_tools when no API key is set."""
+
+    def bind_tools(self, tools: Any, **kwargs: Any) -> "SafeFakeChatModel":
+        return self
 
 
 def get_default_model() -> BaseChatModel:
@@ -15,6 +24,7 @@ def get_default_model() -> BaseChatModel:
         from langchain_google_genai import ChatGoogleGenAI
         return ChatGoogleGenAI(model=settings.DEFAULT_MODEL, api_key=settings.GOOGLE_API_KEY)
     else:
-        from langchain_core.language_models.fake_chat_models import FakeListChatModel
-        return FakeListChatModel(responses=["No LLM API key configured. Please set OPENAI_API_KEY."])
+        return SafeFakeChatModel(
+            responses=["No LLM API key configured. Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY in .env."]
+        )
 
