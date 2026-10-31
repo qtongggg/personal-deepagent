@@ -60,3 +60,11 @@ def test_semantic_search_endpoint(client):
 def test_semantic_search_empty_query(client):
     response = client.get("/api/search?q=")
     assert response.status_code == 400 or response.status_code == 422
+
+
+def test_root_viewer_html_endpoint(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "text/html" in response.headers.get("content-type", "")
+    assert "Personal DeepAgent" in response.text
+    assert "Chunk Studio" in response.text

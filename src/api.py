@@ -1,5 +1,6 @@
 from collections import Counter
 import logging
+import os
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +11,8 @@ from src.skills.catalog_skill import query_catalog_sql
 from src.skills.retriever_skill import retrieve_knowledge_chunks
 
 logger = logging.getLogger(__name__)
+
+TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), "templates", "viewer.html")
 
 app = FastAPI(
     title="Personal DeepAgent API",
@@ -48,6 +51,16 @@ class ChunkInfo(BaseModel):
 @app.get("/health")
 def health_check() -> Dict[str, str]:
     return {"status": "ok", "version": "0.1.0"}
+
+
+@app.get("/", response_class=HTMLResponse)
+def get_viewer_page() -> HTMLResponse:
+    """Serve the interactive single-page Chunk Studio UI."""
+    if not os.path.exists(TEMPLATE_PATH):
+        raise HTTPException(status_code=404, detail="Viewer template not found.")
+    with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
+        html = f.read()
+    return HTMLResponse(content=html)
 
 
 @app.get("/api/documents", response_model=List[DocumentInfo])
