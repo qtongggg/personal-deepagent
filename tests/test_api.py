@@ -101,3 +101,37 @@ def test_ingest_endpoint_mocked(client, monkeypatch):
     assert data["status"] == "SUCCESS"
     assert data["total_chunks"] == 5
     assert data["document_metadata"]["document_name"] == "MOCK_TEST_DOC"
+
+
+def test_ingest_threshold_bounds_validation(client):
+    # Threshold must be between 0.0 and 1.0
+    res_high = client.post("/api/ingest", json={"source": "https://arxiv.org/abs/2401.0001", "threshold": 1.5})
+    assert res_high.status_code == 422
+
+    res_low = client.post("/api/ingest", json={"source": "https://arxiv.org/abs/2401.0001", "threshold": -0.2})
+    assert res_low.status_code == 422
+
+
+def test_get_chunks_with_none_metadata_safety(client, monkeypatch):
+    class MockCollection:
+        def get(self, where=None):
+            return {
+                "ids": ["mock_c1"],
+                "documents": ["Some chunk text without metadata"],
+                "metadatas": [None],  # simulates ChromaDB returning None
+            }
+
+    class MockClient:
+        def get_or_create_collection(self, name):
+            return MockCollection()
+
+    import src.api as api_module
+    monkeypatch.setattr(api_module, "get_chroma_client", lambda: MockClient())
+
+    response = client.get("/api/documents/TEST_DOC/chunks")
+    assert response.status_code == 200
+    chunks = response.json()
+    assert len(chunks) == 1
+    assert chunks[0]["chunk_id"] == "mock_c1"
+    assert chunks[0]["header_path"] == "/"
+

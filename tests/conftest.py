@@ -1,7 +1,8 @@
 import os
 import pytest
-from scripts.ingest import get_chroma_client, seed_knowledge_chunks
+from scripts.ingest import seed_knowledge_chunks
 from src.config import get_settings
+from src.utils.chroma import get_chroma_client
 import src.skills.retriever_skill as retriever_skill
 
 

@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import chromadb
 from src.config import get_settings
-
+from src.utils.chroma import get_chroma_client
 
 DEFAULT_CHUNKS: List[Dict[str, Any]] = [
     {
@@ -58,13 +58,7 @@ DEFAULT_CHUNKS: List[Dict[str, Any]] = [
 ]
 
 
-def get_chroma_client(persist_dir: Optional[str] = None) -> chromadb.ClientAPI:
-    settings = get_settings()
-    target_dir = persist_dir or settings.CHROMA_PERSIST_DIR
-    if not os.path.isabs(target_dir):
-        target_dir = os.path.abspath(target_dir)
-    os.makedirs(target_dir, exist_ok=True)
-    return chromadb.PersistentClient(path=target_dir)
+
 
 
 def seed_knowledge_chunks(client: Optional[chromadb.ClientAPI] = None, collection_name: str = "document_knowledge") -> int:

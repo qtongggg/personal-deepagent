@@ -6,6 +6,7 @@
   <title>Personal DeepAgent — Knowledge & Chunk Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
   <style>
     /* Styling for rendered Markdown tables */
     .prose-content table {
@@ -208,6 +209,16 @@
     let currentChunks = [];
     let selectedDocName = "";
 
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
     async function loadDocuments() {
       try {
         const res = await fetch("/api/documents");
@@ -251,7 +262,7 @@
         document.getElementById("meta-year-type").innerText = `${doc.year || "N/A"} · ${doc.document_type || "Paper"}`;
         
         const urlElem = document.getElementById("meta-url");
-        if (doc.source_url) {
+        if (doc.source_url && (doc.source_url.startsWith("http://") || doc.source_url.startsWith("https://"))) {
           urlElem.href = doc.source_url;
           document.getElementById("meta-url-container").classList.remove("hidden");
         } else {
@@ -268,7 +279,7 @@
         renderSections(currentChunks);
         renderChunks(currentChunks);
       } catch (err) {
-        document.getElementById("chunks-container").innerHTML = `<div class="p-6 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">Error loading chunks: ${err.message}</div>`;
+        document.getElementById("chunks-container").innerHTML = `<div class="p-6 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">Error loading chunks: ${escapeHtml(err.message)}</div>`;
       }
     }
 
@@ -287,10 +298,10 @@
         const item = document.createElement("div");
         item.className = "flex items-center justify-between p-2 rounded-lg hover:bg-indigo-50 cursor-pointer text-slate-700 hover:text-indigo-900 transition";
         item.innerHTML = `
-          <span class="truncate pr-2 font-medium">${sec}</span>
-          <span class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">${count}</span>
+          <span class="truncate pr-2 font-medium">${escapeHtml(sec)}</span>
+          <span class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">${escapeHtml(count)}</span>
         `;
-        item.onclick = () => filterBySection(sec);
+        item.addEventListener("click", () => filterBySection(sec));
         list.appendChild(item);
       });
     }
@@ -308,33 +319,40 @@
 
       chunks.forEach((chunk, index) => {
         const card = document.createElement("div");
-        card.id = `chunk-${chunk.chunk_id}`;
+        card.id = `chunk-${escapeHtml(chunk.chunk_id)}`;
         card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:border-indigo-300 transition";
 
         // Remove the prepended header breadcrumb from raw markdown for display since it's in the card header
         let cleanBody = chunk.chunk_content.replace(/^\[Document:[^\]]+\]\s*/i, "");
-        let htmlContent = marked.parse(cleanBody);
+        let rawHtml = marked.parse(cleanBody);
+        let safeHtml = typeof DOMPurify !== "undefined" ? DOMPurify.sanitize(rawHtml) : rawHtml;
 
         card.innerHTML = `
           <div class="bg-slate-50 border-b border-slate-100 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div class="flex items-center space-x-2 truncate">
               <span class="font-bold text-slate-400">#${index + 1}</span>
               <span class="bg-indigo-50 text-indigo-700 border border-indigo-200/60 font-semibold px-2 py-0.5 rounded truncate max-w-md">
-                ${chunk.header_path}
+                ${escapeHtml(chunk.header_path)}
               </span>
             </div>
             <div class="flex items-center space-x-2 text-[11px]">
-              <span class="bg-slate-200/80 text-slate-600 px-2 py-0.5 rounded font-mono">${chunk.chunk_id}</span>
-              <span class="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2 py-0.5 rounded font-medium">${chunk.word_count} words</span>
-              <button onclick="copyChunk('${chunk.chunk_id}')" class="text-slate-400 hover:text-slate-700 p-1 rounded" title="Copy Content">
+              <span class="bg-slate-200/80 text-slate-600 px-2 py-0.5 rounded font-mono">${escapeHtml(chunk.chunk_id)}</span>
+              <span class="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2 py-0.5 rounded font-medium">${escapeHtml(chunk.word_count)} words</span>
+              <button data-chunk-id="${escapeHtml(chunk.chunk_id)}" class="copy-chunk-btn text-slate-400 hover:text-slate-700 p-1 rounded" title="Copy Content">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
               </button>
             </div>
           </div>
           <div class="p-5 text-sm prose-content text-slate-700">
-            ${htmlContent}
+            ${safeHtml}
           </div>
         `;
+        
+        const copyBtn = card.querySelector(".copy-chunk-btn");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", () => copyChunk(chunk.chunk_id));
+        }
+
         container.appendChild(card);
       });
     }
@@ -460,3 +478,4 @@
   </script>
 </body>
 </html>
+

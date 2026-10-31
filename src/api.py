@@ -2,11 +2,12 @@ from collections import Counter
 import logging
 import os
 from typing import Any, Dict, List, Optional
+import urllib.error
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
-from scripts.ingest import get_chroma_client
+from pydantic import BaseModel, Field
+from src.utils.chroma import get_chroma_client
 from src.skills.catalog_skill import query_catalog_sql
 from src.skills.ingestion.pipeline import download_url_to_temp_file, ingest_pdf_document
 from src.skills.ingestion.schemas import IngestionReport
@@ -52,7 +53,7 @@ class ChunkInfo(BaseModel):
 
 class IngestRequest(BaseModel):
     source: str
-    threshold: float = 0.8
+    threshold: float = Field(default=0.8, ge=0.0, le=1.0)
 
 
 def run_ingestion_sync(source: str, threshold: float = 0.8) -> IngestionReport:
@@ -60,7 +61,15 @@ def run_ingestion_sync(source: str, threshold: float = 0.8) -> IngestionReport:
     source_clean = source.strip()
     is_url = source_clean.startswith("http://") or source_clean.startswith("https://")
     if is_url:
-        temp_pdf = download_url_to_temp_file(source_clean)
+        try:
+            temp_pdf = download_url_to_temp_file(source_clean)
+        except urllib.error.HTTPError as e:
+            raise HTTPException(status_code=400, detail=f"Failed to download arXiv paper (HTTP {e.code}): {e.reason}")
+        except urllib.error.URLError as e:
+            raise HTTPException(status_code=400, detail=f"Network error accessing URL: {e.reason}")
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Download failed: {str(e)}")
+
         try:
             return ingest_pdf_document(temp_pdf, source_url=source_clean, threshold=threshold)
         finally:
@@ -114,6 +123,7 @@ def get_documents() -> List[DocumentInfo]:
     chroma_data = collection.get()
     counts = Counter()
     for meta in chroma_data.get("metadatas", []):
+        meta = meta or {}
         doc = meta.get("document_name")
         if doc:
             counts[doc] += 1
@@ -162,13 +172,14 @@ def get_document_chunks(document_name: str) -> List[ChunkInfo]:
 
     chunks: List[ChunkInfo] = []
     for cid, doc, meta in zip(results["ids"], results["documents"], results["metadatas"]):
-        clean_words = len(doc.split())
+        meta = meta or {}
+        clean_words = len((doc or "").split())
         chunks.append(
             ChunkInfo(
                 chunk_id=cid,
                 document_name=meta.get("document_name", document_name),
                 header_path=meta.get("header_path", "/"),
-                chunk_content=doc,
+                chunk_content=doc or "",
                 word_count=clean_words,
             )
         )
