@@ -152,7 +152,7 @@ def _append_to_catalog_csv(metadata: DocumentMetadata, catalog_path: Optional[st
         return
 
     with open(path, "a", encoding="utf-8", newline="") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         if not file_exists:
             writer.writerow(["document_name", "title", "author", "year", "publisher", "document_type", "source_url"])
         writer.writerow([

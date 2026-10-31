@@ -16,7 +16,7 @@ def _get_connection() -> duckdb.DuckDBPyConnection:
     # Normalize backslashes for DuckDB SQL
     normalized_path = csv_path.replace("\\", "/")
     conn = duckdb.connect(database=":memory:")
-    conn.execute(f"CREATE OR REPLACE VIEW catalog AS SELECT * FROM read_csv_auto('{normalized_path}', header=True)")
+    conn.execute(f"CREATE OR REPLACE VIEW catalog AS SELECT * FROM read_csv('{normalized_path}', delim=',', header=True, auto_detect=True)")
     return conn
 
 
