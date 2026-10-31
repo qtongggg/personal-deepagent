@@ -21,9 +21,17 @@ def clean_markdown_text(raw_md: str) -> str:
     if not raw_md or not raw_md.strip():
         return ""
 
-    # 1. Strip image links, picture tags, and diagram markers
-    text = re.sub(r"!\[.*?\]\(.*?\)", "", raw_md)
-    text = re.sub(r"<\/?picture>", "", text)
+    # 1. Strip image links, picture blocks, and diagram text
+    text = re.sub(
+        r"<!--\s*Start of picture text\s*-->.*?<!--\s*End of picture text\s*-->",
+        "",
+        raw_md,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+    text = re.sub(r"<!--.*?-->", "", text, flags=re.DOTALL)
+    text = re.sub(r"!\[.*?\]\(.*?\)", "", text)
+    text = re.sub(r"<\/?picture[^>]*>", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"<\/?img[^>]*>", "", text, flags=re.IGNORECASE)
     text = re.sub(r"\**Start picture.*?\**", "", text, flags=re.IGNORECASE)
 
     # 2. Separate and prune bibliography and back-matter sections

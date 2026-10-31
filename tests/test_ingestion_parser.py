@@ -29,6 +29,22 @@ def test_clean_markdown_handles_empty_or_whitespace():
     assert clean_markdown_text("   \n\n  ") == ""
 
 
+def test_clean_markdown_removes_picture_text_blocks():
+    raw_md = (
+        "Main text before diagram.\n\n"
+        "<!-- Start of picture text -->\n"
+        "(a) Diagram coordinate labels: Target Round 2<br>channel<br>token\n"
+        "<!-- End of picture text -->\n\n"
+        "Main text following the diagram."
+    )
+    cleaned = clean_markdown_text(raw_md)
+    assert "Start of picture text" not in cleaned
+    assert "End of picture text" not in cleaned
+    assert "Diagram coordinate labels" not in cleaned
+    assert "Main text before diagram." in cleaned
+    assert "Main text following the diagram." in cleaned
+
+
 def test_parse_pdf_file_not_found():
     with pytest.raises(FileNotFoundError):
         parse_pdf_to_clean_markdown("non_existent_file_xyz_123.pdf")
