@@ -50,4 +50,5 @@ htmlcov/
 Thumbs.db
 .superpowers/
 data/quarantine_log.json
-.superpowers/
+data/resources/
+*.pdf
