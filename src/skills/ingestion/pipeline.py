@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import tempfile
+import threading
 import time
 from typing import Any, Dict, List, Optional
 import urllib.request
@@ -19,6 +20,8 @@ from src.skills.ingestion.parser import parse_pdf_to_clean_markdown
 from src.skills.ingestion.schemas import DocumentMetadata, IngestionChunk, IngestionReport
 
 logger = logging.getLogger(__name__)
+
+_DB_LOCK = threading.Lock()
 
 
 def download_url_to_temp_file(url: str) -> str:
@@ -236,20 +239,21 @@ def ingest_markdown_or_pdf(
     if final_eval and final_eval.passed:
         t0 = time.perf_counter()
         print("[5/5] Persisting verified chunks to ChromaDB and data/catalog.csv...", flush=True)
-        client = get_chroma_client()
-        collection = client.get_or_create_collection("document_knowledge")
-        ids = [c.chunk_id for c in chunks]
-        documents = [c.chunk_content for c in chunks]
-        metadatas = [
-            {
-                "chunk_id": c.chunk_id,
-                "document_name": c.document_name,
-                "header_path": c.header_path,
-            }
-            for c in chunks
-        ]
-        collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
-        _append_to_catalog_csv(metadata, catalog_path=catalog_csv_path)
+        with _DB_LOCK:
+            client = get_chroma_client()
+            collection = client.get_or_create_collection("document_knowledge")
+            ids = [c.chunk_id for c in chunks]
+            documents = [c.chunk_content for c in chunks]
+            metadatas = [
+                {
+                    "chunk_id": c.chunk_id,
+                    "document_name": c.document_name,
+                    "header_path": c.header_path,
+                }
+                for c in chunks
+            ]
+            collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
+            _append_to_catalog_csv(metadata, catalog_path=catalog_csv_path)
         t_persist = time.perf_counter() - t0
         t_total = time.perf_counter() - t_start
         print(f"      Persisted in {t_persist:.2f}s | Total Pipeline Time: {t_total:.2f}s.", flush=True)
@@ -274,7 +278,8 @@ def ingest_markdown_or_pdf(
             "failing_sections": list(final_eval.failing_sections) if final_eval else [],
             "diagnostics": final_eval.diagnostic_logs if final_eval else [],
         }
-        _record_quarantine_log(quarantine_record, log_path=quarantine_log_path)
+        with _DB_LOCK:
+            _record_quarantine_log(quarantine_record, log_path=quarantine_log_path)
 
         return IngestionReport(
             document_metadata=metadata,

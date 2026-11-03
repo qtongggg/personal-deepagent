@@ -1,0 +1,118 @@
+{
+  "timestamp": "2026-11-03T23:31:29.483994",
+  "total_documents": 10,
+  "max_workers": 10,
+  "total_wallclock_seconds": 1257.08,
+  "results": [
+    {
+      "worker_id": "1",
+      "url": "https://arxiv.org/abs/2302.04761",
+      "document_name": "ARXIV_TOOLFORMER",
+      "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "status": "SUCCESS",
+      "chunks": 17,
+      "recall_score": 0.8824,
+      "elapsed_seconds": 593.46,
+      "error": null
+    },
+    {
+      "worker_id": "2",
+      "url": "https://arxiv.org/abs/2201.11903",
+      "document_name": "NEURIPS_2022_CHAIN_OF_THOUGHT",
+      "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+      "status": "SUCCESS",
+      "chunks": 14,
+      "recall_score": 0.8571,
+      "elapsed_seconds": 1075.92,
+      "error": null
+    },
+    {
+      "worker_id": "3",
+      "url": "https://arxiv.org/abs/2305.10601",
+      "document_name": "TREE_OF_THOUGHTS",
+      "title": "Tree of Thoughts: Deliberate Problem Solving with Large Language Models",
+      "status": "SUCCESS",
+      "chunks": 14,
+      "recall_score": 0.9286,
+      "elapsed_seconds": 487.71,
+      "error": null
+    },
+    {
+      "worker_id": "4",
+      "url": "https://arxiv.org/abs/2305.18290",
+      "document_name": "DPO_2023",
+      "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+      "status": "SUCCESS",
+      "chunks": 17,
+      "recall_score": 0.8824,
+      "elapsed_seconds": 835.57,
+      "error": null
+    },
+    {
+      "worker_id": "5",
+      "url": "https://arxiv.org/abs/2305.16291",
+      "document_name": "VOYAGER",
+      "title": "VOYAGER: An Open-Ended Embodied Agent with Large Language Models",
+      "status": "SUCCESS",
+      "chunks": 19,
+      "recall_score": 0.8596,
+      "elapsed_seconds": 1090.37,
+      "error": null
+    },
+    {
+      "worker_id": "6",
+      "url": "https://arxiv.org/abs/2303.17651",
+      "document_name": "SELF_REFINE",
+      "title": "SELF-REFINE: Iterative Refinement with Self-Feedback",
+      "status": "SUCCESS",
+      "chunks": 14,
+      "recall_score": 0.7857,
+      "elapsed_seconds": 1140.84,
+      "error": null
+    },
+    {
+      "worker_id": "7",
+      "url": "https://arxiv.org/abs/2304.03442",
+      "document_name": "UIST_2023_GENERATIVE_AGENTS",
+      "title": "Generative Agents: Interactive Simulacra of Human Behavior",
+      "status": "SUCCESS",
+      "chunks": 40,
+      "recall_score": 0.925,
+      "elapsed_seconds": 822.45,
+      "error": null
+    },
+    {
+      "worker_id": "8",
+      "url": "https://arxiv.org/abs/2303.17580",
+      "document_name": "HUGGINGGPT",
+      "title": "HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in Hugging Face",
+      "status": "SUCCESS",
+      "chunks": 18,
+      "recall_score": 0.8148,
+      "elapsed_seconds": 796.75,
+      "error": null
+    },
+    {
+      "worker_id": "9",
+      "url": "https://arxiv.org/abs/2212.08073",
+      "document_name": "ARXIV_CONSTITUTIONAL_AI",
+      "title": "Constitutional AI: Harmlessness from AI Feedback",
+      "status": "SUCCESS",
+      "chunks": 31,
+      "recall_score": 0.8065,
+      "elapsed_seconds": 995.55,
+      "error": null
+    },
+    {
+      "worker_id": "10",
+      "url": "https://arxiv.org/abs/2308.03688",
+      "document_name": "ICLR_2024_AGENTBENCH",
+      "title": "AGENTBENCH: EVALUATING LLMS AS AGENTS",
+      "status": "SUCCESS",
+      "chunks": 66,
+      "recall_score": 0.8687,
+      "elapsed_seconds": 1257.04,
+      "error": null
+    }
+  ]
+}
