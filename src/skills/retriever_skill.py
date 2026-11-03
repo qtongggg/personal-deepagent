@@ -8,6 +8,26 @@ _CLIENT = None
 _COLLECTION = None
 
 
+def _resolve_document_name(document_filter: str) -> Optional[str]:
+    """Resolve a fuzzy title, partial name, or arXiv ID to exact catalog document_name."""
+    if not document_filter:
+        return None
+    try:
+        from src.skills.catalog_skill import query_catalog_sql
+        escaped = document_filter.replace("'", "''")
+        # Exact match
+        rows = query_catalog_sql(f"SELECT document_name FROM catalog WHERE lower(document_name) = lower('{escaped}')")
+        if rows:
+            return rows[0]["document_name"]
+        # Substring in title or document_name
+        rows = query_catalog_sql(f"SELECT document_name FROM catalog WHERE lower(title) LIKE lower('%{escaped}%') OR lower(document_name) LIKE lower('%{escaped}%')")
+        if rows:
+            return rows[0]["document_name"]
+    except Exception:
+        pass
+    return None
+
+
 def _get_collection(collection_name: str = "document_knowledge"):
     global _CLIENT, _COLLECTION
     if _COLLECTION is None:
@@ -28,7 +48,9 @@ def retrieve_knowledge_chunks(
         return []
 
     n_results = max(1, min(top_k, total_count))
-    where_filter = {"document_name": document_filter} if document_filter else None
+    resolved_doc = _resolve_document_name(document_filter) if document_filter else None
+    target_filter = resolved_doc or document_filter
+    where_filter = {"document_name": target_filter} if target_filter else None
 
     query_params = {
         "query_texts": [query],
@@ -38,6 +60,14 @@ def retrieve_knowledge_chunks(
         query_params["where"] = where_filter
 
     results = collection.query(**query_params)
+
+    # Resilient fallback: if where filter returned zero results, retry without filter
+    if (not results or not results["documents"] or not results["documents"][0]) and where_filter:
+        fallback_params = {
+            "query_texts": [query],
+            "n_results": n_results,
+        }
+        results = collection.query(**fallback_params)
 
     chunks: List[Dict[str, Any]] = []
     if not results or not results["documents"] or not results["documents"][0]:

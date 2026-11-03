@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = None
     ANTHROPIC_API_KEY: Optional[str] = None
     GOOGLE_API_KEY: Optional[str] = None
+    DEEPSEEK_API_KEY: Optional[str] = None
 
     DEFAULT_MODEL: str = "gpt-4o"
 

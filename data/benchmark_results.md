@@ -1,15 +1,15 @@
 # Benchmark Report: Personal DeepAgent with Skills vs. Standard Naive RAG
 
-*Generated on: 2026-11-03 22:20:46*
+*Generated on: 2026-11-03 22:32:37*
 
 ## Summary Results
 
 | Scenario | System | Prompt Tokens | Output Tokens | Total Tokens | Latency (s) | Chunks | Markdown Table? |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Scenario 1: Direct Factual Query** | **Standard Naive RAG** | 3124 | 29 | **3153** | 1.19s | 5 | No |
-| | **DeepAgent with Skills** | 26 | 29 | **55** | 0.42s | 0 | No |
-| **Scenario 2: Multi-Hop Cross-Section Comparison** | **Standard Naive RAG** | 2867 | 29 | **2896** | 0.81s | 5 | No |
-| | **DeepAgent with Skills** | 33 | 29 | **62** | 0.12s | 0 | No |
+| **Scenario 1: Direct Factual Query** | **Standard Naive RAG** | 3038 | 54 | **3092** | 8.45s | 5 | No |
+| | **DeepAgent with Skills** | 10034 | 137 | **10171** | 4.36s | 5 | No |
+| **Scenario 2: Multi-Hop Cross-Section Comparison** | **Standard Naive RAG** | 3397 | 485 | **3882** | 5.96s | 5 | No |
+| | **DeepAgent with Skills** | 34182 | 840 | **35022** | 15.91s | 10 | No |
 
 ## Architectural Advantages
 

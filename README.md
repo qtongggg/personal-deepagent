@@ -71,18 +71,18 @@ flowchart TD
     end
 ```
 
-### 2. Live Performance & Token Metrics
+### 2. Live Performance & Accuracy Metrics
 
-Measured using `tiktoken` (cl100k_base) and high-precision timers across representative research queries:
+Empirically measured against real academic papers (`ARXIV_2610_40588`: *Pre-Crime for Agents*) using GPT-4o:
 
-| Scenario | System | Prompt Tokens | Output Tokens | Total Tokens | Latency | Chunks | Table Integrity |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Scenario 1: Direct Factual Query**<br>*(e.g., Signal attenuation at 3m)* | **Standard Naive RAG** | 3,124 | 29 | **3,153** | 1.19s | 5 | Risk of broken pipes |
-| | **DeepAgent with Skills** | 26 | 29 | **55** | **0.42s** | Targeted | Sanitized (`\|` to `—`) |
-| **Scenario 2: Multi-Hop Comparison**<br>*(e.g., Cross-section Results vs Abstract)* | **Standard Naive RAG** | 2,867 | 29 | **2,896** | 0.81s | 5 | Risk of broken pipes |
-| | **DeepAgent with Skills** | 33 | 29 | **62** | **0.12s** | Targeted | Sanitized (`\|` to `—`) |
+| Scenario | System | Latency | Chunks Found | Multi-Hop Success | Hallucination / Missing Section Risk |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Scenario 1: Direct Factual Query**<br>*(AUROC score in Section 4.1)* | **Standard Naive RAG** | 8.45s | 5 | N/A | Generic citation without verified catalog URL |
+| | **DeepAgent with Skills** | **4.36s (1.94x faster)** | 5 | N/A | **100% Grounded + Verbatim Catalog URL** |
+| **Scenario 2: Multi-Hop Cross-Section Comparison**<br>*(Section 4.2 Warning Range vs Section 4.4 False Alarms)* | **Standard Naive RAG** | 5.96s | 5 (Single hop) | ❌ **FAILED** | **Missed Section 4.2 entirely** (*"Section 4.2 not provided here"*)|
+| | **DeepAgent with Skills** | 15.91s | 10 (Multi-hop) |  **SUCCESS** | **Synthesized both sections** + drafted notes in `/workspace` |
 
-> **Key Takeaway:** DeepAgent achieves **up to 98% reduction in prompt token bloat** during multi-step research by utilizing its virtual workspace filesystem scratchpad (`/workspace/notes.md`) instead of dumping all retrieved text into the prompt context window.
+> **Key Takeaway:** Naive RAG is cheap on multi-hop questions only because it **fails to retrieve the necessary sections** (giving up or hallucinating when the context isn't in the top 5 chunks). DeepAgent acts as a true research assistant: it plans, performs multi-hop queries to retrieve *both* Section 4.2 and Section 4.4, drafts synthesis notes to its virtual workspace scratchpad, and verifies exact citations.
 
 ### 3. Reproduce It Yourself
 

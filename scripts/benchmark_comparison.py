@@ -321,11 +321,11 @@ def run_benchmark_suite(
     scenarios = [
         (
             "Scenario 1: Direct Factual Query",
-            "What is the signal attenuation at 3 meters in the indoor office tests?",
+            "In the Pre-Crime for Agents study, what AUROC score does the probe achieve on the Qwen332B model in Section 4.1?",
         ),
         (
             "Scenario 2: Multi-Hop Cross-Section Comparison",
-            "Compare the physical range results in Section 4 with the acoustic leakage threat assumptions in the Abstract and Methodology.",
+            "Compare the probe early-warning range in Section 4.2 with the false alarm trade-offs in Section 4.4 in Pre-Crime for Agents.",
         ),
     ]
 
