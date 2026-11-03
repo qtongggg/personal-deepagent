@@ -14,7 +14,13 @@ class SafeFakeChatModel(FakeListChatModel):
 def get_default_model() -> BaseChatModel:
     """Return configured ChatModel based on environment variables."""
     settings = get_settings()
-    if settings.OPENAI_API_KEY and settings.OPENAI_API_KEY != "your_openai_api_key_here":
+    model_lower = (settings.DEFAULT_MODEL or "").lower()
+
+    if ("deepseek" in model_lower or not settings.OPENAI_API_KEY) and settings.DEEPSEEK_API_KEY and settings.DEEPSEEK_API_KEY != "your_deepseek_api_key_here":
+        from langchain_openai import ChatOpenAI
+        actual_model = settings.DEFAULT_MODEL if "deepseek" in model_lower else "deepseek-chat"
+        return ChatOpenAI(model=actual_model, api_key=settings.DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
+    elif settings.OPENAI_API_KEY and settings.OPENAI_API_KEY != "your_openai_api_key_here":
         from langchain_openai import ChatOpenAI
         return ChatOpenAI(model=settings.DEFAULT_MODEL, api_key=settings.OPENAI_API_KEY)
     elif settings.ANTHROPIC_API_KEY and settings.ANTHROPIC_API_KEY != "your_anthropic_api_key_here":
@@ -23,10 +29,6 @@ def get_default_model() -> BaseChatModel:
     elif settings.GOOGLE_API_KEY and settings.GOOGLE_API_KEY != "your_google_api_key_here":
         from langchain_google_genai import ChatGoogleGenAI
         return ChatGoogleGenAI(model=settings.DEFAULT_MODEL, api_key=settings.GOOGLE_API_KEY)
-    elif settings.DEEPSEEK_API_KEY and settings.DEEPSEEK_API_KEY != "your_deepseek_api_key_here":
-        from langchain_openai import ChatOpenAI
-        model_name = settings.DEFAULT_MODEL if "deepseek" in settings.DEFAULT_MODEL.lower() else "deepseek-chat"
-        return ChatOpenAI(model=model_name, api_key=settings.DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
     else:
         return SafeFakeChatModel(
             responses=["No LLM API key configured. Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY in .env."]
