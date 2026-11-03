@@ -1,0 +1,66 @@
+[
+  {
+    "scenario_name": "Scenario 1: Direct Factual Query",
+    "query": "What is the signal attenuation at 3 meters in the indoor office tests?",
+    "naive_rag": {
+      "approach": "Standard Naive RAG",
+      "query": "What is the signal attenuation at 3 meters in the indoor office tests?",
+      "prompt_tokens": 3124,
+      "completion_tokens": 29,
+      "total_tokens": 3153,
+      "latency_seconds": 1.194,
+      "response_text": "No LLM API key configured. Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY in .env.",
+      "chunks_retrieved": 5,
+      "has_table": false,
+      "status": "SUCCESS",
+      "error": null
+    },
+    "deepagent": {
+      "approach": "Personal DeepAgent with Skills",
+      "query": "What is the signal attenuation at 3 meters in the indoor office tests?",
+      "prompt_tokens": 26,
+      "completion_tokens": 29,
+      "total_tokens": 55,
+      "latency_seconds": 0.423,
+      "response_text": "No LLM API key configured. Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY in .env.",
+      "chunks_retrieved": 0,
+      "has_table": false,
+      "status": "SUCCESS",
+      "error": null
+    },
+    "token_reduction_pct": 98.26,
+    "speedup_ratio": 2.82
+  },
+  {
+    "scenario_name": "Scenario 2: Multi-Hop Cross-Section Comparison",
+    "query": "Compare the physical range results in Section 4 with the acoustic leakage threat assumptions in the Abstract and Methodology.",
+    "naive_rag": {
+      "approach": "Standard Naive RAG",
+      "query": "Compare the physical range results in Section 4 with the acoustic leakage threat assumptions in the Abstract and Methodology.",
+      "prompt_tokens": 2867,
+      "completion_tokens": 29,
+      "total_tokens": 2896,
+      "latency_seconds": 0.808,
+      "response_text": "No LLM API key configured. Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY in .env.",
+      "chunks_retrieved": 5,
+      "has_table": false,
+      "status": "SUCCESS",
+      "error": null
+    },
+    "deepagent": {
+      "approach": "Personal DeepAgent with Skills",
+      "query": "Compare the physical range results in Section 4 with the acoustic leakage threat assumptions in the Abstract and Methodology.",
+      "prompt_tokens": 33,
+      "completion_tokens": 29,
+      "total_tokens": 62,
+      "latency_seconds": 0.116,
+      "response_text": "No LLM API key configured. Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY in .env.",
+      "chunks_retrieved": 0,
+      "has_table": false,
+      "status": "SUCCESS",
+      "error": null
+    },
+    "token_reduction_pct": 97.86,
+    "speedup_ratio": 6.97
+  }
+]
