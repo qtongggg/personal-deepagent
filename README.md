@@ -73,16 +73,16 @@ flowchart TD
 
 ### 2. Live Performance & Accuracy Metrics
 
-Empirically measured against real academic papers (`ARXIV_2610_40588`: *Pre-Crime for Agents*) using GPT-4o:
+Empirically measured against the 16-paper research corpus using DeepSeek (`deepseek-chat`):
 
-| Scenario | System | Latency | Chunks Found | Multi-Hop Success | Hallucination / Missing Section Risk |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| **Scenario 1: Direct Factual Query**<br>*(AUROC score in Section 4.1)* | **Standard Naive RAG** | 8.45s | 5 | N/A | Generic citation without verified catalog URL |
-| | **DeepAgent with Skills** | **4.36s (1.94x faster)** | 5 | N/A | **100% Grounded + Verbatim Catalog URL** |
-| **Scenario 2: Multi-Hop Cross-Section Comparison**<br>*(Section 4.2 Warning Range vs Section 4.4 False Alarms)* | **Standard Naive RAG** | 5.96s | 5 (Single hop) | ❌ **FAILED** | **Missed Section 4.2 entirely** (*"Section 4.2 not provided here"*)|
-| | **DeepAgent with Skills** | 15.91s | 10 (Multi-hop) |  **SUCCESS** | **Synthesized both sections** + drafted notes in `/workspace` |
+| Test Scenario | Approach | Latency | Chunks Found | Multi-Hop Success | Grounding & Synthesis Quality |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **Scenario 1: Direct Factual Query**<br>*(Toolformer: External tools & APIs)* | **Standard Naive RAG** | **3.64s** | 5 | N/A | Brief text listing without implementation details or usage ablation tables. |
+| | **DeepAgent with Skills** | 12.76s | 18 | N/A | **Comprehensive 4-column API table** (Atlas, BM25, NLLB), filtering thresholds, and verified catalog citation. |
+| **Scenario 2: Multi-Hop Cross-Paper Comparison**<br>*(ReAct vs. Reflexion: Reasoning & feedback loops)* | **Standard Naive RAG** | 5.74s | 5 *(Single blind hop)* | FAILED | **Missed Reflexion entirely!** Naive RAG admitted: *"The context does not mention Reflexion at all... direct comparison is not possible."* |
+| | **DeepAgent with Skills** | 34.64s | 20 *(Multi-hop)* | SUCCESS | **Full 11-dimension comparative matrix**, HumanEval & ALFWorld benchmark tables, scratchpad notes in `/workspace`, and verbatim citations for both papers! |
 
-> **Key Takeaway:** Naive RAG is cheap on multi-hop questions only because it **fails to retrieve the necessary sections** (giving up or hallucinating when the context isn't in the top 5 chunks). DeepAgent acts as a true research assistant: it plans, performs multi-hop queries to retrieve *both* Section 4.2 and Section 4.4, drafts synthesis notes to its virtual workspace scratchpad, and verifies exact citations.
+> **Key Architectural Takeaway:** Naive RAG fails on multi-hop scientific questions because a single top-5 vector query cannot reliably bridge across multiple independent papers. DeepAgent acts like a senior research scientist: it verifies document inventory with SQL, queries each paper systematically across multiple hops, and synthesizes complete, cited comparison tables without hallucinations.
 
 ### 3. Reproduce It Yourself
 

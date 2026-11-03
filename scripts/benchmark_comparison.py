@@ -321,11 +321,11 @@ def run_benchmark_suite(
     scenarios = [
         (
             "Scenario 1: Direct Factual Query",
-            "In the Pre-Crime for Agents study, what AUROC score does the probe achieve on the Qwen332B model in Section 4.1?",
+            "In Toolformer, what external tools does the model learn to call in Section 3?",
         ),
         (
-            "Scenario 2: Multi-Hop Cross-Section Comparison",
-            "Compare the probe early-warning range in Section 4.2 with the false alarm trade-offs in Section 4.4 in Pre-Crime for Agents.",
+            "Scenario 2: Multi-Hop Cross-Paper Comparison",
+            "Compare how ReAct and Reflexion handle agent reasoning and feedback loops, including their primary benchmark results.",
         ),
     ]
 
