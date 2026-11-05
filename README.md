@@ -11,6 +11,21 @@ This agent moves beyond basic RAG by incorporating **active planning (`write_to_
 
 ---
 
+## 🎬 Live Arena Demo & Video Walkthrough
+
+Watch the head-to-head comparison where **Standard Naive RAG** fails (misses Reflexion entirely) while **Personal DeepAgent** performs parallel multi-hop retrieval, cross-encoder reranking, and synthesizes an 11-dimension comparative matrix:
+
+> **[▶️ View Arena Showcase Video](data/videos/demo_arena_showcase.webm)** *(Automated Playwright 720p HD recording)*
+
+To run the interactive side-by-side web arena locally:
+```
+# Start the web arena on http://localhost:8000
+python scripts/run_server.py
+
+# Or regenerate the video automatically via Playwright:
+python scripts/generate_demo_video.py
+```
+
 ## 🌟 Key Architecture & Features
 
 ```mermaid

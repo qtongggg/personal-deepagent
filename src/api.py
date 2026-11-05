@@ -205,3 +205,48 @@ def semantic_search(
 
     chunks = retrieve_knowledge_chunks(query=clean_q, top_k=top_k, document_filter=document_name)
     return chunks
+
+
+class ArenaRequest(BaseModel):
+    query: str
+    mode: str = "auto"
+
+
+class ArenaResponse(BaseModel):
+    scenario_name: str
+    query: str
+    naive_rag: Dict[str, Any]
+    deepagent: Dict[str, Any]
+    token_reduction_pct: float
+    speedup_ratio: float
+
+
+@app.post("/api/arena", response_model=ArenaResponse)
+def arena_compare_endpoint(req: ArenaRequest) -> ArenaResponse:
+    """Run or fetch a head-to-head comparison between Naive RAG and DeepAgent."""
+    clean_q = req.query.strip()
+    if not clean_q:
+        raise HTTPException(status_code=400, detail="Query cannot be empty.")
+
+    benchmark_json_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "benchmark_results.json")
+    if req.mode in ("auto", "preset") and os.path.exists(benchmark_json_path):
+        try:
+            import json
+            with open(benchmark_json_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for item in data:
+                item_q = item.get("query", "").lower()
+                clean_lower = clean_q.lower()
+                if clean_lower in item_q or item_q in clean_lower:
+                    return ArenaResponse(**item)
+                if "react" in clean_lower and "reflexion" in clean_lower and "react" in item_q:
+                    return ArenaResponse(**item)
+                if "toolformer" in clean_lower and "toolformer" in item_q:
+                    return ArenaResponse(**item)
+        except Exception as e:
+            logger.warning(f"Error reading cached benchmark results: {e}")
+
+    from scripts.benchmark_comparison import compare_approaches
+    comp = compare_approaches(scenario_name="Live Arena Query", query=clean_q)
+    return ArenaResponse(**comp.model_dump())
+

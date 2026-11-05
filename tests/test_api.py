@@ -135,3 +135,13 @@ def test_get_chunks_with_none_metadata_safety(client, monkeypatch):
     assert chunks[0]["chunk_id"] == "mock_c1"
     assert chunks[0]["header_path"] == "/"
 
+
+def test_arena_compare_endpoint(client):
+    response = client.post("/api/arena", json={"query": "Compare ReAct and Reflexion", "mode": "preset"})
+    assert response.status_code == 200
+    data = response.json()
+    assert "naive_rag" in data
+    assert "deepagent" in data
+    assert data["deepagent"]["status"] == "SUCCESS"
+
+

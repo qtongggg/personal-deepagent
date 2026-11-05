@@ -23,6 +23,7 @@ dependencies = [
     "uvicorn>=0.54.0",
     "rank-bm25>=0.2.2",
     "flashrank>=0.2.10",
+    "playwright>=1.64.1",
 ]
 
 [project.optional-dependencies]
