@@ -87,16 +87,16 @@ def main():
             # 6. Wait for DeepAgent matrix table and results to render
             print(">> Waiting for side-by-side comparison results to render...")
             page.wait_for_selector("#deepagent-output-box table", timeout=15000)
-            page.wait_for_timeout(2000)
+            page.wait_for_timeout(2500)
 
-            # 7. Smoothly scroll down the DeepAgent result to showcase the 11-dimension matrix
-            print(">> Showcasing the 11-dimension comparative matrix...")
+            # 7. Smoothly scroll down the DeepAgent result to showcase the following answer & 11-dimension matrix
+            print(">> Smoothly scrolling through the comparative matrix and benchmark results...")
             deep_box = page.locator("#deepagent-output-box")
-            for _ in range(5):
+            for _ in range(8):
                 deep_box.evaluate("(el) => el.scrollBy({ top: 120, behavior: 'smooth' })")
-                page.wait_for_timeout(600)
+                page.wait_for_timeout(750)
 
-            page.wait_for_timeout(2000)
+            page.wait_for_timeout(3000)
 
             # 8. Close context to finalize video writing
             print(">> Closing recording context...")
