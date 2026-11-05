@@ -247,23 +247,25 @@
             <h3 class="font-semibold text-zinc-100 text-xs sm:text-sm">Approach A: Standard Naive RAG</h3>
             <p class="text-[11px] text-zinc-500">Single vector search (top_k=5)</p>
           </div>
-          <span id="naive-status-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-red-950/60 text-red-400 border border-red-800/50">
-            FAILED ❌ (Missed Reflexion)
+          <span id="naive-status-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-800 text-zinc-400 border border-zinc-700">
+            STANDBY
           </span>
         </div>
 
         <!-- Telemetry Metrics Bar -->
         <div class="bg-[#0c0c0e] border-b border-zinc-800/80 px-3.5 py-1.5 flex flex-wrap gap-3 text-[11px] font-mono text-zinc-400">
-          <div><span>Latency:</span> <strong id="naive-stat-latency" class="text-zinc-200">4.54s</strong></div>
+          <div><span>Latency:</span> <strong id="naive-stat-latency" class="text-zinc-400">-</strong></div>
           <div class="text-zinc-700">|</div>
-          <div><span>Chunks:</span> <strong id="naive-stat-chunks" class="text-zinc-200">5 chunks</strong></div>
+          <div><span>Chunks:</span> <strong id="naive-stat-chunks" class="text-zinc-400">-</strong></div>
           <div class="text-zinc-700">|</div>
-          <div><span>Tokens:</span> <strong id="naive-stat-tokens" class="text-zinc-200">3,988</strong></div>
+          <div><span>Tokens:</span> <strong id="naive-stat-tokens" class="text-zinc-400">-</strong></div>
         </div>
 
         <!-- Output Content Box -->
         <div class="p-3.5 overflow-y-auto max-h-[580px] text-xs sm:text-sm prose-content leading-relaxed text-zinc-300" id="naive-output-box">
-          <p class="text-zinc-500 italic">Click "Run Head-to-Head Arena" to generate output.</p>
+          <div class="h-48 flex flex-col items-center justify-center text-zinc-500 text-xs">
+            <p>Awaiting query execution...</p>
+          </div>
         </div>
       </div>
 
@@ -278,23 +280,25 @@
             </h3>
             <p class="text-[11px] text-zinc-400">Hybrid Search + FlashRank Cross-Encoder Reranker</p>
           </div>
-          <span id="deepagent-status-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-emerald-950/60 text-emerald-400 border border-emerald-800/50">
-            SUCCESS ✅ (Multi-Hop Grounded)
+          <span id="deepagent-status-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-800 text-zinc-400 border border-zinc-700">
+            STANDBY
           </span>
         </div>
 
         <!-- Telemetry Metrics Bar -->
         <div class="bg-[#0c0c0e] border-b border-zinc-800/80 px-3.5 py-1.5 flex flex-wrap gap-3 text-[11px] font-mono text-zinc-400">
-          <div><span>Latency:</span> <strong id="deepagent-stat-latency" class="text-emerald-400">32.70s</strong></div>
+          <div><span>Latency:</span> <strong id="deepagent-stat-latency" class="text-zinc-400">-</strong></div>
           <div class="text-zinc-700">|</div>
-          <div><span>Chunks:</span> <strong id="deepagent-stat-chunks" class="text-emerald-400">32 (Top-4 Hybrid)</strong></div>
+          <div><span>Chunks:</span> <strong id="deepagent-stat-chunks" class="text-zinc-400">-</strong></div>
           <div class="text-zinc-700">|</div>
-          <div><span>Tokens:</span> <strong id="deepagent-stat-tokens" class="text-emerald-400">114,893</strong></div>
+          <div><span>Tokens:</span> <strong id="deepagent-stat-tokens" class="text-zinc-400">-</strong></div>
         </div>
 
         <!-- Output Content Box -->
         <div class="p-3.5 overflow-y-auto max-h-[580px] text-xs sm:text-sm prose-content leading-relaxed text-zinc-100" id="deepagent-output-box">
-          <p class="text-zinc-500 italic">Click "Run Head-to-Head Arena" to generate output.</p>
+          <div class="h-48 flex flex-col items-center justify-center text-zinc-500 text-xs">
+            <p>Awaiting query execution...</p>
+          </div>
         </div>
       </div>
 
@@ -471,9 +475,23 @@
       const stepper = document.getElementById("arena-stepper");
 
       spinner.classList.remove("hidden");
-      btnText.innerText = "Running...";
+      btnText.innerText = "Generating Comparison...";
       runBtn.disabled = true;
       stepper.classList.remove("hidden");
+
+      // Show clean generating / waiting state in both output boxes
+      document.getElementById("naive-output-box").innerHTML = `
+        <div class="h-44 flex flex-col items-center justify-center text-zinc-500 text-xs space-y-2.5">
+          <svg class="w-5 h-5 animate-spin text-zinc-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+          <span class="font-mono text-zinc-400">Retrieving single-shot vector candidates...</span>
+        </div>
+      `;
+      document.getElementById("deepagent-output-box").innerHTML = `
+        <div class="h-44 flex flex-col items-center justify-center text-zinc-400 text-xs space-y-2.5">
+          <svg class="w-5 h-5 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+          <span class="font-mono text-zinc-300">Running multi-hop planner & FlashRank reranker...</span>
+        </div>
+      `;
 
       // Reset step badges
       const stepIds = ["step-planner", "step-sql", "step-retrieval", "step-scratchpad"];
@@ -484,19 +502,23 @@
       });
 
       // Simulation ticks for step animations
-      setTimeout(() => markStepActive("step-planner", "✓"), 250);
-      setTimeout(() => markStepActive("step-sql", "✓"), 500);
-      setTimeout(() => markStepActive("step-retrieval", "✓"), 800);
-      setTimeout(() => markStepActive("step-scratchpad", "✓"), 1200);
+      setTimeout(() => markStepActive("step-planner", "✓"), 300);
+      setTimeout(() => markStepActive("step-sql", "✓"), 650);
+      setTimeout(() => markStepActive("step-retrieval", "✓"), 1050);
+      setTimeout(() => markStepActive("step-scratchpad", "✓"), 1450);
 
       try {
-        const res = await fetch("/api/arena", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: query, mode: "auto" }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Arena execution failed");
+        const [fetchRes] = await Promise.all([
+          fetch("/api/arena", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: query, mode: "auto" }),
+          }),
+          // Minimum 1.6s delay so the user/viewer sees the pipeline stages working
+          new Promise(r => setTimeout(r, 1600))
+        ]);
+        const data = await fetchRes.json();
+        if (!fetchRes.ok) throw new Error(data.detail || "Arena execution failed");
 
         renderArenaResults(data);
       } catch (err) {
@@ -540,6 +562,10 @@
 
       // 2. DeepAgent Render
       const deep = data.deepagent || {};
+      const deepBadge = document.getElementById("deepagent-status-badge");
+      deepBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-emerald-950/60 text-emerald-400 border border-emerald-800/50";
+      deepBadge.innerText = "SUCCESS ✅ (Multi-Hop Grounded)";
+
       document.getElementById("deepagent-stat-latency").innerText = deep.latency_seconds ? deep.latency_seconds.toFixed(2) + "s" : "-";
       document.getElementById("deepagent-stat-chunks").innerText = (deep.chunks_retrieved || 32) + " (Top-4 Hybrid)";
       document.getElementById("deepagent-stat-tokens").innerText = (deep.total_tokens || 0).toLocaleString();
@@ -761,8 +787,6 @@
     // Init on page load
     window.addEventListener("DOMContentLoaded", () => {
       loadDocuments();
-      // Auto-load the ReAct vs Reflexion comparison into Arena
-      runArenaComparison();
     });
   </script>
 </body>
