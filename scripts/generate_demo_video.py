@@ -113,6 +113,37 @@ def main():
             print(f"File Location: {final_path}")
             print(f"File Size: {os.path.getsize(final_path) / 1024:.1f} KB")
             print("=" * 70)
+
+            # Generate optimized animated GIF for GitHub README
+            print(">> Generating optimized animated GIF for GitHub README...")
+            try:
+                import imageio.v3 as iio
+                from PIL import Image
+
+                gif_path = os.path.join(VIDEO_DIR, "demo_arena_showcase.gif")
+                frames = []
+                target_fps = 8
+                step = 4
+
+                for idx, frame in enumerate(iio.imiter(final_path)):
+                    if idx % step == 0:
+                        im = Image.fromarray(frame)
+                        im = im.resize((854, 480), Image.Resampling.BILINEAR)
+                        im_q = im.convert("P", palette=Image.Palette.ADAPTIVE, colors=96)
+                        frames.append(im_q)
+
+                if frames:
+                    frames[0].save(
+                        gif_path,
+                        save_all=True,
+                        append_images=frames[1:],
+                        duration=int(1000 / target_fps),
+                        loop=0,
+                        optimize=True,
+                    )
+                    print(f"[OK] README GIF generated: {gif_path} ({os.path.getsize(gif_path) / (1024*1024):.2f} MB)")
+            except Exception as e:
+                print(f"[WARN] GIF conversion skipped: {e}")
         else:
             print("[WARN] No video file detected in recording directory.")
 

@@ -24,6 +24,9 @@ dependencies = [
     "rank-bm25>=0.2.2",
     "flashrank>=0.2.10",
     "playwright>=1.64.1",
+    "imageio>=2.38.1",
+    "imageio-ffmpeg>=0.8.1",
+    "pillow>=13.0.0",
 ]
 
 [project.optional-dependencies]

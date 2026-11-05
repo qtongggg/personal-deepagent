@@ -15,7 +15,11 @@ This agent moves beyond basic RAG by incorporating **active planning (`write_to_
 
 Watch the head-to-head comparison where **Standard Naive RAG** fails (misses Reflexion entirely) while **Personal DeepAgent** performs parallel multi-hop retrieval, cross-encoder reranking, and synthesizes an 11-dimension comparative matrix:
 
-> **[▶️ View Arena Showcase Video](data/videos/demo_arena_showcase.webm)** *(Automated Playwright 720p HD recording)*
+<p align="center">
+  <img src="data/videos/demo_arena_showcase.gif" alt="Live Arena Demo: Naive RAG vs DeepAgent" width="100%" />
+</p>
+
+> 💡 *Generated automatically via code using Playwright & headless Chromium. High-definition 720p recording available at [`data/videos/demo_arena_showcase.webm`](data/videos/demo_arena_showcase.webm).*
 
 To run the interactive side-by-side web arena locally:
 ```
