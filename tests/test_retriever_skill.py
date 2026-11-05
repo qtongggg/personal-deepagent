@@ -24,3 +24,14 @@ def test_retriever_tool_execution():
     output = retriever_tool.invoke({"query": "Maqasid Sukuk", "document_filter": "IRP 5"})
     assert "IRP 5" in output
     assert "chunk_content" in output or "document_name" in output
+
+
+def test_retriever_hybrid_and_rerank_top_8():
+    from src.skills.retriever_skill import retrieve_knowledge_chunks
+    # Default top_k is 8
+    chunks = retrieve_knowledge_chunks("ReAct reasoning and action ALFWorld benchmark")
+    assert len(chunks) <= 8
+    assert len(chunks) > 0
+    # Verify FlashRank rerank score attached
+    assert "rerank_score" in chunks[0]
+    assert isinstance(chunks[0]["rerank_score"], float)

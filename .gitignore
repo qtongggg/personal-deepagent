@@ -35,6 +35,8 @@ workspace/
 .chroma/
 chroma_db/
 *.parquet
+.cache_flashrank/
+data/.cache_flashrank/
 
 # Testing & Linting
 .pytest_cache/
