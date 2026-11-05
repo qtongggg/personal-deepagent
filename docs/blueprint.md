@@ -38,19 +38,19 @@ flowchart TD
     User(["User Request + User ID"]) --> DeepAgent["LangChain DeepAgent Core Engine"]
 
     subgraph Harness ["Built-in deepagents Harness"]
-        DeepAgent <--> Planner["Task & To-Do Planner<br/>todo_write / todo_read"]
-        DeepAgent <--> VFS["Virtual Workspace Filesystem<br/>write_file / read_file<br/>- notes.md<br/>- comparison_draft.md"]
+        DeepAgent --> Planner["Task & To-Do Planner<br/>todo_write / todo_read"]
+        DeepAgent --> VFS["Virtual Workspace Filesystem<br/>write_file / read_file<br/>- notes.md<br/>- comparison_draft.md"]
     end
 
     subgraph Skills ["Pluggable Skills"]
-        DeepAgent <--> Skill1["Skill 1: Master Catalog Tool<br/>DuckDB / Pandas on catalog.csv"]
-        DeepAgent <--> Skill2["Skill 2: Vector Retriever Tool<br/>Chroma / Hybrid Dense + BM25"]
-        DeepAgent <--> Skill3["Skill 3: Long-Term Memory Tool<br/>Mem0 search_memory + add_memory"]
+        DeepAgent --> Skill1["Skill 1: Master Catalog Tool<br/>DuckDB / Pandas on catalog.csv"]
+        DeepAgent --> Skill2["Skill 2: Vector Retriever Tool<br/>Chroma / Hybrid Dense + BM25"]
+        DeepAgent --> Skill3["Skill 3: Long-Term Memory Tool<br/>Mem0 search_memory + add_memory"]
     end
 
     DeepAgent --> Sanitizer["Post-Synthesis Sanitizer"]
     subgraph Safeguards ["Invariant Safeguards"]
-        Sanitizer --> PipeSanitizer["Pipe Sanitizer: | to — in titles"]
+        Sanitizer --> PipeSanitizer["Pipe Sanitizer: converts pipe to dash in titles"]
         Sanitizer --> URLVerifier["Verbatim Catalog URL Restorer"]
         Sanitizer --> ReferenceContract["Structured References Contract"]
     end
