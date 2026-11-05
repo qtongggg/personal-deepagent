@@ -66,7 +66,7 @@ def _get_bm25_for_data(data: Dict[str, Any]) -> Optional[BM25Okapi]:
 
 def retrieve_knowledge_chunks(
     query: str,
-    top_k: int = 8,
+    top_k: int = 4,
     document_filter: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Retrieve document chunks using a two-stage Hybrid (Dense + BM25) + FlashRank Reranker pipeline."""
@@ -231,7 +231,7 @@ def retrieve_knowledge_chunks(
 @tool("knowledge_retriever")
 def retriever_tool(
     query: str,
-    top_k: int = 8,
+    top_k: int = 4,
     document_filter: Optional[str] = None,
 ) -> str:
     """Retrieve content chunks from research papers using Hybrid (Chroma + BM25) search and FlashRank reranking.
@@ -243,7 +243,7 @@ def retriever_tool(
     - rerank_score (FlashRank cross-encoder relevance score)
 
     Use document_filter to restrict retrieval to a specific document (e.g. document_filter='ICLR_2023_REACT').
-    Defaults to returning top 8 high-precision chunks.
+    Defaults to returning top 4 high-precision chunks (4 chunks per paper = 8 total for a 2-paper comparison).
     """
     try:
         chunks = retrieve_knowledge_chunks(query=query, top_k=top_k, document_filter=document_filter)

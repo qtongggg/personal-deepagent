@@ -78,9 +78,9 @@ Empirically measured against the 16-paper research corpus using DeepSeek (`deeps
 | Test Scenario | Approach | Latency | Chunks Found | Multi-Hop Success | Grounding & Synthesis Quality |
 | :--- | :--- | :---: | :---: | :---: | :--- |
 | **Scenario 1: Direct Factual Query**<br>*(Toolformer: External tools & APIs)* | **Standard Naive RAG** | **3.64s** | 5 | N/A | Brief text listing without implementation details or usage ablation tables. |
-| | **DeepAgent with Skills** | 12.39s | 14 *(Top-8 Hybrid + FlashRank)* | N/A | **Comprehensive 4-column API table** (Atlas, BM25, NLLB), filtering thresholds, and verified catalog citation. |
+| | **DeepAgent with Skills** | **10.61s** | 10 *(Top-4 Hybrid + FlashRank)* | N/A | **Comprehensive 4-column API table** (Atlas, BM25, NLLB), filtering thresholds, and verified catalog citation. |
 | **Scenario 2: Multi-Hop Cross-Paper Comparison**<br>*(ReAct vs. Reflexion: Reasoning & feedback loops)* | **Standard Naive RAG** | 5.74s | 5 *(Single blind hop)* | FAILED | **Missed Reflexion entirely!** Naive RAG admitted: *"The context does not mention Reflexion at all... direct comparison is not possible."* |
-| | **DeepAgent with Skills** | 32.24s *(Parallel Hops)* | 36 *(Top-8 Hybrid + FlashRank)* | SUCCESS | **Full 11-dimension comparative matrix**, HumanEval & ALFWorld benchmark tables, scratchpad notes in `/workspace`, 34.6% token efficiency gain (83k vs 127k), and verbatim citations! |
+| | **DeepAgent with Skills** | 32.70s *(Parallel Hops)* | 32 *(Top-4 Hybrid + FlashRank)* | SUCCESS | **Full 11-dimension comparative matrix**, HumanEval & ALFWorld benchmark tables, scratchpad notes in /workspace, and verbatim citations! |
 
 > **Key Architectural Takeaway:** Naive RAG fails on multi-hop scientific questions because a single top-5 vector query cannot reliably bridge across multiple independent papers. DeepAgent acts like a senior research scientist: it verifies document inventory with SQL, queries each paper systematically across multiple hops, and synthesizes complete, cited comparison tables without hallucinations.
 

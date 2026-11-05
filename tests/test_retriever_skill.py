@@ -26,11 +26,11 @@ def test_retriever_tool_execution():
     assert "chunk_content" in output or "document_name" in output
 
 
-def test_retriever_hybrid_and_rerank_top_8():
+def test_retriever_hybrid_and_rerank_top_4():
     from src.skills.retriever_skill import retrieve_knowledge_chunks
-    # Default top_k is 8
+    # Default top_k is 4 (target 4 chunks per paper, 8 total for 2 papers)
     chunks = retrieve_knowledge_chunks("ReAct reasoning and action ALFWorld benchmark")
-    assert len(chunks) <= 8
+    assert len(chunks) <= 4
     assert len(chunks) > 0
     # Verify FlashRank rerank score attached
     assert "rerank_score" in chunks[0]
