@@ -84,19 +84,16 @@ def main():
             run_btn = page.locator("#arena-run-btn")
             run_btn.click()
 
-            # 6. Wait for DeepAgent matrix table and results to render
-            print(">> Waiting for side-by-side comparison results to render...")
-            page.wait_for_selector("#deepagent-output-box table", timeout=15000)
-            page.wait_for_timeout(2500)
+            # 6. Watch live progressive token streaming
+            print(">> Watching live progressive token streaming and row-by-row table generation...")
+            page.wait_for_selector("#deepagent-output-box table", timeout=20000)
+            
+            # Wait for streaming to complete (button re-enables when all tokens finish)
+            page.wait_for_function("() => !document.getElementById('arena-run-btn').disabled", timeout=25000)
+            print("[OK] Real-time token streaming completed!")
 
-            # 7. Smoothly scroll down the DeepAgent result to showcase the following answer & 11-dimension matrix
-            print(">> Smoothly scrolling through the comparative matrix and benchmark results...")
-            deep_box = page.locator("#deepagent-output-box")
-            for _ in range(8):
-                deep_box.evaluate("(el) => el.scrollBy({ top: 120, behavior: 'smooth' })")
-                page.wait_for_timeout(750)
-
-            page.wait_for_timeout(3000)
+            # 7. Hold for a few moments so viewer can absorb the full answer and conclusion
+            page.wait_for_timeout(3500)
 
             # 8. Close context to finalize video writing
             print(">> Closing recording context...")
