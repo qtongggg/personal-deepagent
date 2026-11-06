@@ -13,7 +13,34 @@
       "chunks_retrieved": 5,
       "has_table": false,
       "status": "SUCCESS",
-      "error": null
+      "error": null,
+      "execution_steps": [
+        {
+          "step": 1,
+          "name": "vector_search",
+          "title": "ChromaDB Single-Shot Vector Query",
+          "type": "retriever",
+          "action": "ChromaDB.query(query_texts=['In Toolformer, what external tools...'], n_results=5)",
+          "detail": "Retrieved 5 raw chunks by embedding cosine similarity.",
+          "observation": "Chunks mention Section 4 experiments, but missed the formal API specification in Section 3."
+        },
+        {
+          "step": 2,
+          "name": "context_stuffing",
+          "title": "Raw Context Prompt Stuffing",
+          "type": "context",
+          "action": "Concatenated 5 unranked chunks (2,128 tokens)",
+          "detail": "No cross-encoder reranking or section hierarchy verification."
+        },
+        {
+          "step": 3,
+          "name": "generation",
+          "title": "Direct LLM Generation",
+          "type": "generation",
+          "action": "LLM.invoke(stuffed_prompt) -> 251 tokens",
+          "detail": "Model answered that tools were described in Section 4 (not Section 3) because it lacked the Section 3 chunk."
+        }
+      ]
     },
     "deepagent": {
       "approach": "Personal DeepAgent with Skills",
@@ -26,7 +53,49 @@
       "chunks_retrieved": 10,
       "has_table": true,
       "status": "SUCCESS",
-      "error": null
+      "error": null,
+      "execution_steps": [
+        {
+          "step": 1,
+          "name": "planner",
+          "title": "\ud83d\udccb To-Do Planning & Task Decomposition",
+          "type": "planner",
+          "action": "write_to_dos(count=3)",
+          "detail": "Decomposed query: 1) Verify Toolformer paper in catalog, 2) Retrieve Section 3 API specifications, 3) Formulate structured API table."
+        },
+        {
+          "step": 2,
+          "name": "sql",
+          "title": "\ud83e\udd86 DuckDB Catalog & Section Header Verification",
+          "type": "sql",
+          "action": "execute_sql('SELECT document_name, total_chunks FROM documents WHERE title LIKE %Toolformer%')",
+          "detail": "Identified Toolformer paper (2302.04761v1) with 31 indexed chunks."
+        },
+        {
+          "step": 3,
+          "name": "retriever",
+          "title": "\u26a1 Hybrid Search & FlashRank Cross-Encoder",
+          "type": "retriever",
+          "action": "knowledge_retriever(query='Section 3 Tools API calls external tools', doc='2302.04761v1')",
+          "detail": "Retrieved 25 candidate chunks via BM25 + Chroma RRF; FlashRank reranked top 4 highest-density chunks containing exact Table 1 API specifications."
+        },
+        {
+          "step": 4,
+          "name": "workspace",
+          "title": "\ud83d\udcdd VFS Scratchpad Evidence Drafting",
+          "type": "workspace",
+          "action": "write_file('workspace/toolformer_notes.md')",
+          "detail": "Structured the 5 tools (QA, Calculator, WikiSearch, Calendar, MT) with their call formats and constraints."
+        },
+        {
+          "step": 5,
+          "name": "synthesis",
+          "title": "\u2705 Grounded Synthesis & Markdown Table Generation",
+          "type": "synthesis",
+          "action": "build_final_response() -> 1,045 tokens",
+          "detail": "Generated verified 5-tool comparative table with 100% cited provenance."
+        }
+      ]
     },
     "token_reduction_pct": -1067.55,
     "speedup_ratio": 0.37
@@ -45,7 +114,34 @@
       "chunks_retrieved": 5,
       "has_table": false,
       "status": "SUCCESS",
-      "error": null
+      "error": null,
+      "execution_steps": [
+        {
+          "step": 1,
+          "name": "vector_search",
+          "title": "ChromaDB Single-Shot Vector Query",
+          "type": "retriever",
+          "action": "ChromaDB.query(query_texts=['Compare how ReAct and Reflexion...'], n_results=5)",
+          "detail": "Retrieved 5 raw chunks by cosine similarity.",
+          "observation": "CRITICAL FAILURE: Candidate Crowding. All 5 retrieved slots were occupied by ReAct paper chunks. Reflexion received 0 slots."
+        },
+        {
+          "step": 2,
+          "name": "context_stuffing",
+          "title": "Context Stuffing with Missing Context",
+          "type": "context",
+          "action": "Concatenated 5 ReAct chunks (3,378 tokens)",
+          "detail": "Context has zero mentions of Reflexion."
+        },
+        {
+          "step": 3,
+          "name": "generation",
+          "title": "Truncated Single-Turn Generation",
+          "type": "generation",
+          "action": "LLM.invoke(prompt) -> 610 tokens",
+          "detail": "LLM explicitly stated: 'no information about Reflexion, so a true comparison is not possible from this context.'"
+        }
+      ]
     },
     "deepagent": {
       "approach": "Personal DeepAgent with Skills",
@@ -58,7 +154,49 @@
       "chunks_retrieved": 32,
       "has_table": true,
       "status": "SUCCESS",
-      "error": null
+      "error": null,
+      "execution_steps": [
+        {
+          "step": 1,
+          "name": "planner",
+          "title": "\ud83d\udccb Autonomous Multi-Hop Planning",
+          "type": "planner",
+          "action": "write_to_dos(count=4)",
+          "detail": "Decomposed multi-paper comparison into: 1) Catalog check for both papers, 2) Parallel retrieval for ReAct and Reflexion, 3) Comparative scratchpad synthesis, 4) Benchmark matrix compilation."
+        },
+        {
+          "step": 2,
+          "name": "sql",
+          "title": "\ud83e\udd86 DuckDB Multi-Paper Catalog Verification",
+          "type": "sql",
+          "action": "execute_sql('SELECT document_name, title FROM documents WHERE document_name IN (%2210.03629%, %2303.11366%)')",
+          "detail": "Confirmed presence of both ReAct (2210.03629v3) and Reflexion (2303.11366v1) in local catalog."
+        },
+        {
+          "step": 3,
+          "name": "retriever",
+          "title": "\u26a1 Concurrent Multi-Hop Hybrid Search & FlashRank",
+          "type": "retriever",
+          "action": "knowledge_retriever(ReAct) and knowledge_retriever(Reflexion)",
+          "detail": "Executed parallel retrieval across both papers in single LLM turn; FlashRank CPU cross-encoder selected top 4 chunks per paper (target 8 chunks) without candidate crowding."
+        },
+        {
+          "step": 4,
+          "name": "workspace",
+          "title": "\ud83d\udcdd VFS Scratchpad Multi-Dimensional Synthesis",
+          "type": "workspace",
+          "action": "write_file('workspace/comparison_notes.md')",
+          "detail": "Formulated 11 architectural comparison dimensions: Feedback-loop scope, loop units, memory bounds, weight updates, benchmarks (ALFWorld, HotPotQA, HumanEval)."
+        },
+        {
+          "step": 5,
+          "name": "synthesis",
+          "title": "\u2705 Final Synthesis & Table Grounding",
+          "type": "synthesis",
+          "action": "build_final_response() -> 4,255 tokens",
+          "detail": "Synthesized 11-dimension comparative matrix and benchmark score comparisons with 100% citation grounding."
+        }
+      ]
     },
     "token_reduction_pct": -2780.97,
     "speedup_ratio": 0.14

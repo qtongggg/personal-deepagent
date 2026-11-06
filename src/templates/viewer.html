@@ -261,6 +261,9 @@
           <div><span>Tokens:</span> <strong id="naive-stat-tokens" class="text-zinc-400">-</strong></div>
         </div>
 
+        <!-- Collapsible Thinking Process & Execution Procedure Drawer -->
+        <div id="naive-trace-container" class="border-b border-zinc-800/80 bg-[#09090b] px-3.5 py-2.5 hidden"></div>
+
         <!-- Output Content Box -->
         <div class="p-3.5 overflow-y-auto max-h-[580px] text-xs sm:text-sm prose-content leading-relaxed text-zinc-300" id="naive-output-box">
           <div class="h-48 flex flex-col items-center justify-center text-zinc-500 text-xs">
@@ -293,6 +296,9 @@
           <div class="text-zinc-700">|</div>
           <div><span>Tokens:</span> <strong id="deepagent-stat-tokens" class="text-zinc-400">-</strong></div>
         </div>
+
+        <!-- Collapsible Thinking Process & Execution Procedure Drawer -->
+        <div id="deepagent-trace-container" class="border-b border-zinc-800/80 bg-[#09090b] px-3.5 py-2.5 hidden"></div>
 
         <!-- Output Content Box -->
         <div class="p-3.5 overflow-y-auto max-h-[580px] text-xs sm:text-sm prose-content leading-relaxed text-zinc-100" id="deepagent-output-box">
@@ -479,6 +485,18 @@
       runBtn.disabled = true;
       stepper.classList.remove("hidden");
 
+      // Hide and clear previous procedural traces
+      const naiveTraceEl = document.getElementById("naive-trace-container");
+      if (naiveTraceEl) {
+        naiveTraceEl.classList.add("hidden");
+        naiveTraceEl.innerHTML = "";
+      }
+      const deepTraceEl = document.getElementById("deepagent-trace-container");
+      if (deepTraceEl) {
+        deepTraceEl.classList.add("hidden");
+        deepTraceEl.innerHTML = "";
+      }
+
       // Show clean generating / waiting state in both output boxes
       document.getElementById("naive-output-box").innerHTML = `
         <div class="h-44 flex flex-col items-center justify-center text-zinc-500 text-xs space-y-2.5">
@@ -559,6 +577,92 @@
       targetEl.scrollTop = targetEl.scrollHeight;
     }
 
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderExecutionSteps(steps, containerEl, isDeepAgent) {
+      if (!containerEl) return;
+      if (!steps || steps.length === 0) {
+        containerEl.classList.add("hidden");
+        containerEl.innerHTML = "";
+        return;
+      }
+
+      containerEl.classList.remove("hidden");
+      const stepCount = steps.length;
+      const themeClass = isDeepAgent ? "border-blue-900/50 bg-zinc-950/70" : "border-zinc-800 bg-zinc-950/70";
+      const badgeClass = isDeepAgent ? "bg-blue-950/80 text-blue-300 border border-blue-800/60" : "bg-zinc-800 text-zinc-400 border border-zinc-700/60";
+
+      let stepsHtml = steps.map(s => {
+        let actionBadge = "";
+        if (s.action) {
+          actionBadge = `<div class="mt-1 font-mono text-[11px] bg-[#0c0c0e] text-zinc-300 px-2 py-1 rounded border border-zinc-800 break-all select-text"><code>${escapeHtml(s.action)}</code></div>`;
+        }
+
+        let detailHtml = "";
+        if (s.detail) {
+          detailHtml = `<div class="mt-1 text-[11px] text-zinc-400 leading-relaxed">${escapeHtml(s.detail)}</div>`;
+        }
+
+        let itemsHtml = "";
+        if (s.items && s.items.length > 0) {
+          const listItems = s.items.map(it => `<li class="text-[11px] text-zinc-400 flex items-start gap-1"><span class="text-blue-400 font-bold">▪</span><span>${escapeHtml(it)}</span></li>`).join("");
+          itemsHtml = `<ul class="mt-1.5 space-y-0.5 pl-1 font-mono">${listItems}</ul>`;
+        }
+
+        let obsHtml = "";
+        if (s.observation) {
+          const isWarn = s.observation.toLowerCase().includes("fail") || s.observation.toLowerCase().includes("crowd") || s.observation.toLowerCase().includes("susceptible") || s.observation.toLowerCase().includes("blind");
+          const obsColor = isWarn ? "bg-amber-950/30 text-amber-300 border-amber-800/50" : "bg-zinc-800/40 text-zinc-300 border-zinc-700/50";
+          obsHtml = `<div class="mt-1.5 text-[11px] p-1.5 rounded border ${obsColor} flex items-start gap-1.5 leading-snug"><span>⚠️</span><span>${escapeHtml(s.observation)}</span></div>`;
+        }
+
+        return `
+          <div class="relative pl-5 pb-3 border-l-2 ${isDeepAgent ? 'border-blue-800/50' : 'border-zinc-700/60'} last:pb-0 last:border-transparent">
+            <div class="absolute -left-[9px] top-0.5 w-4 h-4 rounded-full ${isDeepAgent ? 'bg-blue-600 text-white' : 'bg-zinc-700 text-zinc-200'} text-[10px] font-mono flex items-center justify-center font-bold">
+              ${s.step}
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <div class="font-medium text-xs ${isDeepAgent ? 'text-zinc-100' : 'text-zinc-300'}">${escapeHtml(s.title || s.name)}</div>
+              <span class="text-[10px] font-mono px-1.5 py-0.2 rounded uppercase ${badgeClass}">${escapeHtml(s.type || s.name)}</span>
+            </div>
+            ${actionBadge}
+            ${detailHtml}
+            ${itemsHtml}
+            ${obsHtml}
+          </div>
+        `;
+      }).join("");
+
+      containerEl.innerHTML = `
+        <details open class="group border rounded-lg ${themeClass} overflow-hidden">
+          <summary class="cursor-pointer px-3 py-1.5 flex items-center justify-between text-xs font-medium text-zinc-200 hover:text-white select-none transition bg-zinc-900/60 hover:bg-zinc-800/60">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold flex items-center gap-1.5">
+                <span>🧠</span>
+                <span>Thinking Process & Execution Trace</span>
+              </span>
+              <span class="text-[10px] font-mono px-1.5 py-0.2 rounded ${badgeClass}">${stepCount} steps</span>
+            </div>
+            <div class="flex items-center gap-1 text-[11px] text-zinc-400 font-mono">
+              <span class="group-open:hidden">Show procedure ▼</span>
+              <span class="hidden group-open:inline">Hide procedure ▲</span>
+            </div>
+          </summary>
+          <div class="px-3 py-2.5 border-t border-zinc-800/80 space-y-2">
+            ${stepsHtml}
+          </div>
+        </details>
+      `;
+    }
+
     async function renderArenaResults(data) {
       // 1. Prepare Telemetry
       const naive = data.naive_rag || {};
@@ -570,6 +674,12 @@
       document.getElementById("deepagent-stat-latency").innerText = deep.latency_seconds ? deep.latency_seconds.toFixed(2) + "s" : "-";
       document.getElementById("deepagent-stat-chunks").innerText = (deep.chunks_retrieved || 32) + " (Top-4 Hybrid)";
       document.getElementById("deepagent-stat-tokens").innerText = (deep.total_tokens || 0).toLocaleString();
+
+      // Render Thinking Process & Execution Procedure Drawers
+      const naiveSteps = naive.execution_steps || [];
+      const deepSteps = deep.execution_steps || [];
+      renderExecutionSteps(naiveSteps, document.getElementById("naive-trace-container"), false);
+      renderExecutionSteps(deepSteps, document.getElementById("deepagent-trace-container"), true);
 
       // Set active streaming badges
       const naiveBadge = document.getElementById("naive-status-badge");
