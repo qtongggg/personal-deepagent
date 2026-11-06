@@ -287,26 +287,32 @@ def run_deepagent_benchmark(
                 for tc in msg.tool_calls:
                     t_name = tc.get("name", "")
                     t_args = tc.get("args", {})
-                    if t_name == "write_to_dos":
-                        todos = t_args.get("todos", [])
+                    if t_name in ("write_to_dos", "todo_write"):
+                        raw_todos = t_args.get("todos", [])
+                        if isinstance(raw_todos, str):
+                            todos_list = [line.strip("- ").strip() for line in raw_todos.split("\n") if line.strip()]
+                        elif isinstance(raw_todos, list):
+                            todos_list = [t.get("task", str(t)) if isinstance(t, dict) else str(t) for t in raw_todos]
+                        else:
+                            todos_list = [str(raw_todos)] if raw_todos else []
                         execution_steps.append({
                             "step": step_idx,
                             "name": "planner",
                             "title": "📋 Autonomous To-Do Planning & Task Decomposition",
                             "type": "planner",
-                            "action": f"write_to_dos(count={len(todos)})",
-                            "detail": f"Agent decomposed research question into {len(todos)} targeted verification sub-tasks.",
-                            "items": [t.get("task", str(t)) if isinstance(t, dict) else str(t) for t in todos]
+                            "action": f"{t_name}(count={len(todos_list)})",
+                            "detail": f"Agent decomposed research question into {len(todos_list)} targeted verification sub-tasks.",
+                            "items": todos_list
                         })
                         step_idx += 1
-                    elif t_name == "execute_sql":
+                    elif t_name in ("execute_sql", "catalog_query"):
                         sql_q = t_args.get("query", "")
                         execution_steps.append({
                             "step": step_idx,
                             "name": "sql",
                             "title": "🦆 DuckDB Deterministic Catalog Verification",
                             "type": "sql",
-                            "action": f"execute_sql('{sql_q}')",
+                            "action": f"{t_name}('{sql_q}')",
                             "detail": "Verified corpus papers, document IDs, section headers, and chunk counts before vector querying."
                         })
                         step_idx += 1

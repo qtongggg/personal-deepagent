@@ -511,19 +511,20 @@
         </div>
       `;
 
-      // Reset step badges
-      const stepIds = ["step-planner", "step-sql", "step-retrieval", "step-scratchpad"];
-      stepIds.forEach(id => {
-        const el = document.getElementById(id);
-        el.className = "bg-zinc-800/60 border border-zinc-700/50 px-2 py-0.5 rounded flex items-center gap-1.5 text-zinc-400";
-        el.querySelector(".step-icon").innerText = "⏳";
+      // Reset step badges to loading state
+      const stepIds = [
+        { id: "step-planner", label: "1. To-Do Planner" },
+        { id: "step-sql", label: "2. DuckDB Check" },
+        { id: "step-retrieval", label: "3. Hybrid Search" },
+        { id: "step-scratchpad", label: "4. Synthesis" },
+      ];
+      stepIds.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (el) {
+          el.className = "bg-zinc-800/60 border border-zinc-700/50 px-2 py-0.5 rounded flex items-center gap-1.5 text-zinc-400";
+          el.innerHTML = `<span class="step-icon">⏳</span> <span>${item.label}</span>`;
+        }
       });
-
-      // Simulation ticks for step animations
-      setTimeout(() => markStepActive("step-planner", "✓"), 300);
-      setTimeout(() => markStepActive("step-sql", "✓"), 650);
-      setTimeout(() => markStepActive("step-retrieval", "✓"), 1050);
-      setTimeout(() => markStepActive("step-scratchpad", "✓"), 1450);
 
       try {
         const [fetchRes] = await Promise.all([
@@ -548,11 +549,29 @@
       }
     }
 
-    function markStepActive(stepId, icon) {
+    function updateStepperFromResults(deepSteps) {
+      const stepNames = (deepSteps || []).map(s => s.name || s.type);
+      
+      const hasPlanner = stepNames.includes("planner");
+      const hasSql = stepNames.includes("sql");
+      const hasRetriever = stepNames.includes("retriever");
+      const hasSynthesis = stepNames.includes("synthesis") || (deepSteps && deepSteps.length > 0);
+
+      setStepStatus("step-planner", hasPlanner, "1. To-Do Planner", "Direct");
+      setStepStatus("step-sql", hasSql, "2. DuckDB Check", "Direct");
+      setStepStatus("step-retrieval", hasRetriever, "3. Hybrid Search", "Retrieved");
+      setStepStatus("step-scratchpad", hasSynthesis, "4. Synthesis", "Completed");
+    }
+
+    function setStepStatus(stepId, executed, label, skippedReason) {
       const el = document.getElementById(stepId);
-      if (el) {
+      if (!el) return;
+      if (executed) {
         el.className = "bg-emerald-950/60 border border-emerald-700/60 px-2 py-0.5 rounded flex items-center gap-1.5 text-emerald-400 font-medium transition";
-        el.querySelector(".step-icon").innerText = icon;
+        el.innerHTML = `<span class="step-icon">✓</span> <span>${label}</span>`;
+      } else {
+        el.className = "bg-zinc-900/60 border border-zinc-800 px-2 py-0.5 rounded flex items-center gap-1.5 text-zinc-500 transition";
+        el.innerHTML = `<span class="step-icon text-zinc-600">⚪</span> <span>${label}</span> <span class="text-[10px] text-zinc-600 font-normal">(${skippedReason})</span>`;
       }
     }
 
@@ -680,6 +699,9 @@
       const deepSteps = deep.execution_steps || [];
       renderExecutionSteps(naiveSteps, document.getElementById("naive-trace-container"), false);
       renderExecutionSteps(deepSteps, document.getElementById("deepagent-trace-container"), true);
+
+      // Dynamically update top stepper to reflect actual pipeline path executed
+      updateStepperFromResults(deepSteps);
 
       // Set active streaming badges
       const naiveBadge = document.getElementById("naive-status-badge");
