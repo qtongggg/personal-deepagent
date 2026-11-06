@@ -22,11 +22,20 @@ _TODOS: List[str] = []
 
 
 @tool("todo_write")
-def todo_write(todos: str) -> str:
-    """Record or update research plan tasks and to-do items. Pass each task on a new line."""
+def todo_write(todos: Any) -> str:
+    """Record or update research plan tasks and to-do items. Pass each task on a new line or as a list."""
     global _TODOS
-    _TODOS = [item.strip() for item in todos.split("\n") if item.strip()]
+    if isinstance(todos, list):
+        _TODOS = [str(item).strip() for item in todos if str(item).strip()]
+    else:
+        _TODOS = [item.strip() for item in str(todos).split("\n") if item.strip()]
     return f"Updated todo list with {len(_TODOS)} items."
+
+
+@tool("write_to_dos")
+def write_to_dos(todos: Any) -> str:
+    """Record or update research plan tasks and to-do items. Pass each task on a new line or as a list."""
+    return todo_write.invoke({"todos": todos})
 
 
 @tool("todo_read")
@@ -49,6 +58,7 @@ def get_agent_tools() -> List[Any]:
         add_memory_tool,
         ingest_document_tool,
         todo_write,
+        write_to_dos,
         todo_read,
     ]
 
