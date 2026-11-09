@@ -20,6 +20,13 @@
       this.isRunning = false;
       this.isAborted = false;
 
+      // Playful Chase Mechanics
+      this.posX = -999;
+      this.posY = -999;
+      this.chaseCount = 0;
+      this.lastChaseTime = 0;
+      this.isEvading = false;
+
       this.init();
     }
 
@@ -150,6 +157,30 @@
           this.closeCommandHUD();
         }
       });
+
+      // Playful Pointer Chase / Run Away on Mouse Proximity
+      window.addEventListener("mousemove", (e) => {
+        if (this.isRunning || this.isEvading || this.isCommandHUDOpen()) return;
+        if (this.posX < 0 || this.posY < 0 || this.posX > window.innerWidth || this.posY > window.innerHeight) return;
+
+        const dx = e.clientX - this.posX;
+        const dy = e.clientY - this.posY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // If user's mouse cursor gets closer than 75px
+        if (dist < 75) {
+          this.handleChase(e.clientX, e.clientY);
+        }
+      });
+
+      // Gentle auto-entrance: peek into view near the launcher button after 2 seconds
+      setTimeout(() => {
+        if (this.posX < 0 && !this.isRunning) {
+          const btnRect = this.launcherBtn ? this.launcherBtn.getBoundingClientRect() : { left: window.innerWidth - 180, top: window.innerHeight - 80 };
+          this.cursor.style.transition = "transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)";
+          this.setCursorPos(btnRect.left - 45, btnRect.top - 35);
+        }
+      }, 2000);
     }
 
     isCommandHUDOpen() {
@@ -182,7 +213,61 @@
     }
 
     setCursorPos(x, y) {
+      this.posX = x;
+      this.posY = y;
       this.cursor.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+    }
+
+    async handleChase(mouseX, mouseY) {
+      this.isEvading = true;
+      this.chaseCount++;
+      const now = Date.now();
+
+      // Reset chase counter if user paused for > 6s
+      if (now - this.lastChaseTime > 6000) {
+        this.chaseCount = 1;
+      }
+      this.lastChaseTime = now;
+
+      // Calculate runaway direction away from mouse
+      let angle = Math.atan2(this.posY - mouseY, this.posX - mouseX);
+      angle += (Math.random() - 0.5) * 0.9; // natural wobble
+
+      const leapDist = 130 + Math.random() * 80;
+      let newX = this.posX + Math.cos(angle) * leapDist;
+      let newY = this.posY + Math.sin(angle) * leapDist;
+
+      // Ensure inside viewport bounds
+      const pad = 80;
+      if (newX < pad) newX = pad + Math.random() * 120;
+      if (newX > window.innerWidth - pad) newX = window.innerWidth - pad - Math.random() * 120;
+      if (newY < pad) newY = pad + Math.random() * 120;
+      if (newY > window.innerHeight - pad) newY = window.innerHeight - pad - Math.random() * 120;
+
+      // Snappy spring leap animation
+      this.cursor.style.transition = "transform 0.38s cubic-bezier(0.18, 0.89, 0.32, 1.28)";
+      this.setCursorPos(newX, newY);
+
+      if (this.chaseCount === 1) {
+        this.setState("[ 🏃💨 Woah, too close! ]");
+        await this.sleep(400);
+      } else if (this.chaseCount === 2) {
+        this.setState("[ ⚡ Can't catch me! ]");
+        await this.sleep(400);
+      } else if (this.chaseCount >= 3) {
+        this.setState("[ 🎮 Haha nice try! ]");
+        await this.speak(
+          "AGENT EVASION",
+          "Haha you can't catch me with the mouse! 🎮 Command me by pressing Ctrl + Shift + K!",
+          3800
+        );
+        this.hideSpeech();
+        this.setState(null);
+        this.chaseCount = 0;
+      }
+
+      await this.sleep(300);
+      this.isEvading = false;
     }
 
     async moveTo(x, y, durationMs = 650) {
