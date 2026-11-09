@@ -89,7 +89,7 @@
               <button type="button" class="agent-cmd-chip" data-cmd="projects">🚀 Show Projects</button>
               <button type="button" class="agent-cmd-chip" data-cmd="resume">📄 Download Resume</button>
               <button type="button" class="agent-cmd-chip" data-cmd="architecture">🏗️ Architecture</button>
-              <button type="button" class="agent-cmd-chip" data-cmd="play lofi beats">🎵 Play Lofi Beats</button>
+              <button type="button" class="agent-cmd-chip" data-cmd="play lofi beats">🎵 Cross-Tab: Play Lofi in Chrome</button>
               <button type="button" class="agent-cmd-chip" data-cmd="ask What are QT's core skills and flagship projects?">💬 Ask Skills &amp; Projects</button>
               <button type="button" class="agent-cmd-chip" data-cmd="tour">🎬 Full Showcase Tour</button>
             </div>
@@ -547,7 +547,7 @@
         return;
       }
 
-      // 5. COMMAND: YOUTUBE / PLAY MUSIC / SONG
+      // 5. COMMAND: YOUTUBE / PLAY MUSIC / SONG (REAL CHROME CROSS-TAB)
       if (
         cmdLower.includes("youtube") ||
         cmdLower.startsWith("play ") ||
@@ -568,43 +568,33 @@
           songQuery = "lofi hip hop radio beats to relax study to";
         }
 
-        // STEP 1: Announce and glide up to YouTube Tab in navigation
-        this.setState("[ 🌐 Gliding to YouTube Tab... ]");
-        this.speak("NAVIGATING TABS", "Heading up to the YouTube Music tab...", 2200);
+        // STEP 1: Announce Cross-Tab Travel
+        this.setState("[ 🚀 Cross-Tab Warp: Departing to Real Chrome... ]");
+        await this.speak("CROSS-TAB WARP 🚀", "Departing this tab to control YouTube in a real Google Chrome window! Watch your screen!", 2200);
 
-        const ytTab = document.getElementById("nav-tab-youtube");
-        if (ytTab) {
-          await this.moveToElement(ytTab, ytTab.offsetWidth / 2, ytTab.offsetHeight / 2, 700);
-          this.triggerClickRipple();
-          ytTab.classList.add("active");
+        // STEP 2: Animate pointer warping off top edge of screen
+        this.cursor.style.transition = "transform 0.55s cubic-bezier(0.12, 0.9, 0.25, 1)";
+        this.setCursorPos(window.innerWidth / 2, -120);
+        await this.sleep(400);
+
+        // STEP 3: Trigger real Google Chrome cross-tab backend
+        try {
+          fetch("/api/browser/cross-tab-youtube", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ song: songQuery }),
+          }).catch((err) => console.warn("Cross-tab trigger:", err));
+        } catch (e) {
+          console.warn("Cross-tab fetch failed:", e);
         }
 
-        // STEP 2: Open the Virtual Cyber Browser Window
-        this.openYouTubeWindow();
-        await this.sleep(350);
+        // STEP 4: Pointer returns from top edge once Chrome is active
+        await this.sleep(3000);
+        this.cursor.style.transition = "transform 0.85s cubic-bezier(0.16, 1, 0.3, 1)";
+        this.setCursorPos(window.innerWidth / 2, 70);
 
-        // STEP 3: Glide down to YouTube search bar and auto-type the song
-        const ytInput = document.getElementById("yt-browser-input");
-        const ytSearchBtn = document.getElementById("yt-browser-search-btn");
-        if (ytInput && ytSearchBtn) {
-          this.setState("[ ⌨️ Auto-Typing Song... ]");
-          await this.moveToElement(ytInput, 40, ytInput.offsetHeight / 2, 600);
-          this.triggerClickRipple();
-          ytInput.focus();
-
-          await this.typeInto(ytInput, songQuery, 28);
-          await this.sleep(200);
-
-          // STEP 4: Glide to Play Button and click
-          await this.moveToElement(ytSearchBtn, ytSearchBtn.offsetWidth / 2, ytSearchBtn.offsetHeight / 2, 400);
-          this.triggerClickRipple();
-
-          // STEP 5: Start playback inside the tab
-          this.playYouTube(songQuery);
-        }
-
-        this.setState("[ 🎵 Playing on YouTube... ]");
-        await this.speak("NOW PLAYING 🎧", `Playing "${songQuery}" inside YouTube tab! Enjoy the music while exploring!`, 3400);
+        this.setState("[ 🎵 YouTube Active in Real Chrome Tab ]");
+        await this.speak("CROSS-TAB AGENT ACTIVE 🎧", `Now playing "${songQuery}" in your real Chrome tab! Enjoy the music!`, 3600);
         this.hideSpeech();
         this.setState(null);
         this.isRunning = false;

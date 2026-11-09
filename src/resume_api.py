@@ -22,6 +22,7 @@ from langchain_core.messages import HumanMessage
 import uvicorn
 
 from src.resume_agent import create_resume_agent
+from src.skills.cross_tab_agent import launch_cross_tab_youtube
 
 app = FastAPI(title="QT Resume DeepAgent API")
 
@@ -113,6 +114,18 @@ async def api_chat(req: ChatRequest):
             "X-Accel-Buffering": "no",
         },
     )
+
+
+class CrossTabYouTubeRequest(BaseModel):
+    song: Optional[str] = "lofi hip hop radio beats to relax study to"
+
+
+@app.post("/api/browser/cross-tab-youtube")
+async def api_cross_tab_youtube(req: CrossTabYouTubeRequest):
+    """Launches visible real Google Chrome with the companion pointer to play music."""
+    song = (req.song or "lofi hip hop radio beats to relax study to").strip()
+    asyncio.create_task(launch_cross_tab_youtube(song))
+    return JSONResponse({"status": "launched", "song": song})
 
 
 # =====================================================================
