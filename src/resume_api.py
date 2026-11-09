@@ -14,7 +14,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import AsyncGenerator, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,6 +25,7 @@ import uvicorn
 
 from src.resume_agent import create_resume_agent
 from src.skills.cross_tab_agent import launch_cross_tab_youtube
+from src.skills.web_navigation_planner import plan_web_actions
 
 app = FastAPI(title="QT Resume DeepAgent API")
 
@@ -120,6 +121,22 @@ async def api_chat(req: ChatRequest):
 
 class CrossTabYouTubeRequest(BaseModel):
     song: Optional[str] = "lofi hip hop radio beats to relax study to"
+
+
+class PlanWebActionRequest(BaseModel):
+    goal: str
+    url: Optional[str] = ""
+    elements: List[Dict[str, Any]] = []
+
+
+@app.post("/api/browser/plan-action")
+async def api_plan_web_action(req: PlanWebActionRequest):
+    """Smart Web Navigation Planner endpoint.
+    Takes perceived page elements and a natural language goal,
+    and returns LLM-reasoned pointer thoughts and actions.
+    Independent from Resume RAG."""
+    plan = plan_web_actions(req.goal, req.url or "", req.elements)
+    return JSONResponse(plan)
 
 
 @app.post("/api/browser/cross-tab-youtube")

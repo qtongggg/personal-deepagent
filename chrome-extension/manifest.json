@@ -1,17 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "QT-Agent Guide — Cross-Tab Companion",
-  "version": "1.0.0",
-  "description": "Cross-tab companion agent pointer for Mah Qing Tong's DeepAgent Portfolio. Navigates real Chrome tabs, auto-types, and plays YouTube music.",
+  "name": "QT-Agent Guide — Autonomous Web Companion",
+  "version": "2.0.0",
+  "description": "Smart autonomous companion agent pointer. Scans page layout dynamically, reasons about actions with LLM, and controls web navigation on any site.",
   "permissions": [
     "tabs",
     "activeTab",
     "storage"
   ],
   "host_permissions": [
+    "<all_urls>",
     "http://localhost:8000/*",
-    "http://127.0.0.1:8000/*",
-    "https://*.youtube.com/*"
+    "http://127.0.0.1:8000/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -27,10 +27,14 @@
     },
     {
       "matches": [
-        "https://*.youtube.com/*"
+        "<all_urls>"
       ],
       "css": ["pointer_overlay.css"],
-      "js": ["youtube_companion.js"],
+      "js": [
+        "page_scanner.js",
+        "smart_companion.js",
+        "youtube_companion.js"
+      ],
       "run_at": "document_idle"
     }
   ],
