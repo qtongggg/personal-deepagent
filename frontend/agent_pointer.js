@@ -577,17 +577,19 @@
         this.setCursorPos(window.innerWidth / 2, -120);
         await this.sleep(400);
 
-        // STEP 3: Dispatch to Chrome Extension (or fallback to clean new tab)
-        if (window.__QT_AGENT_EXTENSION_INSTALLED) {
-          window.postMessage({
-            type: "QT_AGENT_CROSS_TAB_COMMAND",
-            action: "play_youtube",
-            song: songQuery
-          }, "*");
-        } else {
-          // Direct clean browser tab without any background ghost processes
-          window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(songQuery)}`, "_blank", "noopener");
-        }
+        // STEP 3: Open YouTube with QT-Agent Cross-Tab command hash
+        const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(songQuery)}#qt_agent_play=${encodeURIComponent(songQuery)}`;
+
+        // Send to Chrome Extension Bridge
+        window.postMessage({
+          type: "QT_AGENT_CROSS_TAB_COMMAND",
+          action: "play_youtube",
+          song: songQuery,
+          url: targetUrl
+        }, "*");
+
+        // Open new tab in user's active Chrome window
+        window.open(targetUrl, "_blank", "noopener");
 
         // STEP 4: Pointer returns from top edge once Chrome is active
         await this.sleep(3000);

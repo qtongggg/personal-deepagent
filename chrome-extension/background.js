@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const songQuery = message.song || "lofi hip hop radio beats to relax study to";
     console.log("[QT-Agent Background] Creating real Chrome tab for song:", songQuery);
 
-    const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(songQuery)}`;
+    const targetUrl = message.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(songQuery)}#qt_agent_play=${encodeURIComponent(songQuery)}`;
 
     chrome.tabs.create({ url: targetUrl }, (tab) => {
       // Store pending task in extension storage for the new YouTube tab
