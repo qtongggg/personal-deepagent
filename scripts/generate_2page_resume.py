@@ -297,18 +297,18 @@ def generate_2page_resume():
       <img src="file:///{photo_file}" class="header-photo" alt="Mah Qing Tong" />
     </header>
 
-    <!-- PROFESSIONAL SUMMARY (UPDATED: SKILLS HARNESS & EVALUATIONS) -->
+    <!-- PROFESSIONAL SUMMARY (PASSIONATE ABOUT AGENT ARCHITECTURES, HARNESS & EVALS) -->
     <section class="section">
       <div class="section-header">
         <div class="bar"></div>
         <span>Professional Summary</span>
       </div>
       <p class="summary-text">
-        <strong>LLM Engineer at Zetrix AI</strong> with a Bachelor of Computer Science in Data Science from <strong>Monash University Malaysia</strong>. Experienced in architecting production Agentic RAG workflows, autonomous multi-agent systems, and modular <strong>Agent Skills (<code>SKILL.md</code> / MCP)</strong>. Specializing in <strong>Harness Engineering</strong> (step-budget guardrails, context compaction, sandboxed tool execution, automated self-correction) and <strong>Rigorous Evaluation</strong> (automated Needle-in-a-Haystack benchmarks, retrieval recall, and faithfulness scoring). Hands-on expertise in hybrid vector/BM25 retrieval, cross-encoder reranking, and full-stack backend development for robust enterprise AI applications.
+        <strong>LLM Engineer at Zetrix AI</strong> with a Bachelor of Computer Science in Data Science from <strong>Monash University Malaysia</strong>. Passionate about exploring autonomous agent architectures, production Agentic RAG workflows, and modular <strong>Agent Skills (<code>SKILL.md</code> / MCP)</strong> with practical harness engineering and systematic evaluation. Hands-on expertise in hybrid dense/sparse retrieval, cross-encoder reranking, and full-stack backend development, driven to design reliable, self-correcting, and high-impact enterprise AI solutions.
       </p>
     </section>
 
-    <!-- TECHNICAL SKILLS -->
+    <!-- TECHNICAL SKILLS (STREAMLINED) -->
     <section class="section">
       <div class="section-header">
         <div class="bar"></div>
@@ -320,10 +320,6 @@ def generate_2page_resume():
           <span class="skill-list">LangChain, LangGraph, Agent Skills (SKILL.md), Model Context Protocol (MCP), Dify, Multi-Agent Orchestration, Human-in-the-Loop (HITL), Prompt Engineering</span>
         </div>
         <div class="skill-row">
-          <span class="skill-label">Harness Engineering & Evals:</span>
-          <span class="skill-list">Step-Budget Guardrails, Context Compaction, Sandboxed Execution, Automated Self-Correction Loops, Needle-in-a-Haystack Evals, Faithfulness Benchmarking</span>
-        </div>
-        <div class="skill-row">
           <span class="skill-label">RAG & Information Retrieval:</span>
           <span class="skill-list">Hybrid Search, Dense & Sparse Retrieval (BM25), Qdrant, ChromaDB, Cross-Encoder Reranking, Multi-Hop Retrieval, Hierarchical Ingestion</span>
         </div>
@@ -332,8 +328,12 @@ def generate_2page_resume():
           <span class="skill-list">Python, FastAPI, TypeScript, JavaScript, SQL, REST APIs, Next.js, Server-Sent Events (SSE)</span>
         </div>
         <div class="skill-row">
-          <span class="skill-label">Machine Learning & Tools:</span>
-          <span class="skill-list">PyTorch, Hugging Face Transformers, BERT Prefix Prompt-Tuning, PostgreSQL, DuckDB, MongoDB, Git, Docker, Linux, Pytest, CI/CD</span>
+          <span class="skill-label">Machine Learning:</span>
+          <span class="skill-list">PyTorch, Hugging Face Transformers, BERT Prefix Prompt-Tuning, CNNs, Embeddings, Self-Attention from scratch</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">Databases & DevOps:</span>
+          <span class="skill-list">PostgreSQL, DuckDB, MongoDB, Git, Docker, Linux, Pytest, GitHub Actions, CI/CD</span>
         </div>
       </div>
     </section>
@@ -383,15 +383,15 @@ def generate_2page_resume():
   </div>
 
   <!-- ============================================================ -->
-  <!-- PAGE 2: SELECTED TECHNICAL PROJECTS, EDUCATION, HONORS       -->
+  <!-- PAGE 2: TECHNICAL PROJECTS, EDUCATION, LEADERSHIP & HONORS   -->
   <!-- ============================================================ -->
   <div class="resume-page page-break-before" id="page-2">
 
-    <!-- SELECTED TECHNICAL PROJECTS -->
+    <!-- TECHNICAL PROJECTS -->
     <section class="section">
       <div class="section-header">
         <div class="bar"></div>
-        <span>Selected Technical Projects</span>
+        <span>Technical Projects</span>
       </div>
       <div class="section-subtitle">AI application development • RAG • Agentic systems • Backend engineering</div>
 
@@ -435,7 +435,7 @@ def generate_2page_resume():
       </div>
     </section>
 
-    <!-- EDUCATION (EXPANDED WITH UNIVERSITY LIFE LEARNINGS & RESEARCH) -->
+    <!-- EDUCATION -->
     <section class="section avoid-break" style="margin-top: 8px;">
       <div class="section-header">
         <div class="bar"></div>
@@ -459,13 +459,14 @@ def generate_2page_resume():
       </div>
     </section>
 
-    <!-- SELECTED HONORS & COMPETITIONS -->
+    <!-- LEADERSHIP & HONORS -->
     <section class="section avoid-break" style="margin-top: 8px;">
       <div class="section-header">
         <div class="bar"></div>
-        <span>Selected Honors & Competitions</span>
+        <span>Leadership & Honors</span>
       </div>
       <ul class="bullets">
+        <li><strong>President of Diabolo Society:</strong> Foon Yew High School (Jan 2019 – Dec 2021) — Directed society operations, organized performances, led weekly training programs, and coordinated major cultural events.</li>
         <li><strong>Monash Coding League 2024:</strong> Competitive algorithmic programming challenge.</li>
         <li><strong>ExxonMobil DataWorks Challenge 2024:</strong> Data analytics and predictive modeling competition.</li>
         <li><strong>Leadership Champ by YCA:</strong> Youth leadership accreditation.</li>
@@ -479,6 +480,20 @@ def generate_2page_resume():
 
     with open(html_file, "w", encoding="utf-8") as f:
         f.write(html_content)
+
+    # Safe handling if PDF is currently opened in an IDE or browser viewer
+    old_pdf = pdf_file + ".old"
+    if os.path.exists(old_pdf):
+        try:
+            os.remove(old_pdf)
+        except Exception:
+            pass
+    if os.path.exists(pdf_file):
+        try:
+            with open(pdf_file, "ab"):
+                pass
+        except PermissionError:
+            os.rename(pdf_file, old_pdf)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -512,6 +527,24 @@ def generate_2page_resume():
     
     assert page_count == 2, f"Expected exactly 2 pages, but got {page_count} pages!"
     print("SUCCESS: PDF is verified to be EXACTLY 2 pages with top-right photo!")
+
+    # Also sync copy to artifact and nifty-tesla
+    artifact_pdf = r"C:\Users\User\.gemini\antigravity\brain\c39f0747-9fe2-42f7-ba3f-4b04c42cf777\Mah_Qing_Tong_Resume_2Page.pdf"
+    nifty_pdf = r"C:\Users\User\Documents\antigravity\nifty-tesla\Mah_Qing_Tong_Resume.pdf"
+    
+    for target in [artifact_pdf, nifty_pdf]:
+        try:
+            if os.path.exists(target):
+                try:
+                    with open(target, "ab"):
+                        pass
+                except PermissionError:
+                    os.rename(target, target + ".old")
+            import shutil
+            shutil.copy2(pdf_file, target)
+            print(f"Copied to: {target}")
+        except Exception as e:
+            print(f"Warning: could not copy to {target}: {e}")
 
 if __name__ == "__main__":
     generate_2page_resume()

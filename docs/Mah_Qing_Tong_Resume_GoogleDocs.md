@@ -6,16 +6,16 @@ LinkedIn: [linkedin.com/in/qtong](https://linkedin.com/in/qtong) | GitHub: [gith
 ---
 
 ## PROFESSIONAL SUMMARY
-**LLM Engineer at Zetrix AI** with a Bachelor of Computer Science in Data Science from **Monash University Malaysia**. Experienced in architecting production Agentic RAG workflows, autonomous multi-agent systems, and modular **Agent Skills (`SKILL.md` / MCP)**. Specializing in **Harness Engineering** (step-budget guardrails, context compaction, sandboxed tool execution, automated self-correction) and **Rigorous Evaluation** (automated Needle-in-a-Haystack benchmarks, retrieval recall, and faithfulness scoring). Hands-on expertise in hybrid vector/BM25 retrieval, cross-encoder reranking, and full-stack backend development for robust enterprise AI applications.
+**LLM Engineer at Zetrix AI** with a Bachelor of Computer Science in Data Science from **Monash University Malaysia**. Passionate about exploring autonomous agent architectures, production Agentic RAG workflows, and modular **Agent Skills (`SKILL.md` / MCP)** with practical harness engineering and systematic evaluation. Hands-on expertise in hybrid dense/sparse retrieval, cross-encoder reranking, and full-stack backend development, driven to design reliable, self-correcting, and high-impact enterprise AI solutions.
 
 ---
 
 ## TECHNICAL SKILLS
 - **LLM & Agentic Systems**: LangChain, LangGraph, Agent Skills (`SKILL.md`), Model Context Protocol (MCP), Dify, Multi-Agent Orchestration, Human-in-the-Loop (HITL), Prompt Engineering
-- **Harness Engineering & Evals**: Step-Budget Guardrails, Context Compaction, Sandboxed Execution, Automated Self-Correction Loops, Needle-in-a-Haystack Evals, Faithfulness Benchmarking
 - **RAG & Information Retrieval**: Hybrid Search, Dense & Sparse Retrieval (BM25), Qdrant, ChromaDB, Cross-Encoder Reranking, Multi-Hop Retrieval, Hierarchical Ingestion
 - **Programming & Backend**: Python, FastAPI, TypeScript, JavaScript, SQL, REST APIs, Next.js, Server-Sent Events (SSE)
-- **Machine Learning & Tools**: PyTorch, Hugging Face Transformers, BERT Prefix Prompt-Tuning, PostgreSQL, DuckDB, MongoDB, Git, Docker, Linux, Pytest, CI/CD
+- **Machine Learning**: PyTorch, Hugging Face Transformers, BERT Prefix Prompt-Tuning, CNNs, Embeddings, Self-Attention from scratch
+- **Databases & DevOps**: PostgreSQL, DuckDB, MongoDB, Git, Docker, Linux, Pytest, GitHub Actions, CI/CD
 
 ---
 
@@ -37,7 +37,7 @@ LinkedIn: [linkedin.com/in/qtong](https://linkedin.com/in/qtong) | GitHub: [gith
 
 ---
 
-## SELECTED TECHNICAL PROJECTS
+## TECHNICAL PROJECTS
 
 ### Personal DeepAgent — Autonomous AI Agent System & Kinetic Portfolio
 *LangGraph • Agent Skills • Hybrid RAG • FastAPI • DuckDB • FlashRank • Next.js • SSE*
@@ -69,7 +69,8 @@ LinkedIn: [linkedin.com/in/qtong](https://linkedin.com/in/qtong) | GitHub: [gith
 
 ---
 
-## SELECTED HONORS & COMPETITIONS
+## LEADERSHIP & HONORS
+- **President of Diabolo Society**: Foon Yew High School (Jan 2019 – Dec 2021) — Directed society operations, organized performances, led weekly training programs, and coordinated major cultural events.
 - **Monash Coding League 2024**: Competitive algorithmic programming challenge.
 - **ExxonMobil DataWorks Challenge 2024**: Data analytics and predictive modeling competition.
-- **Leadership Champ by YCA**: Youth leadership accreditation.
+- **Leadership Champ by YCA**: Youth leadership and collaborative management accreditation.
