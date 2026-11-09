@@ -9,7 +9,7 @@
  * 3. Uses QTPageScanner to perceive the page's interactive elements.
  * 4. Consults the DeepAgent Web Navigation Planner API for dynamic LLM reasoning.
  * 5. Animates the pointer smoothly across the DOM with thoughts, shockwaves, and clicks.
- * 6. Automatically handles cross-tab YouTube playback from the portfolio.
+ * 6. Autonomous Multi-Step Execution: Searches and automatically clicks top video to play!
  */
 
 (function () {
@@ -172,7 +172,7 @@
     chipsDiv.className = "smart-command-chips";
 
     const chipConfigs = [
-      { text: "🎵 Play Top Video", goal: "Play the top video" },
+      { text: "🎵 Play Top Video", goal: "Play top video" },
       { text: "🔍 Search Lofi Beats", goal: "Search for lofi beats and play top video" },
       { text: "📜 Scroll Page", goal: "Scroll down to explore page content" },
       { text: "⚡ Find Search Bar", goal: "Find and focus the search input" }
@@ -316,18 +316,34 @@
     });
 
     // =========================================================================
-    // 4. THE SMART BRAIN LOOP: Perceive -> Reason -> Act
+    // 4. AUTONOMOUS BRAIN LOOP: Perceive -> Reason -> Act -> Auto-Chain
     // =========================================================================
     async function executeSmartGoal(goal) {
       if (isExecuting) return;
       isExecuting = true;
 
+      const isPlayGoal = /play|lofi|music|song|beats|track|video|watch/i.test(goal);
+      console.log(`[Smart Companion] Executing Goal: "${goal}", isPlayGoal: ${isPlayGoal}`);
+
+      // Fast-Path: If on YouTube search results and user wants to play a video, click it directly!
+      if (window.location.hostname.includes("youtube.com") && window.location.pathname === "/results" && isPlayGoal) {
+        setState("[ 🔍 Locating Top Video... ]");
+        await waitForYouTubeResults(3000);
+        const topVideo = document.querySelector("a#video-title, ytd-video-renderer a#video-title, a[href*='/watch']");
+        if (topVideo) {
+          await clickTopVideo(topVideo);
+          setState("[ ⚡ READY ]");
+          isExecuting = false;
+          return;
+        }
+      }
+
       setState("[ 🔍 Perceiving Page... ]");
       speak("PERCEPTION SCAN", `Analyzing visible elements on ${window.location.hostname}...`, 1800);
 
-      // Wait briefly for SPA render if on YouTube search results
-      if (window.location.hostname.includes("youtube.com") && window.location.pathname === "/results") {
-        await waitForYouTubeResults(3000);
+      // Wait briefly for SPA render if on YouTube
+      if (window.location.hostname.includes("youtube.com")) {
+        await waitForYouTubeResults(2500);
       }
 
       // 1. Scan page elements
@@ -369,8 +385,9 @@
       }
 
       // 4. Execute Planned Actions
+      let didSearch = false;
       for (const step of plan.actions) {
-        console.log("[Smart Companion] Step:", step);
+        console.log("[Smart Companion] Executing Step:", step);
 
         if (step.thought) {
           speak("STEP ACTION", step.thought, 2200);
@@ -378,17 +395,18 @@
 
         if (step.type === "move_and_click" || step.type === "click") {
           let el = window.QTPageScanner.getElement(step.target_id);
-          // Fallback if target element not directly mapped
           if (!el && window.location.hostname.includes("youtube.com")) {
-            el = document.querySelector("ytd-video-renderer a#video-title, ytd-video-renderer a#thumbnail");
+            el = document.querySelector("a#video-title, ytd-video-renderer a#video-title, a[href*='/watch']");
           }
 
           if (el) {
-            // Find clickable anchor if container is custom element
             let targetClick = el;
             if (el.tagName.toLowerCase().includes("video-renderer") || el.tagName.toLowerCase() === "ytd-video-renderer") {
-              const innerLink = el.querySelector("a#video-title, a#thumbnail, a[href]");
+              const innerLink = el.querySelector("a#video-title, a#thumbnail, a[href*='/watch'], a[href]");
               if (innerLink) targetClick = innerLink;
+            } else if (el.tagName !== "A") {
+              const nearestAnchor = el.closest("a[href]") || el.querySelector("a[href]");
+              if (nearestAnchor) targetClick = nearestAnchor;
             }
 
             try { targetClick.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
@@ -403,10 +421,21 @@
             await sleep(200);
 
             clickRipple();
-            targetClick.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+            const eventInit = { bubbles: true, cancelable: true, composed: true, view: window, detail: 1 };
+            targetClick.dispatchEvent(new PointerEvent("pointerdown", eventInit));
+            targetClick.dispatchEvent(new MouseEvent("mousedown", eventInit));
+            targetClick.dispatchEvent(new PointerEvent("pointerup", eventInit));
+            targetClick.dispatchEvent(new MouseEvent("mouseup", eventInit));
+            targetClick.dispatchEvent(new MouseEvent("click", eventInit));
             if (targetClick.click) targetClick.click();
-            if (targetClick.href && !window.location.href.includes(targetClick.href)) {
-              window.location.href = targetClick.href;
+
+            const href = targetClick.href || (targetClick.closest && targetClick.closest("a") && targetClick.closest("a").href);
+            if (href && (href.includes("/watch") || href.includes("youtube.com/watch"))) {
+              setTimeout(() => {
+                if (!window.location.href.includes("/watch")) {
+                  window.location.href = href;
+                }
+              }, 450);
             }
             await sleep(700);
           }
@@ -432,6 +461,7 @@
             await sleep(300);
           }
         } else if (step.type === "press_enter") {
+          didSearch = true;
           const active = document.activeElement;
           if (active) {
             const form = active.closest("form");
@@ -442,6 +472,18 @@
             }
           }
           await sleep(1200);
+
+          // AUTONOMOUS CONTINUATION: If user wanted to play a song/video, automatically wait for results & click!
+          if (isPlayGoal && window.location.hostname.includes("youtube.com")) {
+            setState("[ ⏳ Loading Search Results... ]");
+            speak("AUTONOMOUS AGENT 🔍", "Search submitted! Waiting for video results to appear...", 2500);
+            await waitForYouTubeResults(5000);
+            const topVideo = document.querySelector("a#video-title, ytd-video-renderer a#video-title, a[href*='/watch']");
+            if (topVideo) {
+              await clickTopVideo(topVideo);
+            }
+            break;
+          }
         } else if (step.type === "scroll") {
           const amt = step.amount || 450;
           const dir = step.direction === "up" ? -1 : 1;
@@ -456,30 +498,67 @@
       isExecuting = false;
     }
 
+    async function clickTopVideo(videoEl) {
+      if (!videoEl) {
+        videoEl = document.querySelector("a#video-title, ytd-video-renderer a#video-title, a[href*='/watch']");
+      }
+      if (!videoEl) return;
+
+      try { videoEl.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
+      await sleep(350);
+
+      const rect = videoEl.getBoundingClientRect();
+      const tx = Math.max(80, Math.min(rect.left + 80, window.innerWidth - 120));
+      const ty = Math.max(60, Math.min(rect.top + rect.height / 2, window.innerHeight - 100));
+
+      const videoTitle = (videoEl.innerText || videoEl.getAttribute("title") || "Top Video").trim().slice(0, 45);
+      speak("AI REASONING 💡", `Found "${videoTitle}". Gliding to click and play!`, 3000);
+
+      setState("[ 🎯 Gliding to Video... ]");
+      await moveTo(tx, ty, 700);
+      await sleep(250);
+
+      clickRipple();
+      setState("[ 🎵 Launching Playback... ]");
+
+      const eventInit = { bubbles: true, cancelable: true, composed: true, view: window, detail: 1 };
+      videoEl.dispatchEvent(new PointerEvent("pointerdown", eventInit));
+      videoEl.dispatchEvent(new MouseEvent("mousedown", eventInit));
+      videoEl.dispatchEvent(new PointerEvent("pointerup", eventInit));
+      videoEl.dispatchEvent(new MouseEvent("mouseup", eventInit));
+      videoEl.dispatchEvent(new MouseEvent("click", eventInit));
+      if (videoEl.click) videoEl.click();
+
+      const href = videoEl.href || (videoEl.closest && videoEl.closest("a") && videoEl.closest("a").href);
+      if (href && (href.includes("/watch") || href.includes("youtube.com/watch"))) {
+        setTimeout(() => {
+          if (!window.location.href.includes("/watch")) {
+            window.location.href = href;
+          }
+        }, 450);
+      }
+      await sleep(800);
+    }
+
     function heuristicPlan(goal, elements) {
       const gl = goal.toLowerCase();
       // First check for video on YouTube
-      if (gl.includes("play") || gl.includes("video") || gl.includes("music") || gl.includes("lofi")) {
+      if (gl.includes("play") || gl.includes("video") || gl.includes("music") || gl.includes("lofi") || gl.includes("beats")) {
         for (const el of elements) {
-          const txt = (el.text || "").toLowerCase();
-          if (txt.includes("lofi") || txt.includes("beats") || txt.includes("mix") || txt.includes("radio") || el.tag === "a") {
-            return {
-              thought: `I found the video "${el.text.slice(0, 35)}". Moving to play it!`,
-              actions: [{ type: "move_and_click", target_id: el.id, thought: "Clicking to play video" }]
-            };
+          if (el.role === "video" || el.tag === "a") {
+            const txt = (el.text || "").toLowerCase();
+            if (txt.includes("lofi") || txt.includes("beats") || txt.includes("mix") || txt.includes("radio") || txt.includes("music") || el.role === "video") {
+              return {
+                thought: `I found the video "${el.text.slice(0, 35)}". Moving to play it!`,
+                actions: [{ type: "move_and_click", target_id: el.id, thought: "Clicking to play video" }]
+              };
+            }
           }
-        }
-        // Fallback: click first link
-        if (elements.length > 0) {
-          return {
-            thought: "Selecting the top interactive result on page.",
-            actions: [{ type: "move_and_click", target_id: elements[0].id, thought: "Clicking top element" }]
-          };
         }
       }
 
       // Check for search
-      if (gl.includes("search")) {
+      if (gl.includes("search") || gl.includes("find")) {
         for (const el of elements) {
           if (el.tag === "input" || el.role === "searchbox" || el.placeholder.toLowerCase().includes("search")) {
             return {
@@ -493,6 +572,14 @@
         }
       }
 
+      // Fallback
+      if (elements.length > 0) {
+        return {
+          thought: `Perceiving interactive element to achieve: "${goal}".`,
+          actions: [{ type: "move_and_click", target_id: elements[0].id, thought: "Clicking element" }]
+        };
+      }
+
       return {
         thought: `Perceived page for goal: "${goal}".`,
         actions: [{ type: "done", message: "Scan complete." }]
@@ -502,7 +589,7 @@
     async function waitForYouTubeResults(timeoutMs = 3000) {
       const start = Date.now();
       while (Date.now() - start < timeoutMs) {
-        const found = document.querySelector("ytd-video-renderer a#video-title, ytd-video-renderer a#thumbnail");
+        const found = document.querySelector("a#video-title, ytd-video-renderer a#video-title, a[href*='/watch']");
         if (found) return true;
         await sleep(200);
       }
@@ -565,7 +652,7 @@
         });
       }
 
-      // If user landed on YouTube search results directly (e.g. from search query in URL)
+      // If user landed on YouTube search results directly
       if (window.location.pathname === "/results") {
         const urlParams = new URLSearchParams(window.location.search);
         const query = urlParams.get("search_query");

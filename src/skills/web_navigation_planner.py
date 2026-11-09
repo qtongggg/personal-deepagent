@@ -33,8 +33,8 @@ Output STRICTLY valid JSON with:
 
 GUIDELINES:
 1. Pick the single most relevant element matching the user's intent.
-2. If looking for a search bar, look for inputs with role="searchbox", placeholder with "search", or input tags.
-3. If looking for a video to play after search results are visible, pick the top video card or video link.
+2. CRITICAL FOR VIDEO/MUSIC: If the user wants to play/listen to a video or song, and video results or watch links (role="video" or tag="a" with video title) are ALREADY visible on the page, DO NOT pick the search input! Directly target the top video link (action: move_and_click) to play it immediately.
+3. Only target the search input if no video results are present on the page yet.
 4. Keep the "thought" short (under 20 words) so it fits in a floating thought bubble.
 5. Return ONLY the JSON object, no markdown fences or extra text.
 """

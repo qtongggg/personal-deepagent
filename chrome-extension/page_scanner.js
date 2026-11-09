@@ -12,17 +12,34 @@ window.QTPageScanner = (function () {
     trackedElementsMap = [];
     const elementsData = [];
 
-    // Selectors for interactive affordances across all modern web apps + YouTube video cards
-    const candidates = document.querySelectorAll(`
-      ytd-video-renderer a#video-title,
-      ytd-video-renderer a#thumbnail,
-      input, textarea, select,
-      button, [role="button"],
-      a[href], [role="link"],
-      [role="tab"], [role="searchbox"],
-      [role="menuitem"], [role="switch"],
-      [data-interactive="true"]
-    `);
+    // Prioritize video cards on video sites like YouTube
+    const isYouTube = window.location.hostname.includes("youtube.com");
+    let candidates = [];
+
+    if (isYouTube) {
+      const videoLinks = Array.from(document.querySelectorAll(`
+        a#video-title,
+        ytd-video-renderer a#video-title,
+        a#thumbnail[href*="/watch"],
+        ytd-video-renderer a#thumbnail
+      `));
+      const otherInteractive = Array.from(document.querySelectorAll(`
+        input[name="search_query"], input#search, input,
+        button, [role="button"],
+        a[href], [role="link"],
+        [role="searchbox"]
+      `));
+      candidates = videoLinks.concat(otherInteractive);
+    } else {
+      candidates = Array.from(document.querySelectorAll(`
+        input, textarea, select,
+        button, [role="button"],
+        a[href], [role="link"],
+        [role="tab"], [role="searchbox"],
+        [role="menuitem"], [role="switch"],
+        [data-interactive="true"]
+      `));
+    }
 
     let count = 0;
     for (const el of candidates) {
@@ -40,6 +57,20 @@ window.QTPageScanner = (function () {
       let text = (el.innerText || el.textContent || el.value || el.getAttribute("aria-label") || el.getAttribute("title") || "").trim();
       text = text.replace(/\s+/g, " ").slice(0, 80);
 
+      // Determine role
+      let role = el.getAttribute("role");
+      if (!role) {
+        if (el.id === "video-title" || (el.href && el.href.includes("/watch"))) {
+          role = "video";
+        } else if (el.tagName === "INPUT") {
+          role = el.getAttribute("type") === "search" || el.id === "search" ? "searchbox" : "input";
+        } else if (el.tagName === "BUTTON") {
+          role = "button";
+        } else {
+          role = "link";
+        }
+      }
+
       // Save mapping
       const id = count++;
       trackedElementsMap[id] = el;
@@ -47,7 +78,7 @@ window.QTPageScanner = (function () {
       elementsData.push({
         id: id,
         tag: el.tagName.toLowerCase(),
-        role: el.getAttribute("role") || (el.tagName === "INPUT" ? "input" : el.tagName === "BUTTON" ? "button" : "link"),
+        role: role,
         text: text,
         placeholder: el.getAttribute("placeholder") || "",
         aria: el.getAttribute("aria-label") || "",
