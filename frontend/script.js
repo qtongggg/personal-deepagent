@@ -7,70 +7,82 @@
 const QT_DATA = {
   email: "smartqingtong@gmail.com",
   typewriterPhrases: [
-    "RAG & Dify Workflows",
-    "Markdown Pre-Cleaning Pipelines",
-    "Agent Skills & MCP Tools",
-    "Harness Engineering"
+    "Autonomous Multi-Hop Agents",
+    "Hybrid RAG + FlashRank Reranking",
+    "FastAPI Backend + SSE Streaming",
+    "Dify Production AI Workflows"
   ],
   pillars: [
     {
       index: "01",
       code: "LAYER // 01",
-      title: "Retrieval-Augmented Generation & Markdown Pre-Cleaning",
+      title: "Retrieval-Augmented Generation & FlashRank Reranking",
       tag: "[ PIPELINE // RAG ]",
-      desc: "Engineering end-to-end RAG pipelines that pre-clean and normalize noisy raw files into structured Markdown before hybrid chunking—combining OpenAI embeddings, Qdrant dense+sparse search, and cross-encoder reranking.",
+      desc: "Architecting high-precision RAG pipelines combining ChromaDB vector embeddings, BM25 sparse keyword matching, and cross-encoder FlashRank reranking to eliminate hallucination.",
       stages: [
-        { step: "STAGE 01 →", name: "Raw Pre-Clean", sub: "Noisy Docs → MD", highlight: false },
-        { step: "STAGE 02 →", name: "Hybrid Chunker", sub: "SentenceSplitter", highlight: true },
-        { step: "STAGE 03 →", name: "Qdrant Hybrid", sub: "Dense + Sparse", highlight: false },
-        { step: "STAGE 04 ●", name: "Cross-Reranker", sub: "Precision Context", highlight: false }
+        { step: "STAGE 01 →", name: "Markdown Normalizer", sub: "Clean Ingestion", highlight: false },
+        { step: "STAGE 02 →", name: "Hybrid Retriever", sub: "Chroma + BM25", highlight: true },
+        { step: "STAGE 03 →", name: "FlashRank", sub: "Cross-Reranker", highlight: false },
+        { step: "STAGE 04 ●", name: "Context Injection", sub: "Deterministic Grounding", highlight: false }
       ]
     },
     {
       index: "02",
       code: "LAYER // 02",
-      title: "Agent Skills & Analytical Tool Calling",
-      tag: "[ PIPELINE // SKILLS ]",
-      desc: "Extending chatbots beyond naive RAG by equipping LLM agents with custom Agent Skills, MCP tools, and analytical functions (comparisons, exhaustive listing, exact counting, and Text-to-SQL).",
+      title: "Autonomous Agent Loops & Active Planning",
+      tag: "[ PIPELINE // AGENTIC ]",
+      desc: "Developing production-grade agentic loops with LangGraph and LangChain deepagents: incorporating task planning (write_to_dos), virtual workspace filesystems, and multi-hop execution.",
       stages: [
-        { step: "STAGE 01 →", name: "Intent Router", sub: "Query Analysis", highlight: false },
-        { step: "STAGE 02 →", name: "Agent Skills", sub: "Compare/Count/List", highlight: true },
-        { step: "STAGE 03 →", name: "MCP & Text-SQL", sub: "Schema Execution", highlight: false },
-        { step: "STAGE 04 ●", name: "HITL Turnover", sub: "Verified Handoff", highlight: false }
+        { step: "STAGE 01 →", name: "Active Planner", sub: "write_to_dos State", highlight: true },
+        { step: "STAGE 02 →", name: "Virtual Workspace", sub: "Scratchpad File I/O", highlight: false },
+        { step: "STAGE 03 →", name: "Iterative Hops", sub: "Multi-Source Reasoning", highlight: false },
+        { step: "STAGE 04 ●", name: "Memory Commit", sub: "Mem0 Persistence", highlight: false }
       ]
     },
     {
       index: "03",
       code: "LAYER // 03",
-      title: "Harness Engineering & Deep Learning Foundations",
-      tag: "[ PIPELINE // HARNESS ]",
-      desc: "Building deterministic agent orchestration loops, repository memory harnesses (progress.md / decision.md), and custom PyTorch Transformer / Prefix Prompt-Tuning architectures.",
+      title: "Natural Language Analytics & Schema Verification",
+      tag: "[ PIPELINE // ANALYTICS ]",
+      desc: "Building deterministic Text-to-SQL agents using LangGraph and PostgreSQL/DuckDB that inspect database schemas, validate queries, and render dynamic analytical charts.",
       stages: [
-        { step: "STAGE 01 →", name: "Harness Memory", sub: "progress & decision", highlight: false },
-        { step: "STAGE 02 →", name: "Control Loop", sub: "Rewrite & Verify", highlight: true },
-        { step: "STAGE 03 →", name: "Self-Attention", sub: "PyTorch Encoder", highlight: false },
-        { step: "STAGE 04 ●", name: "Prefix Tuning", sub: "Frozen BERT Adapt", highlight: false }
+        { step: "STAGE 01 →", name: "Schema Inspection", sub: "Table Cataloging", highlight: false },
+        { step: "STAGE 02 →", name: "SQL Generation", sub: "Domain Constraint Rules", highlight: true },
+        { step: "STAGE 03 →", name: "Query Execution", sub: "DuckDB / PostgreSQL", highlight: false },
+        { step: "STAGE 04 ●", name: "Dynamic Visuals", sub: "JSON & Chart Delivery", highlight: false }
       ]
     },
     {
       index: "04",
       code: "LAYER // 04",
-      title: "Dify Workflow Automation & Full-Stack AI",
-      tag: "[ PIPELINE // AUTOMATION ]",
-      desc: "Orchestrating production AI workflows in Dify at Zetrix AI—connecting RAG knowledge bases, booking APIs, FastAPI SSE microservices, and real-time OCR pipelines.",
+      title: "Production AI Workflows & FastAPI Microservices",
+      tag: "[ PIPELINE // FULL-STACK ]",
+      desc: "Deploying full-stack AI backends and enterprise agent workflows: connecting FastAPI SSE real-time streaming, Dify DAG orchestration, and live Human-in-the-Loop turnovers.",
       stages: [
         { step: "STAGE 01 →", name: "Dify Chatflow", sub: "DAG Orchestration", highlight: true },
-        { step: "STAGE 02 →", name: "FastAPI SSE", sub: "Streaming Proxy", highlight: false },
-        { step: "STAGE 03 →", name: "Booking & APIs", sub: "Slot Automation", highlight: false },
-        { step: "STAGE 04 ●", name: "Live Production", sub: "24/7 Execution", highlight: false }
+        { step: "STAGE 02 →", name: "FastAPI Backend", sub: "SSE Streaming Proxy", highlight: false },
+        { step: "STAGE 03 →", name: "HITL Turnover", sub: "Live Agent Handoff", highlight: false },
+        { step: "STAGE 04 ●", name: "Production Deploy", sub: "Containerized 24/7", highlight: false }
       ]
     }
   ],
   systems: [
     {
       num: "01",
+      title: "PERSONAL DEEPAGENT // Autonomous Multi-Hop Research Agent & Benchmark Arena",
+      category: "AGENTIC",
+      desc: "Flagship autonomous research agent built using LangChain deepagents harness and LangGraph. Features dynamic task planning, virtual scratchpad filesystem, multi-hop retrieval over structured catalogs and vector stores, and automated side-by-side arena benchmarking.",
+      highlights: [
+        "Engineered 2-hop iterative retrieval: Hop 1 DuckDB catalog SQL query + Hop 2 surgical dense+BM25 vector search with FlashRank reranking.",
+        "Integrated active task planning (write_to_dos) and virtual scratchpad drafting before committing long-term memory to Mem0.",
+        "Automated headless Chromium arena video recording comparing standard naive RAG vs DeepAgent across an 11-dimension comparative matrix."
+      ],
+      tags: ["#LANGGRAPH", "#MULTI-HOP-RAG", "#DUCKDB", "#FLASHRANK", "#DEEPAGENTS"]
+    },
+    {
+      num: "02",
       title: "INCEIF i-FIKR // Islamic Knowledge Agent with Analytical Skills (Zetrix AI)",
-      category: "HARNESS",
+      category: "AGENTIC",
       desc: "Domain-specific Islamic finance and knowledge chatbot built at Zetrix AI. Overcame standard naive RAG limitations by integrating custom Agent Skills to handle structured comparisons, exhaustive listing, and exact counting queries.",
       highlights: [
         "Engineered specialized Agent Skills for multi-document comparison, structured listing, and count aggregation.",
@@ -80,8 +92,8 @@ const QT_DATA = {
       tags: ["#ZETRIX-AI", "#AGENT-SKILLS", "#DIFY-WORKFLOW", "#ANALYTICAL-RAG"]
     },
     {
-      num: "02",
-      title: "PROPERTY AVATAR // Conversational Booking & Human-Turnover Agent (Zetrix AI)",
+      num: "03",
+      title: "PROPERTY AVATAR // Conversational Booking Concierge & Human Turnover (Zetrix AI)",
       category: "AUTOMATION",
       desc: "Interactive real-estate AI avatar and booking concierge engineered at Zetrix AI to automate appointment scheduling, slot verification, and live human agent handoff.",
       highlights: [
@@ -92,32 +104,21 @@ const QT_DATA = {
       tags: ["#ZETRIX-AI", "#DIFY-AGENT", "#BOOKING-AUTOMATION", "#HUMAN-TURNOVER"]
     },
     {
-      num: "03",
-      title: "ENTERPRISE WIKI RAG & Markdown Pre-Cleaning Pipeline (Zetrix AI)",
+      num: "04",
+      title: "ENTERPRISE WIKI RAG // Structured Markdown Normalization Pipeline (Zetrix AI)",
       category: "RAG",
       desc: "Internal enterprise knowledge assistant and automated document pre-cleaning pipeline enabling company-wide SOP and wiki Q&A with clean Markdown ingestion.",
       highlights: [
         "Built pre-cleaning pipelines that transform noisy raw documents into structured Markdown before vector indexing.",
-        "Deployed internal Wiki RAG chatbot for fast, grounded answers across company knowledge bases."
+        "Deployed internal Wiki RAG chatbot for fast, grounded answers across company knowledge bases with deterministic source attribution."
       ],
       tags: ["#ZETRIX-AI", "#WIKI-RAG", "#MARKDOWN-PRECLEANING", "#KNOWLEDGE-BASE"]
     },
     {
-      num: "04",
-      title: "AI JOB SEARCH & RESUME AGENT // Multi-Agent MCP & Qdrant Hybrid RAG",
-      category: "RAG",
-      desc: "End-to-end multi-agent LLM system using LangChain, MCP, OpenAI embeddings (text-embedding-3-large), and Qdrant to automate job retrieval, ranking, and personalized outreach.",
-      highlights: [
-        "Engineered custom hybrid chunking (SentenceSplitter, HybridChunker) with dense + sparse retrieval and cross-encoder reranking.",
-        "Built a controlled manual agent orchestration loop: query rewriting, retrieval, ranking, and summarization with JSearch API."
-      ],
-      tags: ["#LANGCHAIN", "#MCP", "#QDRANT", "#HYBRID-RAG", "#RERANKING"]
-    },
-    {
       num: "05",
       title: "F1 DATA TEXT-TO-SQL AGENT // LangGraph & PostgreSQL Analytics",
-      category: "HARNESS",
-      desc: "Workflow-based Text-to-SQL agent using Python, PostgreSQL, LangGraph, and LangChain that converts natural-language F1 queries into executable SQL, JSON, and Matplotlib charts.",
+      category: "AGENTIC",
+      desc: "Workflow-based Text-to-SQL agent using Python, PostgreSQL, LangGraph, and LangChain that converts natural-language F1 queries into executable SQL, JSON, and dynamic charts.",
       highlights: [
         "Automated database schema inspection, SQL execution, confidence scoring, and dynamic chart selection.",
         "Encoded Formula 1 domain rules for sprint points, standings, race statistics, and historical analytics."
@@ -126,8 +127,8 @@ const QT_DATA = {
     },
     {
       num: "06",
-      title: "DEEP LEARNING SEQUENTIAL CLASSIFIER & BERT Prefix Prompt-Tuning",
-      category: "HARNESS",
+      title: "MODULAR TRANSFORMER & BERT PREFIX PROMPT-TUNING (PyTorch Deep Learning)",
+      category: "AGENTIC",
       desc: "Modular Transformer Encoder built from scratch in PyTorch alongside a parameter-efficient Prefix Prompt-Tuning pipeline for pretrained BERT models.",
       highlights: [
         "Implemented custom Multi-Head Self-Attention, Position-wise Feed-Forward networks, and Attention-augmented RNN/LSTM/GRUs.",
@@ -137,12 +138,14 @@ const QT_DATA = {
     }
   ],
   cliOutputs: {
-    philosophy: `"A raw LLM is just a reasoning engine—its true capability is unlocked by the harness, clean Markdown context architecture, and agent skills surrounding it." — Mah Qing Tong (QT), LLM Engineer @ Zetrix AI`,
-    rag: `RAG ARCHITECTURE :: Raw Document Pre-Cleaning → Structured Markdown Normalization → Hybrid Chunking → Qdrant Dense + Sparse Retrieval → Cross-Encoder Reranking.`,
-    harness: `HARNESS & SKILLS :: Dify Agent Workflows + Analytical Agent Skills (Compare / List / Count) + MCP Tooling + Controlled Loops + Human-in-the-Loop Turnover.`,
-    workflow: `ZETRIX AI SYSTEMS :: (1) INCEIF i-FIKR Analytical Islamic Chatbot, (2) Property Avatar Booking & Human-Turnover Agent, (3) Enterprise Internal Wiki RAG.`
+    overview: `MAH QING TONG (QT) :: AI & LLM Engineer specializing in Autonomous Multi-Hop Agents (LangGraph), Production RAG (ChromaDB + BM25 + FlashRank), and FastAPI Full-Stack Systems. Bachelor of Computer Science (Data Science) from Monash University (Graduated Dec 2025).`,
+    deepagent: `PERSONAL DEEPAGENT :: LangChain deepagents harness + LangGraph + DuckDB SQL + Hybrid Dense+BM25 + FlashRank Reranker. Solves complex queries via active task planning (write_to_dos), virtual workspace scratchpads, and 2-hop iterative retrieval.`,
+    rag: `HYBRID RAG PIPELINE :: Raw Document Normalization (Markdown) → Hybrid Search (Dense ChromaDB Embeddings + BM25 Sparse Keywords) → FlashRank Cross-Encoder Reranking → Grounded Context Synthesis.`,
+    agentic: `AGENTIC & HARNESS :: LangGraph State Machines + Active Task Planning + Virtual Scratchpads + Custom Agent Skills (Compare / List / Count) + Human-in-the-Loop Turnover.`,
+    zetrix: `ZETRIX AI SYSTEMS :: (1) INCEIF i-FIKR Analytical Islamic Knowledge Agent, (2) Property Avatar Booking & Human-Turnover Concierge, (3) Enterprise Wiki RAG with Markdown Pre-Cleaning.`
   }
 };
+
 
 // ============================================================================
 // 1. RENDER PILLARS & SYSTEMS (NO BOXES, PURE HAIRLINE STREAMS)
@@ -514,20 +517,35 @@ function initInteractiveCLIAgent() {
 
   async function streamBrowserFallback(query, streamUI) {
     const q = query.toLowerCase();
-    let answer = QT_DATA.cliOutputs.philosophy;
-    let section = "PHILOSOPHY";
-    if (q.includes("rag") || q.includes("retriev") || q.includes("vector") || q.includes("chunk")) {
-      answer = QT_DATA.cliOutputs.rag + "\n\nFeatured RAG Systems: NEXUS-RAG (Adaptive Hybrid & Graph Retrieval) & CHRONO-INDEX (Differential Ingestion).";
-      section = "RAG ARCHITECTURE";
-    } else if (q.includes("harness") || q.includes("skill") || q.includes("mcp") || q.includes("agent")) {
-      answer = QT_DATA.cliOutputs.harness + "\n\nQT has authored 50+ modular Agent Skills (SKILL.md & MCP) with 99.4% harness evaluation reliability.";
-      section = "HARNESS & AGENT SKILLS";
-    } else if (q.includes("dify") || q.includes("workflow") || q.includes("automat")) {
-      answer = QT_DATA.cliOutputs.workflow + "\n\nQT uses Dify workflows, FastAPI microservices, and event-driven multi-agent DAGs for 24/7 autonomous execution.";
-      section = "DIFY & AUTOMATION";
+    let answer = QT_DATA.cliOutputs.overview;
+    let section = "PROFILE OVERVIEW";
+    if (q.includes("deepagent") || q.includes("research") || q.includes("multihop") || q.includes("multi-hop")) {
+      answer = QT_DATA.cliOutputs.deepagent;
+      section = "PERSONAL DEEPAGENT";
+    } else if (q.includes("rag") || q.includes("retriev") || q.includes("vector") || q.includes("flashrank") || q.includes("bm25")) {
+      answer = QT_DATA.cliOutputs.rag;
+      section = "HYBRID RAG PIPELINE";
+    } else if (q.includes("agent") || q.includes("langgraph") || q.includes("harness") || q.includes("skill") || q.includes("sql")) {
+      answer = QT_DATA.cliOutputs.agentic;
+      section = "AGENTIC SYSTEMS";
+    } else if (q.includes("zetrix") || q.includes("fikr") || q.includes("property") || q.includes("avatar") || q.includes("dify")) {
+      answer = QT_DATA.cliOutputs.zetrix;
+      section = "ZETRIX AI SYSTEMS";
     } else if (q.includes("project") || q.includes("system") || q.includes("built")) {
-      answer = "SELECTED SYSTEMS BY QT:\n01. AEGIS — Autonomous Agent Harness & Skill Runtime\n02. NEXUS-RAG — Adaptive Hybrid & Graph Retrieval Engine\n03. HYPERFLOW — Event-Driven AI Automation Orchestrator\n04. SKILLFORGE — Composable Agent Skills Registry\n05. CHRONO-INDEX — Continuous Differential RAG Ingestion";
-      section = "SELECTED SYSTEMS";
+      answer = "FEATURED ENGINEERED PROJECTS BY QT:
+" +
+        "01. Personal DeepAgent — Autonomous Multi-Hop Research Agent & Benchmark Arena
+" +
+        "02. INCEIF i-FIKR — Islamic Knowledge Agent with Analytical Skills (Zetrix AI)
+" +
+        "03. Property Avatar — Conversational Booking & Human Turnover Concierge (Zetrix AI)
+" +
+        "04. Enterprise Wiki RAG — Structured Markdown Normalization Pipeline (Zetrix AI)
+" +
+        "05. F1 Data Text-to-SQL Agent — LangGraph Schema Verification & PostgreSQL Analytics
+" +
+        "06. Modular Transformer & Prefix-Tuning — PyTorch Deep Learning";
+      section = "FEATURED PROJECTS";
     }
 
     streamUI.metaEl.textContent = `QT-AGENT // RAG [${section}]`;
@@ -564,7 +582,8 @@ function initInteractiveCLIAgent() {
         "  • Ask any natural-language question (e.g., 'How does QT build RAG & Dify workflows?')\n" +
         "  • cd ./projects     — Navigate to Section 03 (Engineered Projects) & list systems\n" +
         "  • cd ./capabilities — Navigate to Section 02 (Core Architecture Pillars)\n" +
-        "  • cd ./philosophy   — Navigate to Section 01 (The Harness Philosophy)\n" +
+        "  • cd ./architecture — Navigate to Section 01 (Core Architecture Pillars)\n" +
+        "  • cd ./projects     — Navigate to Section 02 (Engineered Projects)\n" +
         "  • /rag              — Inspect QT's Hybrid & Graph RAG stack\n" +
         "  • /harness          — Inspect QT's Harness Engineering & Agent Skills architecture\n" +
         "  • /dify             — Inspect QT's Dify & Automation Workflow expertise\n" +
@@ -601,11 +620,19 @@ function initInteractiveCLIAgent() {
       return;
     }
 
-    if (qNorm === "cd ./philosophy" || qNorm === "cd philosophy") {
-      const ui = createAgentStreamingEntry("QT-AGENT // DIRECTORY NAVIGATION [~/philosophy]");
-      ui.textEl.textContent = "Opening Page 02 -> Section 01 // THE HARNESS PHILOSOPHY...";
+    if (qNorm === "cd ./architecture" || qNorm === "cd architecture" || qNorm === "cd ./philosophy" || qNorm === "cd philosophy") {
+      const ui = createAgentStreamingEntry("QT-AGENT // DIRECTORY NAVIGATION [~/architecture]");
+      ui.textEl.textContent = "Opening Page 02 -> Section 01 // CORE ARCHITECTURE PILLARS...";
       ui.cursorEl.remove();
-      setTimeout(() => switchPortfolioView("details", "manifesto"), 220);
+      setTimeout(() => switchPortfolioView("details", "capabilities"), 220);
+      return;
+    }
+
+    if (qNorm === "cd ./projects" || qNorm === "cd projects" || qNorm === "cd ./systems" || qNorm === "cd systems") {
+      const ui = createAgentStreamingEntry("QT-AGENT // DIRECTORY NAVIGATION [~/projects]");
+      ui.textEl.textContent = "Opening Page 02 -> Section 02 // ENGINEERED PROJECTS...";
+      ui.cursorEl.remove();
+      setTimeout(() => switchPortfolioView("details", "systems"), 220);
       return;
     }
 
@@ -1271,7 +1298,7 @@ function switchPortfolioView(targetView, sectionId) {
     const itemScroll = item.getAttribute("data-scroll-target");
     if (!isDetails && itemTarget === "home") {
       item.classList.add("active");
-    } else if (isDetails && itemScroll && itemScroll === (sectionId || "manifesto")) {
+    } else if (isDetails && itemScroll && itemScroll === (sectionId || "capabilities")) {
       item.classList.add("active");
     } else {
       item.classList.remove("active");

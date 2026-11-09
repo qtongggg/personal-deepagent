@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MAH QING TONG (QT) — LLM Engineer</title>
-  <meta name="description" content="Mah Qing Tong (QT) — LLM Engineer specializing in RAG, Agent Skills, Harness Engineering, and Automation Workflows." />
+  <title>MAH QING TONG (QT) — AI &amp; LLM Engineer</title>
+  <meta name="description" content="Mah Qing Tong (QT) — AI &amp; LLM Engineer specializing in Autonomous Multi-Hop Agents (LangGraph), Production RAG (ChromaDB + BM25 + FlashRank), and FastAPI Full-Stack Systems." />
   <!-- Google Fonts: Syne, Space Grotesk & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261018s" />
+  <link rel="stylesheet" href="styles.css?v=20261109" />
 </head>
 <body>
   <!-- Full-Page Center-Outward Liquid Water Ripple Focus Overlay (WebGL Shader) -->
@@ -26,7 +26,7 @@
   <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
   <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
 
-  <!-- Minimalist Open Top Bar (No Box) -->
+  <!-- Minimalist Open Top Bar -->
   <header class="open-header">
     <a href="#home" class="brand-mark" data-view-target="home">
       <span class="signal-dot"></span>
@@ -35,9 +35,9 @@
 
     <nav class="minimal-nav" aria-label="Primary Navigation">
       <a href="#home" class="nav-item active" data-view-target="home">00. Home</a>
-      <a href="#manifesto" class="nav-item" data-view-target="details" data-scroll-target="manifesto">01. Philosophy</a>
-      <a href="#capabilities" class="nav-item" data-view-target="details" data-scroll-target="capabilities">02. Capabilities</a>
-      <a href="#systems" class="nav-item" data-view-target="details" data-scroll-target="systems">03. Projects</a>
+      <a href="#capabilities" class="nav-item" data-view-target="details" data-scroll-target="capabilities">01. Architecture</a>
+      <a href="#systems" class="nav-item" data-view-target="details" data-scroll-target="systems">02. Projects</a>
+      <a href="/Mah_Qing_Tong_Resume.pdf" target="_blank" class="nav-item nav-resume-btn">[ Resume PDF ↗ ]</a>
     </nav>
 
     <div class="header-telemetry">
@@ -51,7 +51,7 @@
 
   <main id="top">
     <!-- ===================================================================
-         PAGE 01 (HOME VIEW) — CLAUDE / CHATGPT MINIMALIST CENTERED AGENT
+         PAGE 01 (HOME VIEW) — MINIMALIST CENTERED AGENT STAGE
          =================================================================== -->
     <div id="view-home" class="view-page active">
       <section class="home-command-stage" id="contact">
@@ -73,12 +73,12 @@
               MAH QING TONG <span class="text-orange">(QT)</span>
             </h1>
             <p class="minimal-home-sub">
-              LLM Engineer @ Zetrix AI &nbsp;/&nbsp;
-              <span class="text-white" id="typewriter-text">RAG &amp; Dify Workflows</span><span class="blink-block">_</span>
+              AI &amp; LLM Engineer &nbsp;/&nbsp;
+              <span class="text-white" id="typewriter-text">Autonomous Multi-Hop Agents</span><span class="blink-block">_</span>
             </p>
           </div>
 
-          <!-- 3. Conversation Stream (Hidden until first query, just like Claude/ChatGPT) -->
+          <!-- 3. Conversation Stream -->
           <div class="minimal-thread-wrap is-empty" id="minimal-thread-wrap">
             <div class="minimal-thread-bar">
               <span id="cli-session-id">SESSION // ACTIVE</span>
@@ -94,20 +94,20 @@
               type="text"
               id="cli-input"
               class="minimal-input-field"
-              placeholder="Ask anything about QT..."
+              placeholder="Ask anything about QT's AI agents, projects, or background..."
             />
             <button type="submit" class="minimal-submit-btn" id="cli-submit-btn" aria-label="Submit query">
               ↵
             </button>
           </form>
 
-          <!-- 5. Quiet Suggestion Chips Under the Single Input Line -->
+          <!-- 5. Quick Prompt Chips -->
           <div class="minimal-suggestions reveal-up delay-3" id="cli-quick-prompts">
-            <button type="button" class="minimal-chip cli-btn" data-query="What systems has QT built as an LLM Engineer at Zetrix AI?">Zetrix AI Work</button>
-            <button type="button" class="minimal-chip cli-btn" data-query="How does QT build INCEIF i-FIKR, Wiki RAG, and Markdown pre-cleaning pipelines?">RAG &amp; Agent Skills</button>
-            <button type="button" class="minimal-chip cli-btn" data-query="Tell me about Property Avatar and Dify Automation Workflows">Property Avatar &amp; Dify</button>
-            <button type="button" class="minimal-chip cli-btn" data-query="What is QT's educational background at Monash University and academic AI projects?">Monash CS</button>
-            <button type="button" class="minimal-chip accent-chip" data-view-target="details" data-scroll-target="systems">Explore Projects →</button>
+            <button type="button" class="minimal-chip cli-btn" data-query="Tell me about Personal DeepAgent: the multi-hop research agent, virtual workspace, and benchmark arena">Personal DeepAgent</button>
+            <button type="button" class="minimal-chip cli-btn" data-query="What AI systems has QT built as an LLM Engineer at Zetrix AI?">Zetrix AI Work</button>
+            <button type="button" class="minimal-chip cli-btn" data-query="How does the F1 Data Text-to-SQL LangGraph agent verify schemas and generate dynamic charts?">F1 Text-to-SQL</button>
+            <button type="button" class="minimal-chip cli-btn" data-query="What are QT's core technical skills, frameworks, and education background?">Tech Stack &amp; Background</button>
+            <button type="button" class="minimal-chip accent-chip" data-view-target="details" data-scroll-target="capabilities">Explore Architecture &amp; Projects →</button>
           </div>
         </div>
 
@@ -118,18 +118,19 @@
             <span>SUBANG JAYA, MY (UTC+8)</span>
           </div>
           <div class="footer-right">
-            <button type="button" class="footer-link orange-link btn-reset" data-view-target="details" data-scroll-target="manifesto">
+            <button type="button" class="footer-link orange-link btn-reset" data-view-target="details" data-scroll-target="capabilities">
               ARCHITECTURE &amp; PROJECTS →
             </button>
             <a href="https://github.com/qtongggg" target="_blank" rel="noopener noreferrer" class="footer-link">GITHUB ↗</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="footer-link">LINKEDIN ↗</a>
+            <a href="https://linkedin.com/in/qtong" target="_blank" rel="noopener noreferrer" class="footer-link">LINKEDIN ↗</a>
+            <a href="/Mah_Qing_Tong_Resume.pdf" target="_blank" class="footer-link orange-link">RESUME PDF ↗</a>
           </div>
         </footer>
       </section>
     </div>
 
     <!-- ===================================================================
-         PAGE 02 (DETAILS VIEW) — PHILOSOPHY, PILLARS & ENGINEERED PROJECTS
+         PAGE 02 (DETAILS VIEW) — ARCHITECTURE PILLARS & ENGINEERED PROJECTS
          =================================================================== -->
     <div id="view-details" class="view-page">
       <div class="details-subnav-bar">
@@ -137,73 +138,34 @@
           [ ← BACK TO HOME ]
         </button>
         <div class="details-jump-links">
-          <a href="#manifesto" class="details-jump-item" data-view-target="details" data-scroll-target="manifesto">01. PHILOSOPHY</a>
-          <a href="#capabilities" class="details-jump-item" data-view-target="details" data-scroll-target="capabilities">02. CORE PILLARS</a>
-          <a href="#systems" class="details-jump-item" data-view-target="details" data-scroll-target="systems">03. PROJECTS</a>
+          <a href="#capabilities" class="details-jump-item" data-view-target="details" data-scroll-target="capabilities">01. ARCHITECTURE PILLARS</a>
+          <a href="#systems" class="details-jump-item" data-view-target="details" data-scroll-target="systems">02. ENGINEERED PROJECTS</a>
+          <a href="/Mah_Qing_Tong_Resume.pdf" target="_blank" class="details-jump-item nav-resume-btn">[ ⬇ RESUME PDF ]</a>
         </div>
       </div>
 
       <!-- KINETIC MARQUEE STREAM -->
       <div class="kinetic-ticker" aria-hidden="true">
         <div class="ticker-track" id="ticker-track">
-          <span>LLM ENGINEER @ ZETRIX AI</span><span class="sep">✦</span>
+          <span>AI &amp; LLM ENGINEER</span><span class="sep">✦</span>
+          <span>LANGGRAPH AUTONOMOUS AGENTS</span><span class="sep">✦</span>
+          <span>HYBRID RAG (CHROMADB + BM25 + FLASHRANK)</span><span class="sep">✦</span>
+          <span>FASTAPI &amp; PYTHON BACKEND</span><span class="sep">✦</span>
           <span>DIFY WORKFLOW AUTOMATION</span><span class="sep">✦</span>
-          <span>HYBRID &amp; MARKDOWN RAG</span><span class="sep">✦</span>
-          <span>AGENT SKILLS &amp; MCP</span><span class="sep">✦</span>
-          <span>HARNESS ENGINEERING</span><span class="sep">✦</span>
-          <span>MONASH CS (DATA SCIENCE)</span><span class="sep">✦</span>
-          <span>LLM ENGINEER @ ZETRIX AI</span><span class="sep">✦</span>
+          <span>ZETRIX AI INTERN</span><span class="sep">✦</span>
+          <span>MONASH CS (DATA SCIENCE GRADUATE)</span><span class="sep">✦</span>
+          <span>AI &amp; LLM ENGINEER</span><span class="sep">✦</span>
+          <span>LANGGRAPH AUTONOMOUS AGENTS</span><span class="sep">✦</span>
+          <span>HYBRID RAG (CHROMADB + BM25 + FLASHRANK)</span><span class="sep">✦</span>
+          <span>FASTAPI &amp; PYTHON BACKEND</span><span class="sep">✦</span>
           <span>DIFY WORKFLOW AUTOMATION</span><span class="sep">✦</span>
-          <span>HYBRID &amp; MARKDOWN RAG</span><span class="sep">✦</span>
-          <span>AGENT SKILLS &amp; MCP</span><span class="sep">✦</span>
-          <span>HARNESS ENGINEERING</span><span class="sep">✦</span>
-          <span>MONASH CS (DATA SCIENCE)</span><span class="sep">✦</span>
         </div>
       </div>
 
-      <!-- 01. THE MANIFESTO -->
-      <section id="manifesto" class="section-open">
-        <div class="section-index reveal-on-scroll">
-          <span class="index-num">01</span>
-          <span class="index-line"></span>
-          <span class="index-label">THE HARNESS PHILOSOPHY</span>
-        </div>
-
-        <div class="manifesto-wrapper">
-          <p class="manifesto-text" id="scroll-highlight-text">
-            When an AI agent fails in production, 90% of the time it is not the model—it is noisy retrieval context or a fragile runtime loop. I bridge the gap between frontier LLMs and deterministic software through rigorous RAG pipelines, portable Agent Skills, resilient Harness Engineering, and autonomous Automation Workflows.
-          </p>
-        </div>
-
-        <!-- Open Architectural Metrics Strip -->
-        <div class="open-stats-row">
-          <div class="stat-col reveal-on-scroll">
-            <span class="stat-num">B.CS</span>
-            <span class="stat-title">MONASH CS (DATA SCIENCE)</span>
-            <span class="stat-sub">Graduated Dec 2025 • Deep Learning &amp; Systems</span>
-          </div>
-          <div class="stat-col reveal-on-scroll delay-1">
-            <span class="stat-num" data-count="6" data-suffix="+">6+</span>
-            <span class="stat-title">PRODUCTION &amp; AI SYSTEMS</span>
-            <span class="stat-sub">INCEIF i-FIKR, Property Avatar, Wiki RAG &amp; MCP Agents</span>
-          </div>
-          <div class="stat-col reveal-on-scroll delay-2">
-            <span class="stat-num" data-count="100" data-suffix="%">100%</span>
-            <span class="stat-title">MARKDOWN RAG PRE-CLEANING</span>
-            <span class="stat-sub">Structured document normalization &amp; Qdrant hybrid search</span>
-          </div>
-          <div class="stat-col reveal-on-scroll delay-3">
-            <span class="stat-num" data-count="24" data-suffix="/7">24/7</span>
-            <span class="stat-title">DIFY &amp; AGENT WORKFLOWS</span>
-            <span class="stat-sub">Automated booking, analytical skills &amp; HITL turnover</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- 02. CORE PILLARS & CAPABILITIES -->
+      <!-- 01. CORE PILLARS & CAPABILITIES -->
       <section id="capabilities" class="section-open">
         <div class="section-index reveal-on-scroll">
-          <span class="index-num">02</span>
+          <span class="index-num">01</span>
           <span class="index-line"></span>
           <span class="index-label">CORE ARCHITECTURE PILLARS</span>
         </div>
@@ -214,11 +176,11 @@
               FOUR PILLARS OF <span class="text-orange">AGENTIC</span> ENGINEERING.
             </h2>
             <p class="editorial-sub">
-              Scroll through each layer of the stack—or hover any pillar to inspect the underlying 4-stage architecture pipeline and engineering toolkit.
+              Explore the engineering layers powering production AI: from multi-stage hybrid retrieval and deterministic agent orchestration to natural-language analytics and high-throughput deployment.
             </p>
             <div class="active-pillar-indicator">
               <span class="indicator-code" id="active-pillar-code">LAYER // 01</span>
-              <span class="indicator-title" id="active-pillar-name">Retrieval-Augmented Generation</span>
+              <span class="indicator-title" id="active-pillar-name">Retrieval-Augmented Generation &amp; FlashRank</span>
             </div>
           </div>
 
@@ -228,20 +190,20 @@
         </div>
       </section>
 
-      <!-- 03. SELECTED PROJECTS & ARCHITECTURES -->
+      <!-- 02. SELECTED PROJECTS & ARCHITECTURES -->
       <section id="systems" class="section-open">
         <div class="section-index reveal-on-scroll">
-          <span class="index-num">03</span>
+          <span class="index-num">02</span>
           <span class="index-line"></span>
-          <span class="index-label">SELECTED PROJECTS &amp; ARCHITECTURES (ZETRIX AI &amp; R&amp;D)</span>
+          <span class="index-label">SELECTED PROJECTS &amp; ARCHITECTURES</span>
         </div>
 
         <div class="systems-header-row reveal-on-scroll">
           <h2 class="editorial-heading">ENGINEERED <span class="text-orange">PROJECTS</span></h2>
           <div class="open-filter-group" id="project-filters">
             <button class="open-filter active" data-filter="all">ALL [06]</button>
-            <button class="open-filter" data-filter="RAG">RAG</button>
-            <button class="open-filter" data-filter="HARNESS">HARNESS &amp; SKILLS</button>
+            <button class="open-filter" data-filter="AGENTIC">AGENTIC &amp; HARNESS</button>
+            <button class="open-filter" data-filter="RAG">RAG &amp; RETRIEVAL</button>
             <button class="open-filter" data-filter="AUTOMATION">AUTOMATION</button>
           </div>
         </div>
@@ -264,14 +226,15 @@
         <footer class="open-footer">
           <div class="footer-left">
             <button type="button" class="footer-link orange-link btn-reset" data-view-target="home">
-              ← BACK TO HOME // INTERACTIVE CLI AGENT
+              ← BACK TO HOME // INTERACTIVE AGENT
             </button>
             <span class="footer-sep">//</span>
-            <span>MAH QING TONG (QT) — LLM ENGINEER</span>
+            <span>MAH QING TONG (QT) — AI &amp; LLM ENGINEER</span>
           </div>
           <div class="footer-right">
             <a href="https://github.com/qtongggg" target="_blank" rel="noopener noreferrer" class="footer-link">GITHUB ↗</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="footer-link">LINKEDIN ↗</a>
+            <a href="https://linkedin.com/in/qtong" target="_blank" rel="noopener noreferrer" class="footer-link">LINKEDIN ↗</a>
+            <a href="/Mah_Qing_Tong_Resume.pdf" target="_blank" class="footer-link orange-link">RESUME PDF ↗</a>
           </div>
         </footer>
       </section>
@@ -281,6 +244,6 @@
   <!-- Minimal Toast Notification -->
   <div class="signal-toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="script.js?v=20261018t"></script>
+  <script src="script.js?v=20261109"></script>
 </body>
 </html>
