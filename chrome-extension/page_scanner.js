@@ -12,14 +12,16 @@ window.QTPageScanner = (function () {
     trackedElementsMap = [];
     const elementsData = [];
 
-    // Selectors for interactive affordances across all modern web apps
+    // Selectors for interactive affordances across all modern web apps + YouTube video cards
     const candidates = document.querySelectorAll(`
+      ytd-video-renderer a#video-title,
+      ytd-video-renderer a#thumbnail,
       input, textarea, select,
       button, [role="button"],
       a[href], [role="link"],
       [role="tab"], [role="searchbox"],
       [role="menuitem"], [role="switch"],
-      ytd-video-renderer, [data-interactive="true"]
+      [data-interactive="true"]
     `);
 
     let count = 0;
@@ -28,7 +30,7 @@ window.QTPageScanner = (function () {
 
       // Visibility check
       const rect = el.getBoundingClientRect();
-      if (rect.width < 12 || rect.height < 10) continue;
+      if (rect.width < 10 || rect.height < 10) continue;
       if (rect.bottom < 0 || rect.top > window.innerHeight * 1.5) continue; // on or near screen
 
       const style = window.getComputedStyle(el);

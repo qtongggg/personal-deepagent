@@ -588,8 +588,10 @@
           url: targetUrl
         }, "*");
 
-        // Open new tab in user's active Chrome window
-        window.open(targetUrl, "_blank", "noopener");
+        // If extension is not active, fallback to window.open
+        if (!window.__QT_AGENT_EXTENSION_INSTALLED) {
+          window.open(targetUrl, "_blank");
+        }
 
         // STEP 4: Pointer returns from top edge once Chrome is active
         await this.sleep(3000);

@@ -32,8 +32,7 @@
       "css": ["pointer_overlay.css"],
       "js": [
         "page_scanner.js",
-        "smart_companion.js",
-        "youtube_companion.js"
+        "smart_companion.js"
       ],
       "run_at": "document_idle"
     }
