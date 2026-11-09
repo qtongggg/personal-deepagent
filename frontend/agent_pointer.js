@@ -577,15 +577,23 @@
         this.setCursorPos(window.innerWidth / 2, -120);
         await this.sleep(400);
 
-        // STEP 3: Trigger real Google Chrome cross-tab backend
+        // STEP 3: Dispatch command to Chrome Extension Bridge & Backend
         try {
+          // Send to Chrome Extension Bridge (opens new tab in user's active Chrome window)
+          window.postMessage({
+            type: "QT_AGENT_CROSS_TAB_COMMAND",
+            action: "play_youtube",
+            song: songQuery
+          }, "*");
+
+          // Also send to local backend as reliable fallback
           fetch("/api/browser/cross-tab-youtube", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ song: songQuery }),
-          }).catch((err) => console.warn("Cross-tab trigger:", err));
+          }).catch((err) => console.warn("Cross-tab backend trigger:", err));
         } catch (e) {
-          console.warn("Cross-tab fetch failed:", e);
+          console.warn("Cross-tab trigger failed:", e);
         }
 
         // STEP 4: Pointer returns from top edge once Chrome is active

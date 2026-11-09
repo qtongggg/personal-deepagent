@@ -225,6 +225,34 @@ CROSS_TAB_POINTER_INJECTOR = """
 # Active browser session reference so it doesn't get garbage-collected prematurely
 _ACTIVE_CROSS_BROWSER = None
 
+def force_chrome_foreground():
+    """Forces Windows to bring the Chrome window to the absolute front."""
+    import sys
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+        user32 = ctypes.windll.user32
+
+        def enum_windows_callback(hwnd, extra):
+            if user32.IsWindowVisible(hwnd):
+                length = user32.GetWindowTextLengthW(hwnd)
+                if length > 0:
+                    buffer = ctypes.create_unicode_buffer(length + 1)
+                    user32.GetWindowTextW(hwnd, buffer, length + 1)
+                    title = buffer.value
+                    if "YouTube" in title or "Chrome" in title:
+                        # 9 = SW_RESTORE, 3 = SW_MAXIMIZE
+                        user32.ShowWindow(hwnd, 9)
+                        user32.SetForegroundWindow(hwnd)
+            return True
+
+        WNDENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)
+        user32.EnumWindows(WNDENUMPROC(enum_windows_callback), 0)
+    except Exception:
+        pass
+
+
 async def launch_cross_tab_youtube(song_name: str = "lofi hip hop radio beats to relax study to"):
     """Launches visible real Google Chrome, navigates to YouTube, injects the companion pointer,
     auto-types the song, and begins live playback."""
@@ -233,22 +261,33 @@ async def launch_cross_tab_youtube(song_name: str = "lofi hip hop radio beats to
     clean_song = (song_name or "lofi hip hop radio beats to relax study to").strip()
     print(f"\n[Cross-Tab] Launching real Chrome for song: '{clean_song}' ...")
 
+    launch_args = [
+        "--start-maximized",
+        "--window-position=40,40",
+        "--window-size=1400,900",
+        "--disable-blink-features=AutomationControlled",
+        "--no-first-run",
+        "--no-default-browser-check",
+    ]
+
     p = await async_playwright().start()
     try:
-        browser = await p.chromium.launch(headless=False, channel="chrome")
+        browser = await p.chromium.launch(headless=False, channel="chrome", args=launch_args)
         print("[Cross-Tab] Launched system Google Chrome!")
     except Exception as e:
         print(f"[Cross-Tab] System Chrome failed ({e}), using bundled Chromium...")
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch(headless=False, args=launch_args)
 
     _ACTIVE_CROSS_BROWSER = browser
-    context = await browser.new_context(viewport={"width": 1366, "height": 840})
+    context = await browser.new_context(no_viewport=True)
     page = await context.new_page()
 
     try:
         print("[Cross-Tab] Opening YouTube in Chrome...")
         await page.goto("https://www.youtube.com", wait_until="domcontentloaded", timeout=20000)
-        await page.wait_for_timeout(1500)
+        await page.bring_to_front()
+        force_chrome_foreground()
+        await page.wait_for_timeout(1200)
 
         # Inject Cross-Tab Pointer
         await page.evaluate(CROSS_TAB_POINTER_INJECTOR)
@@ -260,6 +299,7 @@ async def launch_cross_tab_youtube(song_name: str = "lofi hip hop radio beats to
             window.__crossAgent.setState('[ 🌐 Arrived From Portfolio Tab ]');
             window.__crossAgent.speak('CROSS-TAB AGENT', 'I have crossed over from your portfolio tab! Searching for your song...');
         }""")
+        force_chrome_foreground()
         await page.wait_for_timeout(1400)
 
         # Step 2: Locate YouTube Search Box

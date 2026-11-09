@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QT-Agent Companion</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 280px;
+      padding: 16px;
+      background: #0b0d13;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+    }
+    .badge-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff5c00;
+      box-shadow: 0 0 10px #ff5c00;
+    }
+    .title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ff5c00;
+      letter-spacing: 0.05em;
+    }
+    .status-row {
+      font-size: 11px;
+      color: #888888;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .status-row span {
+      color: #00ff66;
+      font-weight: 600;
+    }
+    .action-btn {
+      width: 100%;
+      background: rgba(255, 92, 0, 0.15);
+      border: 1px solid rgba(255, 92, 0, 0.5);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 9px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+    }
+    .action-btn:hover {
+      background: #ff5c00;
+      color: #000000;
+    }
+    .footer {
+      font-size: 10px;
+      color: #555555;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="badge-dot"></div>
+    <div class="title">QT-AGENT GUIDE</div>
+  </div>
+  <div class="status-row">
+    Cross-Tab Extension: <span>CONNECTED</span><br>
+    Ready for portfolio commands from localhost:8000
+  </div>
+  <button type="button" class="action-btn" id="btn-play-lofi">
+    <span>🎵</span>
+    <span>Play Lofi in YouTube Tab</span>
+  </button>
+  <div class="footer">MAH QING TONG (QT) // DEEPAGENT</div>
+
+  <script>
+    document.getElementById("btn-play-lofi").addEventListener("click", () => {
+      chrome.runtime.sendMessage({
+        action: "play_youtube",
+        song: "lofi hip hop radio beats to relax study to"
+      });
+    });
+  </script>
+</body>
+</html>
