@@ -54,3 +54,5 @@ Thumbs.db
 data/quarantine_log.json
 data/resources/
 *.pdf
+!frontend/Mah_Qing_Tong_Resume.pdf
+!docs/*.pdf

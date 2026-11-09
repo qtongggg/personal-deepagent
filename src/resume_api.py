@@ -34,8 +34,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Reference to nifty-tesla frontend directory
-NIFTY_DIR = Path(r"C:\Users\User\Documents\antigravity\nifty-tesla").resolve()
+# Frontend static directory (Unified Monorepo with fallback)
+FRONTEND_DIR = (Path(__file__).resolve().parent.parent / "frontend").resolve()
+FALLBACK_DIR = Path(r"C:\Users\User\Documents\antigravity\nifty-tesla").resolve()
+STATIC_DIR = FRONTEND_DIR if FRONTEND_DIR.exists() else FALLBACK_DIR
 
 # Shared agent instance
 _AGENT = None
@@ -114,12 +116,12 @@ async def api_chat(req: ChatRequest):
 
 
 # =====================================================================
-# Serve nifty-tesla Frontend Static Files
+# Serve Frontend Static Files (Unified Monorepo)
 # =====================================================================
 
 @app.get("/")
 async def serve_index():
-    index_file = NIFTY_DIR / "index.html"
+    index_file = STATIC_DIR / "index.html"
     return FileResponse(
         index_file,
         headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
@@ -128,14 +130,14 @@ async def serve_index():
 
 @app.get("/{file_path:path}")
 async def serve_static(file_path: str):
-    target = (NIFTY_DIR / file_path).resolve()
-    if target.is_file() and str(target).startswith(str(NIFTY_DIR)) and not target.name.startswith(".env"):
+    target = (STATIC_DIR / file_path).resolve()
+    if target.is_file() and str(target).startswith(str(STATIC_DIR)) and not target.name.startswith(".env"):
         return FileResponse(
             target,
             headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
         )
     return FileResponse(
-        NIFTY_DIR / "index.html",
+        STATIC_DIR / "index.html",
         headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
     )
 
@@ -145,7 +147,7 @@ if __name__ == "__main__":
     print("\n" + "=" * 65)
     print(">> QT Portfolio & Resume DeepAgent Server Running!")
     print(f">> Local URL: http://localhost:{port}")
-    print(f">> Serving UI From: {NIFTY_DIR}")
+    print(f">> Serving UI From: {STATIC_DIR}")
     print(">> Engine: Resume DeepAgent (ChromaDB + BM25 + FlashRank)")
     print("=" * 65 + "\n")
     uvicorn.run("src.resume_api:app", host="0.0.0.0", port=port, reload=True)
