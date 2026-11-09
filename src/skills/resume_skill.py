@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from langchain_core.tools import tool
 from rank_bm25 import BM25Okapi
 from flashrank import Ranker, RerankRequest
@@ -7,13 +7,32 @@ from src.utils.chroma import get_chroma_client
 
 COLLECTION_NAME = "personal_resume_knowledge"
 
+# Pre-initialize Chroma client and collection on the main thread to ensure safe thread-pool usage
+_CHROMA_CLIENT = None
+_CHROMA_COLLECTION = None
+
+
+def _get_collection():
+    global _CHROMA_CLIENT, _CHROMA_COLLECTION
+    if _CHROMA_COLLECTION is None:
+        _CHROMA_CLIENT = get_chroma_client()
+        _CHROMA_COLLECTION = _CHROMA_CLIENT.get_collection(COLLECTION_NAME)
+    return _CHROMA_COLLECTION
+
+
+# Eager load on module import
+try:
+    _get_collection()
+except Exception:
+    pass
+
+
 @tool
 def retrieve_resume_knowledge(query: str) -> str:
     """Search Mah Qing Tong's (QT) official resume for experience, education, skills, and projects.
     Use this tool whenever asked about QT's background, past roles, technical stack, or achievements.
     """
-    client = get_chroma_client()
-    collection = client.get_collection(COLLECTION_NAME)
+    collection = _get_collection()
 
     # 1. Fetch all documents from the collection
     all_data = collection.get()

@@ -532,19 +532,13 @@ function initInteractiveCLIAgent() {
       answer = QT_DATA.cliOutputs.zetrix;
       section = "ZETRIX AI SYSTEMS";
     } else if (q.includes("project") || q.includes("system") || q.includes("built")) {
-      answer = "FEATURED ENGINEERED PROJECTS BY QT:
-" +
-        "01. Personal DeepAgent — Autonomous Multi-Hop Research Agent & Benchmark Arena
-" +
-        "02. INCEIF i-FIKR — Islamic Knowledge Agent with Analytical Skills (Zetrix AI)
-" +
-        "03. Property Avatar — Conversational Booking & Human Turnover Concierge (Zetrix AI)
-" +
-        "04. Enterprise Wiki RAG — Structured Markdown Normalization Pipeline (Zetrix AI)
-" +
-        "05. F1 Data Text-to-SQL Agent — LangGraph Schema Verification & PostgreSQL Analytics
-" +
-        "06. Modular Transformer & Prefix-Tuning — PyTorch Deep Learning";
+      answer = `FEATURED ENGINEERED PROJECTS BY QT:
+01. Personal DeepAgent — Autonomous Multi-Hop Research Agent & Benchmark Arena
+02. INCEIF i-FIKR — Islamic Knowledge Agent with Analytical Skills (Zetrix AI)
+03. Property Avatar — Conversational Booking & Human Turnover Concierge (Zetrix AI)
+04. Enterprise Wiki RAG — Structured Markdown Normalization Pipeline (Zetrix AI)
+05. F1 Data Text-to-SQL Agent — LangGraph Schema Verification & PostgreSQL Analytics
+06. Modular Transformer & Prefix-Tuning — PyTorch Deep Learning`;
       section = "FEATURED PROJECTS";
     }
 
