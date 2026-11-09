@@ -19,7 +19,7 @@ def generate_1page_resume():
 
     @page {
       size: A4;
-      margin: 9.5mm 13mm 9.5mm 13mm;
+      margin: 9mm 13.5mm 9mm 13.5mm;
     }
 
     * {
@@ -32,16 +32,16 @@ def generate_1page_resume():
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: #0f172a;
       background: #ffffff;
-      font-size: 8.8pt;
-      line-height: 1.35;
+      font-size: 8.95pt;
+      line-height: 1.39;
       -webkit-font-smoothing: antialiased;
     }
 
     /* HEADER */
     .header {
       border-bottom: 2px solid #881337;
-      padding-bottom: 6px;
-      margin-bottom: 7px;
+      padding-bottom: 7px;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
@@ -52,7 +52,7 @@ def generate_1page_resume():
     }
 
     .name-title h1 {
-      font-size: 19pt;
+      font-size: 19.5pt;
       font-weight: 700;
       color: #0f172a;
       letter-spacing: -0.02em;
@@ -61,7 +61,7 @@ def generate_1page_resume():
     }
 
     .name-title .title {
-      font-size: 9.6pt;
+      font-size: 9.7pt;
       font-weight: 600;
       color: #881337;
       text-transform: uppercase;
@@ -72,9 +72,9 @@ def generate_1page_resume():
 
     .contact-info {
       text-align: right;
-      font-size: 8.3pt;
+      font-size: 8.4pt;
       color: #475569;
-      line-height: 1.4;
+      line-height: 1.42;
       margin-left: 14px;
     }
 
@@ -95,14 +95,14 @@ def generate_1page_resume():
 
     /* SECTION HEADERS */
     .section {
-      margin-bottom: 7px;
+      margin-bottom: 8.5px;
     }
 
     .section-header {
       display: flex;
       align-items: center;
       gap: 5px;
-      margin-bottom: 4px;
+      margin-bottom: 4.5px;
       padding-bottom: 1.5px;
       border-bottom: 1px solid #e2e8f0;
     }
@@ -115,7 +115,7 @@ def generate_1page_resume():
     }
 
     .section-header span {
-      font-size: 9.1pt;
+      font-size: 9.2pt;
       font-weight: 700;
       color: #881337;
       text-transform: uppercase;
@@ -126,13 +126,13 @@ def generate_1page_resume():
     .summary-text {
       color: #334155;
       text-align: justify;
-      font-size: 8.75pt;
-      line-height: 1.36;
+      font-size: 8.9pt;
+      line-height: 1.39;
     }
 
     /* ITEMS */
     .item {
-      margin-bottom: 5px;
+      margin-bottom: 6px;
     }
 
     .item:last-child {
@@ -143,23 +143,23 @@ def generate_1page_resume():
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 1.5px;
+      margin-bottom: 2px;
     }
 
     .item-title {
-      font-size: 9.1pt;
+      font-size: 9.25pt;
       font-weight: 700;
       color: #0f172a;
     }
 
     .item-subtitle {
-      font-size: 8.7pt;
+      font-size: 8.85pt;
       font-weight: 600;
       color: #334155;
     }
 
     .item-date {
-      font-size: 8.1pt;
+      font-size: 8.2pt;
       font-weight: 600;
       color: #64748b;
       white-space: nowrap;
@@ -167,7 +167,7 @@ def generate_1page_resume():
     }
 
     .item-tags {
-      font-size: 7.85pt;
+      font-size: 8.0pt;
       font-family: 'JetBrains Mono', monospace;
       color: #881337;
       font-weight: 500;
@@ -179,14 +179,14 @@ def generate_1page_resume():
     .bullets {
       list-style-type: square;
       padding-left: 14px;
-      margin-top: 1.5px;
+      margin-top: 2px;
     }
 
     .bullets li {
-      margin-bottom: 1.5px;
+      margin-bottom: 2.2px;
       color: #334155;
-      font-size: 8.65pt;
-      line-height: 1.34;
+      font-size: 8.8pt;
+      line-height: 1.37;
       text-align: justify;
     }
 
@@ -208,13 +208,13 @@ def generate_1page_resume():
     .skills-grid {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 3.5px;
     }
 
     .skill-row {
       display: flex;
-      font-size: 8.55pt;
-      line-height: 1.32;
+      font-size: 8.7pt;
+      line-height: 1.35;
     }
 
     .skill-label {
