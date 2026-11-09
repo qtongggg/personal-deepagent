@@ -38,9 +38,6 @@
       <a href="#home" class="nav-item active" data-view-target="home">00. Home</a>
       <a href="#capabilities" class="nav-item" data-view-target="details" data-scroll-target="capabilities">01. Architecture</a>
       <a href="#systems" class="nav-item" data-view-target="details" data-scroll-target="systems">02. Projects</a>
-      <button type="button" class="nav-item nav-tab-youtube" id="nav-tab-youtube" title="Open YouTube Music Tab">
-        <span class="yt-nav-dot"></span>▶ YouTube Tab
-      </button>
       <a href="/Mah_Qing_Tong_Resume.pdf" target="_blank" class="nav-item nav-resume-btn">[ Resume PDF ↗ ]</a>
     </nav>
 
@@ -244,66 +241,6 @@
       </section>
     </div>
   </main>
-
-  <!-- Virtual Cyber Browser / YouTube Tab Window -->
-  <div class="virtual-yt-window" id="virtual-yt-window" role="dialog" aria-label="YouTube Music Tab">
-    <!-- Window Title / Tab Bar -->
-    <div class="yt-window-header">
-      <div class="yt-window-tabs">
-        <button type="button" class="yt-tab-pill active" id="yt-tab-active-btn">
-          <span class="yt-tab-icon">▶</span>
-          <span class="yt-tab-title">YouTube Music</span>
-          <span class="yt-tab-eq">
-            <span></span><span></span><span></span>
-          </span>
-        </button>
-      </div>
-      <div class="yt-window-controls">
-        <button type="button" class="yt-window-btn" id="yt-minimize-btn" title="Minimize player">_</button>
-        <button type="button" class="yt-window-btn" id="yt-close-btn" title="Close player">×</button>
-      </div>
-    </div>
-
-    <!-- Browser Address & Search Navigation Row -->
-    <div class="yt-window-address-bar">
-      <span class="yt-address-lock" title="Secure Connection">🔒</span>
-      <span class="yt-address-prefix">youtube.com/search?q=</span>
-      <input
-        type="text"
-        id="yt-browser-input"
-        class="yt-browser-input"
-        placeholder="Type song or music name..."
-        autocomplete="off"
-      />
-      <button type="button" id="yt-browser-search-btn" class="yt-browser-search-btn">
-        <span>▶ PLAY</span>
-      </button>
-    </div>
-
-    <!-- Player Screen Frame -->
-    <div class="yt-player-container">
-      <iframe
-        id="yt-player-frame"
-        class="yt-player-frame"
-        src="about:blank"
-        title="YouTube Player"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-      ></iframe>
-      <div class="yt-player-placeholder" id="yt-player-placeholder">
-        <div class="yt-placeholder-icon">🎵</div>
-        <div class="yt-placeholder-text">Awaiting song command...</div>
-        <div class="yt-placeholder-sub">Ask the pointer to play any song or type above</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Floating Minimized Music Pill (when window is minimized) -->
-  <div class="yt-mini-pill" id="yt-mini-pill" title="Click to open YouTube Player">
-    <span class="yt-mini-dot"></span>
-    <span class="yt-mini-text" id="yt-mini-text">🎵 YouTube Music</span>
-    <span class="yt-mini-expand">↗</span>
-  </div>
 
   <!-- Minimal Toast Notification -->
   <div class="signal-toast" id="toast" role="status" aria-live="polite"></div>
