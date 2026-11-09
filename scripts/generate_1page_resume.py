@@ -173,6 +173,17 @@ def generate_1page_resume():
       font-weight: 500;
       text-align: right;
       margin-left: auto;
+      line-height: 1.35;
+    }
+
+    .tag-item {
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .tag-sep {
+      color: #881337;
+      margin: 0 3px;
     }
 
     /* BULLETS: PURE STATIC FLOW FOR 100% ATS ORDER */
@@ -305,8 +316,17 @@ def generate_1page_resume():
     <!-- Project 1: Personal DeepAgent & Kinetic Portfolio -->
     <div class="item">
       <div class="item-header">
-        <span class="item-title">Personal DeepAgent — Autonomous AI Agent System & Kinetic Portfolio</span>
-        <span class="item-tags">LangGraph • Agent Skills • Hybrid RAG • FastAPI • DuckDB • FlashRank • Next.js • SSE</span>
+        <span class="item-title">Personal DeepAgent — AI Agent System & Kinetic Portfolio</span>
+        <div class="item-tags">
+          <span class="tag-item">LangGraph</span>
+          <span class="tag-item"><span class="tag-sep">•</span>Agent Skills</span>
+          <span class="tag-item"><span class="tag-sep">•</span>Hybrid RAG</span>
+          <span class="tag-item"><span class="tag-sep">•</span>FastAPI</span>
+          <span class="tag-item"><span class="tag-sep">•</span>DuckDB</span>
+          <span class="tag-item"><span class="tag-sep">•</span>FlashRank</span>
+          <span class="tag-item"><span class="tag-sep">•</span>Next.js</span>
+          <span class="tag-item"><span class="tag-sep">•</span>SSE</span>
+        </div>
       </div>
       <ul class="bullets">
         <li>Architected a multi-agent orchestration graph featuring dynamic planning with step-budget guardrails, a ReAct research agent, and modular sub-agent workers with isolated execution.</li>
@@ -320,7 +340,13 @@ def generate_1page_resume():
     <div class="item" style="margin-top: 5px;">
       <div class="item-header">
         <span class="item-title">AI Job Search & Resume Agent</span>
-        <span class="item-tags">LangChain • MCP • Qdrant • Hybrid Search • JSearch API</span>
+        <div class="item-tags">
+          <span class="tag-item">LangChain</span>
+          <span class="tag-item"><span class="tag-sep">•</span>MCP</span>
+          <span class="tag-item"><span class="tag-sep">•</span>Qdrant</span>
+          <span class="tag-item"><span class="tag-sep">•</span>Hybrid Search</span>
+          <span class="tag-item"><span class="tag-sep">•</span>JSearch API</span>
+        </div>
       </div>
       <ul class="bullets">
         <li>Designed a multi-agent LLM application automating job discovery, semantic candidate ranking, resume analysis, and personalised outreach drafting.</li>
