@@ -108,6 +108,46 @@
       this.cmdOverlay = document.getElementById("agent-command-overlay");
       this.cmdInput = document.getElementById("agent-command-input");
 
+      // Cache Virtual YouTube Window DOM elements
+      this.ytNavBtn = document.getElementById("nav-tab-youtube");
+      this.ytWindow = document.getElementById("virtual-yt-window");
+      this.ytInput = document.getElementById("yt-browser-input");
+      this.ytSearchBtn = document.getElementById("yt-browser-search-btn");
+      this.ytFrame = document.getElementById("yt-player-frame");
+      this.ytPlaceholder = document.getElementById("yt-player-placeholder");
+      this.ytCloseBtn = document.getElementById("yt-close-btn");
+      this.ytMinimizeBtn = document.getElementById("yt-minimize-btn");
+      this.ytMiniPill = document.getElementById("yt-mini-pill");
+      this.ytMiniText = document.getElementById("yt-mini-text");
+
+      // Bind YouTube Tab and Window Controls
+      if (this.ytNavBtn) {
+        this.ytNavBtn.addEventListener("click", () => this.toggleYouTubeWindow());
+      }
+      if (this.ytCloseBtn) {
+        this.ytCloseBtn.addEventListener("click", () => this.closeYouTubeWindow());
+      }
+      if (this.ytMinimizeBtn) {
+        this.ytMinimizeBtn.addEventListener("click", () => this.minimizeYouTubeWindow());
+      }
+      if (this.ytMiniPill) {
+        this.ytMiniPill.addEventListener("click", () => this.restoreYouTubeWindow());
+      }
+      if (this.ytSearchBtn) {
+        this.ytSearchBtn.addEventListener("click", () => {
+          const q = this.ytInput ? this.ytInput.value.trim() : "";
+          if (q) this.playYouTube(q);
+        });
+      }
+      if (this.ytInput) {
+        this.ytInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            const q = this.ytInput.value.trim();
+            if (q) this.playYouTube(q);
+          }
+        });
+      }
+
       // Bind launcher button
       this.launcherBtn = document.getElementById("agent-tour-start-btn");
       if (this.launcherBtn) {
@@ -206,6 +246,73 @@
       } else {
         this.openCommandHUD();
       }
+    }
+
+    openYouTubeWindow() {
+      if (this.ytWindow) {
+        this.ytWindow.classList.add("is-open");
+      }
+      if (this.ytMiniPill) {
+        this.ytMiniPill.classList.remove("is-active");
+      }
+      if (this.ytNavBtn) {
+        this.ytNavBtn.classList.add("active");
+      }
+    }
+
+    closeYouTubeWindow() {
+      if (this.ytWindow) {
+        this.ytWindow.classList.remove("is-open");
+      }
+      if (this.ytFrame) {
+        this.ytFrame.src = "about:blank";
+      }
+      if (this.ytPlaceholder) {
+        this.ytPlaceholder.classList.remove("is-hidden");
+      }
+      if (this.ytMiniPill) {
+        this.ytMiniPill.classList.remove("is-active");
+      }
+      if (this.ytNavBtn) {
+        this.ytNavBtn.classList.remove("active");
+      }
+    }
+
+    minimizeYouTubeWindow() {
+      if (this.ytWindow) {
+        this.ytWindow.classList.remove("is-open");
+      }
+      if (this.ytMiniPill) {
+        this.ytMiniPill.classList.add("is-active");
+      }
+    }
+
+    restoreYouTubeWindow() {
+      this.openYouTubeWindow();
+    }
+
+    toggleYouTubeWindow() {
+      if (this.ytWindow && this.ytWindow.classList.contains("is-open")) {
+        this.closeYouTubeWindow();
+      } else {
+        this.openYouTubeWindow();
+      }
+    }
+
+    playYouTube(songQuery) {
+      const query = (songQuery || "lofi hip hop radio").trim();
+      let embedUrl;
+      if (/lofi|study|chill|relax/i.test(query)) {
+        embedUrl = "https://www.youtube-nocookie.com/embed/jfKfPfyJRdk?autoplay=1&enablejsapi=1";
+      } else {
+        embedUrl = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(query)}&autoplay=1`;
+      }
+
+      if (this.ytInput) this.ytInput.value = query;
+      if (this.ytPlaceholder) this.ytPlaceholder.classList.add("is-hidden");
+      if (this.ytFrame) this.ytFrame.src = embedUrl;
+      if (this.ytMiniText) this.ytMiniText.textContent = `🎵 ${query}`;
+      if (this.ytNavBtn) this.ytNavBtn.classList.add("active");
     }
 
     async sleep(ms) {
@@ -461,17 +568,43 @@
           songQuery = "lofi hip hop radio beats to relax study to";
         }
 
-        this.setState("[ 🎵 Launching YouTube Music... ]");
-        this.triggerClickRipple();
+        // STEP 1: Announce and glide up to YouTube Tab in navigation
+        this.setState("[ 🌐 Gliding to YouTube Tab... ]");
+        this.speak("NAVIGATING TABS", "Heading up to the YouTube Music tab...", 2200);
 
-        const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(songQuery)}`;
-        try {
-          window.open(targetUrl, "_blank", "noopener,noreferrer");
-        } catch (e) {
-          console.warn("Could not open new window:", e);
+        const ytTab = document.getElementById("nav-tab-youtube");
+        if (ytTab) {
+          await this.moveToElement(ytTab, ytTab.offsetWidth / 2, ytTab.offsetHeight / 2, 700);
+          this.triggerClickRipple();
+          ytTab.classList.add("active");
         }
 
-        await this.speak("AGENT DJ 🎧", `Playing "${songQuery}" on YouTube!`, 2800);
+        // STEP 2: Open the Virtual Cyber Browser Window
+        this.openYouTubeWindow();
+        await this.sleep(350);
+
+        // STEP 3: Glide down to YouTube search bar and auto-type the song
+        const ytInput = document.getElementById("yt-browser-input");
+        const ytSearchBtn = document.getElementById("yt-browser-search-btn");
+        if (ytInput && ytSearchBtn) {
+          this.setState("[ ⌨️ Auto-Typing Song... ]");
+          await this.moveToElement(ytInput, 40, ytInput.offsetHeight / 2, 600);
+          this.triggerClickRipple();
+          ytInput.focus();
+
+          await this.typeInto(ytInput, songQuery, 28);
+          await this.sleep(200);
+
+          // STEP 4: Glide to Play Button and click
+          await this.moveToElement(ytSearchBtn, ytSearchBtn.offsetWidth / 2, ytSearchBtn.offsetHeight / 2, 400);
+          this.triggerClickRipple();
+
+          // STEP 5: Start playback inside the tab
+          this.playYouTube(songQuery);
+        }
+
+        this.setState("[ 🎵 Playing on YouTube... ]");
+        await this.speak("NOW PLAYING 🎧", `Playing "${songQuery}" inside YouTube tab! Enjoy the music while exploring!`, 3400);
         this.hideSpeech();
         this.setState(null);
         this.isRunning = false;
