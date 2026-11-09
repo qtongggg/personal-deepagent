@@ -369,7 +369,7 @@ def generate_2page_resume():
             <span class="item-title">Zetrix AI</span>
             <span class="item-subtitle"> | LLM Engineer</span>
           </div>
-          <span class="item-date">JUN 2024 – PRESENT</span>
+          <span class="item-date">JUN 2026 – PRESENT</span>
         </div>
         <ul class="bullets">
           <li><strong>Enterprise AI Workflow Automation:</strong> Developed Dify-based AI workflows for enterprise SOP and knowledge-base retrieval, grounding LLM responses in internal documentation to improve answer relevance and consistency for customer operations.</li>

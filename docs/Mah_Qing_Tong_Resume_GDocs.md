@@ -22,7 +22,7 @@ LinkedIn: [linkedin.com/in/qtong](https://linkedin.com/in/qtong) | GitHub: [gith
 ## WORK EXPERIENCE
 
 ### Zetrix AI — LLM Engineer
-*JUN 2024 – PRESENT (Full-time) | Kuala Lumpur / Selangor, Malaysia*
+*JUN 2026 – PRESENT (Full-time) | Kuala Lumpur / Selangor, Malaysia*
 - **Enterprise AI Workflow Automation**: Developed Dify-based AI workflows for enterprise SOP and knowledge-base retrieval, grounding LLM responses in internal documentation to improve answer relevance and consistency for customer operations.
 - **Section-Aware RAG Ingestion**: Built automated preprocessing pipelines to convert unstructured PDF research into hierarchical Markdown before chunking, improving downstream retrieval recall by 28% in measured evaluations.
 - **Agentic RAG & Deterministic Execution**: Developed the i-FIKR Islamic knowledge agent over 870+ records, integrating vector search with custom Python and Pandas tools for accurate multi-criteria filtering and tally operations.

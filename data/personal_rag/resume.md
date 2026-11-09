@@ -22,7 +22,7 @@ LLM Engineer at Zetrix AI with a Bachelor of Computer Science in Data Science fr
 ## Professional Experience
 
 ### Zetrix AI — LLM Engineer
-- **Duration**: June 2024 – Present (Full-time)
+- **Duration**: June 2026 – Present (Full-time)
 - **Location**: Kuala Lumpur / Selangor, Malaysia
 - **Core Engineering Achievements**:
   - **Enterprise AI Workflow Automation**: Developed Dify-based AI workflows for enterprise SOP and knowledge-base retrieval, grounding LLM responses in internal documentation to improve answer relevance and consistency for customer operations.
