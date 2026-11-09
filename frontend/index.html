@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20261109" />
+  <link rel="stylesheet" href="agent_pointer.css?v=20261109" />
 </head>
 <body>
   <!-- Full-Page Center-Outward Liquid Water Ripple Focus Overlay (WebGL Shader) -->
@@ -244,6 +245,16 @@
   <!-- Minimal Toast Notification -->
   <div class="signal-toast" id="toast" role="status" aria-live="polite"></div>
 
+  <!-- Floating Agent Tour Launcher (Phase 1) -->
+  <div class="agent-tour-launcher-wrap" id="agent-tour-launcher-wrap">
+    <button type="button" class="agent-tour-btn" id="agent-tour-start-btn" aria-label="Start Agent Tour">
+      <span class="tour-dot"></span>
+      <span>MEET QT'S AGENT GUIDE</span>
+      <span class="tour-arrow">↗</span>
+    </button>
+  </div>
+
   <script src="script.js?v=20261109"></script>
+  <script src="agent_pointer.js?v=20261109"></script>
 </body>
 </html>
