@@ -150,5 +150,11 @@ if __name__ == "__main__":
     print(f">> Serving UI From: {STATIC_DIR}")
     print(">> Engine: Resume DeepAgent (ChromaDB + BM25 + FlashRank)")
     print("=" * 65 + "\n")
-    uvicorn.run("src.resume_api:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run(
+        "src.resume_api:app",
+        host="0.0.0.0",
+        port=port,
+        reload=True,
+        reload_dirs=[str(Path(__file__).parent), str(STATIC_DIR)],
+    )
     

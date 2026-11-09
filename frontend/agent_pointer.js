@@ -1,6 +1,6 @@
 /**
- * frontend/agent_pointer.js — Phase 1: Live Interactive Agent Pointer & Greeting
- * Controls the autonomous cursor, DOM physics, speech bubbles, and typing actions.
+ * frontend/agent_pointer.js — Live Interactive Agent Pointer & Ctrl+Shift+K Command HUD
+ * Supports autonomous cursor navigation, physical DOM interaction, and natural-language commands.
  */
 
 (function () {
@@ -15,6 +15,8 @@
       this.bubbleText = null;
       this.ripple = null;
       this.launcherBtn = null;
+      this.cmdOverlay = null;
+      this.cmdInput = null;
       this.isRunning = false;
       this.isAborted = false;
 
@@ -29,7 +31,7 @@
       this.overlay.id = "agent-pointer-overlay";
       this.overlay.className = "agent-pointer-overlay";
       this.overlay.innerHTML = `
-        <div class="agent-pointer-cursor" id="agent-pointer-cursor">
+        <div class="agent-pointer-cursor" id="agent-pointer-cursor" title="Click to command agent (Ctrl+Shift+K)">
           <div class="agent-pointer-body">
             <!-- Custom Cyber-Orange SVG Cursor Arrow -->
             <svg class="agent-pointer-svg" viewBox="0 0 24 24" fill="none">
@@ -55,6 +57,36 @@
             </div>
           </div>
         </div>
+
+        <!-- Ctrl + Shift + K Command Bar Overlay -->
+        <div class="agent-command-overlay" id="agent-command-overlay">
+          <div class="agent-command-card" role="dialog" aria-modal="true" aria-label="Agent Command HUD">
+            <div class="agent-command-header">
+              <span class="command-header-title">
+                <span class="tour-dot"></span>
+                <span>QT-AGENT COMMAND HUD</span>
+              </span>
+              <span class="command-header-shortcut">ESC TO CLOSE</span>
+            </div>
+            <form class="agent-command-input-row" id="agent-cmd-form" autocomplete="off">
+              <span class="command-prompt-symbol">&gt;_</span>
+              <input
+                type="text"
+                id="agent-command-input"
+                class="agent-command-input"
+                placeholder="Type command: 'show projects', 'download resume', 'ask [question]'..."
+              />
+              <button type="submit" class="command-submit-btn">RUN ↵</button>
+            </form>
+            <div class="agent-command-chips">
+              <button type="button" class="agent-cmd-chip" data-cmd="projects">🚀 Show Projects</button>
+              <button type="button" class="agent-cmd-chip" data-cmd="resume">📄 Download Resume</button>
+              <button type="button" class="agent-cmd-chip" data-cmd="architecture">🏗️ Architecture</button>
+              <button type="button" class="agent-cmd-chip" data-cmd="ask What are QT's core skills and flagship projects?">💬 Ask Skills &amp; Projects</button>
+              <button type="button" class="agent-cmd-chip" data-cmd="tour">🎬 Full Showcase Tour</button>
+            </div>
+          </div>
+        </div>
       `;
       document.body.appendChild(this.overlay);
 
@@ -65,6 +97,8 @@
       this.bubbleTitle = document.getElementById("agent-bubble-title");
       this.bubbleText = document.getElementById("agent-bubble-text");
       this.ripple = document.getElementById("agent-click-ripple");
+      this.cmdOverlay = document.getElementById("agent-command-overlay");
+      this.cmdInput = document.getElementById("agent-command-input");
 
       // Bind launcher button
       this.launcherBtn = document.getElementById("agent-tour-start-btn");
@@ -72,12 +106,74 @@
         this.launcherBtn.addEventListener("click", () => this.startPhase1Tour());
       }
 
-      // Keyboard escape listener to abort anytime
+      // Clicking pointer itself opens Command HUD
+      this.cursor.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.openCommandHUD();
+      });
+
+      // Command Form Submit
+      const cmdForm = document.getElementById("agent-cmd-form");
+      if (cmdForm) {
+        cmdForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const val = this.cmdInput.value.trim();
+          if (val) this.executeCommand(val);
+        });
+      }
+
+      // Quick Chips
+      document.querySelectorAll(".agent-cmd-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const cmd = chip.getAttribute("data-cmd");
+          if (cmd) this.executeCommand(cmd);
+        });
+      });
+
+      // Global Keydown: Ctrl+Shift+K / Cmd+Shift+K to summon Command HUD
       window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && this.isRunning) {
-          this.abort();
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "K" || e.key === "k")) {
+          e.preventDefault();
+          this.toggleCommandHUD();
+        } else if (e.key === "Escape") {
+          if (this.isCommandHUDOpen()) {
+            this.closeCommandHUD();
+          } else if (this.isRunning) {
+            this.abort();
+          }
         }
       });
+
+      // Click outside command card closes HUD
+      this.cmdOverlay.addEventListener("click", (e) => {
+        if (e.target === this.cmdOverlay) {
+          this.closeCommandHUD();
+        }
+      });
+    }
+
+    isCommandHUDOpen() {
+      return this.cmdOverlay && this.cmdOverlay.classList.contains("is-active");
+    }
+
+    openCommandHUD() {
+      if (!this.cmdOverlay) return;
+      this.cmdOverlay.classList.add("is-active");
+      setTimeout(() => this.cmdInput && this.cmdInput.focus(), 80);
+    }
+
+    closeCommandHUD() {
+      if (!this.cmdOverlay) return;
+      this.cmdOverlay.classList.remove("is-active");
+      if (this.cmdInput) this.cmdInput.value = "";
+    }
+
+    toggleCommandHUD() {
+      if (this.isCommandHUDOpen()) {
+        this.closeCommandHUD();
+      } else {
+        this.openCommandHUD();
+      }
     }
 
     async sleep(ms) {
@@ -107,7 +203,6 @@
     triggerClickRipple() {
       this.cursor.classList.add("is-clicking");
       this.ripple.classList.remove("animate");
-      // Trigger reflow to restart animation
       void this.ripple.offsetWidth;
       this.ripple.classList.add("animate");
       setTimeout(() => {
@@ -139,7 +234,7 @@
       this.bubble.classList.remove("is-active");
     }
 
-    async typeInto(inputEl, text, charDelayMs = 38) {
+    async typeInto(inputEl, text, charDelayMs = 32) {
       if (this.isAborted || !inputEl) return;
       inputEl.focus();
       inputEl.value = "";
@@ -172,7 +267,142 @@
     }
 
     // ========================================================================
-    // PHASE 1: Awakening, Greeting, Neural Inspection & Live Chat Submission
+    // DIRECT COMMAND EXECUTION PIPELINE
+    // ========================================================================
+    async executeCommand(rawCommand) {
+      const cmd = rawCommand.trim();
+      if (!cmd) return;
+
+      this.closeCommandHUD();
+      this.isRunning = true;
+      this.isAborted = false;
+
+      const cmdLower = cmd.toLowerCase();
+
+      // Ensure cursor is visible
+      const curRect = this.cursor.getBoundingClientRect();
+      if (curRect.left < 0 || curRect.top < 0) {
+        this.cursor.style.transition = "none";
+        this.setCursorPos(window.innerWidth / 2, window.innerHeight * 0.7);
+        await this.sleep(50);
+      }
+
+      // 1. COMMAND: PROJECTS / WORK
+      if (cmdLower.includes("project") || cmdLower.includes("system") || cmdLower === "projects") {
+        this.setState("[ 🚀 Navigating to Projects... ]");
+        const detailsBtn = document.querySelector('[data-view-target="details"]');
+        if (detailsBtn) {
+          await this.moveToElement(detailsBtn, detailsBtn.offsetWidth / 2, detailsBtn.offsetHeight / 2, 600);
+          this.triggerClickRipple();
+          detailsBtn.click();
+          await this.sleep(500);
+        }
+
+        const project1 = document.querySelector("#systems-list .system-row");
+        if (project1) {
+          await this.moveToElement(project1, 120, 24, 700);
+          this.triggerClickRipple();
+          project1.click();
+          await this.speak("FLAGSHIP PROJECT", "Here is Personal DeepAgent — multi-hop research agent with benchmark arena!", 3000);
+          this.hideSpeech();
+        }
+        this.setState(null);
+        this.isRunning = false;
+        return;
+      }
+
+      // 2. COMMAND: RESUME / CV
+      if (cmdLower.includes("resume") || cmdLower.includes("cv") || cmdLower.includes("download")) {
+        this.setState("[ 📄 Locating Resume PDF... ]");
+        const resumeBtn = document.querySelector('.nav-resume-btn, [href*="Resume.pdf"]');
+        if (resumeBtn) {
+          await this.moveToElement(resumeBtn, resumeBtn.offsetWidth / 2, resumeBtn.offsetHeight / 2, 700);
+          this.triggerClickRipple();
+          await this.speak("1-PAGE ATS RESUME", "Clicking verified 1-page ATS resume for download!", 2400);
+          this.hideSpeech();
+          resumeBtn.click();
+        }
+        this.setState(null);
+        this.isRunning = false;
+        return;
+      }
+
+      // 3. COMMAND: ARCHITECTURE / RAG
+      if (cmdLower.includes("architecture") || cmdLower.includes("pillar") || cmdLower.includes("rag")) {
+        this.setState("[ 🏗️ Inspecting Architecture... ]");
+        const archLink = document.querySelector('[data-scroll-target="capabilities"]');
+        if (archLink) {
+          await this.moveToElement(archLink, archLink.offsetWidth / 2, archLink.offsetHeight / 2, 600);
+          this.triggerClickRipple();
+          archLink.click();
+          await this.sleep(400);
+        }
+        const pillar1 = document.querySelector("#pillars-stream .pillar-block");
+        if (pillar1) {
+          await this.moveToElement(pillar1, 80, 40, 650);
+          await this.speak("CORE ARCHITECTURE", "Four layers of agentic engineering: Hybrid RAG, Agent Loops, Analytics & Full-Stack Deployment.", 3200);
+          this.hideSpeech();
+        }
+        this.setState(null);
+        this.isRunning = false;
+        return;
+      }
+
+      // 4. COMMAND: TOUR / GUIDE
+      if (cmdLower === "tour" || cmdLower.includes("showcase") || cmdLower.includes("guide")) {
+        await this.startPhase1Tour();
+        return;
+      }
+
+      // 5. COMMAND: NOTE
+      if (cmdLower.startsWith("note:") || cmdLower.startsWith("note ") || cmdLower.startsWith("take note")) {
+        const noteText = cmd.replace(/^(note:|note\s+|take\s+note:?)/i, "").trim();
+        this.setState("[ 📝 Saving Workspace Note... ]");
+        await this.speak("WORKSPACE NOTE SAVED", `"${noteText}" has been logged to your session scratchpad!`, 2600);
+        this.hideSpeech();
+        this.setState(null);
+        this.isRunning = false;
+        return;
+      }
+
+      // 6. DEFAULT: ASK AGENT A QUESTION
+      const queryText = cmd.replace(/^ask\s+/i, "").trim();
+      this.setState("[ 💬 Routing to Terminal... ]");
+      
+      // Ensure on Home view
+      const homeView = document.getElementById("view-home");
+      if (homeView && !homeView.classList.contains("active")) {
+        const homeBtn = document.querySelector('[data-view-target="home"]');
+        if (homeBtn) {
+          homeBtn.click();
+          await this.sleep(300);
+        }
+      }
+
+      const inputEl = document.getElementById("cli-input");
+      const submitBtn = document.getElementById("cli-submit-btn");
+      if (inputEl && submitBtn) {
+        await this.moveToElement(inputEl, 40, inputEl.offsetHeight / 2, 650);
+        this.triggerClickRipple();
+        this.setState("[ ⌨️ Typing Query... ]");
+        await this.typeInto(inputEl, queryText, 28);
+        await this.sleep(300);
+
+        await this.moveToElement(submitBtn, submitBtn.offsetWidth / 2, submitBtn.offsetHeight / 2, 450);
+        this.triggerClickRipple();
+        submitBtn.click();
+
+        this.setState("[ ⚡ DeepAgent Streaming Answer... ]");
+        await this.speak("AI AGENT STREAM", `Routing question to QT's Resume DeepAgent...`, 2400);
+        this.hideSpeech();
+      }
+
+      this.setState(null);
+      this.isRunning = false;
+    }
+
+    // ========================================================================
+    // SCRIPTED SHOWCASE TOUR
     // ========================================================================
     async startPhase1Tour() {
       if (this.isRunning) {
@@ -190,12 +420,12 @@
         `;
       }
 
-      // Step 1: Start at bottom-right near the button
+      // Step 1: Start at bottom-right near button
       const btnRect = this.launcherBtn ? this.launcherBtn.getBoundingClientRect() : { left: window.innerWidth - 180, top: window.innerHeight - 80 };
       this.cursor.style.transition = "none";
       this.setCursorPos(btnRect.left, btnRect.top - 20);
 
-      // Step 2: Glide into center-left
+      // Step 2: Glide into center
       await this.sleep(100);
       this.setState("[ ⚡ AWAKENING... ]");
       await this.moveTo(window.innerWidth * 0.42, window.innerHeight * 0.38, 750);
@@ -208,7 +438,7 @@
       );
       this.hideSpeech();
 
-      // Step 4: Move to the 3D ASCII Möbius neural symbol
+      // Step 4: Move to 3D ASCII Möbius neural symbol
       const canvasEl = document.getElementById("cli-ascii-canvas");
       if (canvasEl) {
         this.setState("[ 🔍 Inspecting Reasoning Core ]");
