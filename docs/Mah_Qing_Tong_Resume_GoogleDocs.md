@@ -6,7 +6,7 @@ LinkedIn: [linkedin.com/in/qtong](https://linkedin.com/in/qtong) | GitHub: [gith
 ---
 
 ## PROFESSIONAL SUMMARY
-**LLM Engineer at Zetrix AI** with a Bachelor of Computer Science in Data Science from **Monash University Malaysia**. Passionate about exploring autonomous agent architectures, production Agentic RAG workflows, and modular **Agent Skills (`SKILL.md` / MCP)** with practical harness engineering and systematic evaluation. Hands-on expertise in hybrid dense/sparse retrieval, cross-encoder reranking, and full-stack backend development, driven to design reliable, self-correcting, and high-impact enterprise AI solutions.
+**LLM Engineer at Zetrix AI** with a Bachelor of Computer Science in Data Science from **Monash University Malaysia**. Passionate about exploring autonomous agent architectures, production Agentic RAG workflows, and modular **Agent Skills (`SKILL.md` / MCP)** with practical harness engineering and systematic evaluation. Frequently serving as the Person-in-Charge (PIC) across key AI initiatives, demonstrating high ownership, technical accountability, and end-to-end responsibility from initial system design to production delivery. Proven expertise in hybrid dense/sparse retrieval, cross-encoder reranking, and full-stack backend development for robust enterprise AI applications.
 
 ---
 

@@ -57,7 +57,7 @@ def generate_2page_resume():
     /* Header */
     .header {{
       border-bottom: 2px solid #881337;
-      padding-bottom: 8px;
+      padding-bottom: 9px;
       margin-bottom: 9px;
       display: flex;
       justify-content: space-between;
@@ -69,7 +69,7 @@ def generate_2page_resume():
     }}
 
     .name-title h1 {{
-      font-size: 21pt;
+      font-size: 21.5pt;
       font-weight: 700;
       color: #0f172a;
       letter-spacing: -0.02em;
@@ -82,14 +82,14 @@ def generate_2page_resume():
       color: #881337;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-top: 2px;
+      margin-top: 3px;
     }}
 
     .contact-info {{
       font-size: 8.5pt;
       color: #475569;
-      line-height: 1.42;
-      margin-top: 5px;
+      line-height: 1.45;
+      margin-top: 6px;
     }}
 
     .contact-info a {{
@@ -106,16 +106,16 @@ def generate_2page_resume():
       margin: 0 4px;
     }}
 
-    /* Photo: larger size, no red border, clean subtle shadow */
+    /* Photo: enlarged prominent size, no red border, subtle shadow */
     .header-photo {{
-      width: 90px;
-      height: 102px;
+      width: 114px;
+      height: 128px;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 9px;
       border: none;
-      margin-left: 16px;
+      margin-left: 18px;
       flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.14);
     }}
 
     /* Section Headers */
@@ -175,6 +175,7 @@ def generate_2page_resume():
       display: flex;
       justify-content: space-between;
       align-items: baseline;
+      gap: 8px;
       margin-bottom: 2px;
     }}
 
@@ -195,13 +196,29 @@ def generate_2page_resume():
       font-weight: 600;
       color: #64748b;
       white-space: nowrap;
+      margin-left: auto;
+      text-align: right;
     }}
 
+    /* Tags: strictly right-aligned, atomic tags with dot never hanging */
     .item-tags {{
       font-size: 8.05pt;
       font-family: 'JetBrains Mono', monospace;
       color: #881337;
       font-weight: 500;
+      text-align: right;
+      margin-left: auto;
+      line-height: 1.35;
+    }}
+
+    .tag-item {{
+      display: inline-block;
+      white-space: nowrap;
+    }}
+
+    .tag-sep {{
+      color: #881337;
+      margin: 0 3px;
     }}
 
     /* Bullets */
@@ -268,11 +285,11 @@ def generate_2page_resume():
 <body>
 
   <!-- ============================================================ -->
-  <!-- PAGE 1: HEADER (WITH PHOTO), SUMMARY, SKILLS, EXPERIENCE     -->
+  <!-- PAGE 1: HEADER (WITH ENLARGED PHOTO), SUMMARY, SKILLS, EXP   -->
   <!-- ============================================================ -->
   <div class="resume-page" id="page-1">
 
-    <!-- HEADER WITH TOP-RIGHT PHOTO (NO RED BORDER, PROMINENT SIZE) -->
+    <!-- HEADER WITH TOP-RIGHT PHOTO (ENLARGED, NO RED BORDER) -->
     <header class="header">
       <div class="header-left">
         <div class="name-title">
@@ -297,18 +314,18 @@ def generate_2page_resume():
       <img src="file:///{photo_file}" class="header-photo" alt="Mah Qing Tong" />
     </header>
 
-    <!-- PROFESSIONAL SUMMARY (PASSIONATE ABOUT AGENT ARCHITECTURES, HARNESS & EVALS) -->
+    <!-- PROFESSIONAL SUMMARY (WITH PIC & END-TO-END PROJECT RESPONSIBILITY) -->
     <section class="section">
       <div class="section-header">
         <div class="bar"></div>
         <span>Professional Summary</span>
       </div>
       <p class="summary-text">
-        <strong>LLM Engineer at Zetrix AI</strong> with a Bachelor of Computer Science in Data Science from <strong>Monash University Malaysia</strong>. Passionate about exploring autonomous agent architectures, production Agentic RAG workflows, and modular <strong>Agent Skills (<code>SKILL.md</code> / MCP)</strong> with practical harness engineering and systematic evaluation. Hands-on expertise in hybrid dense/sparse retrieval, cross-encoder reranking, and full-stack backend development, driven to design reliable, self-correcting, and high-impact enterprise AI solutions.
+        <strong>LLM Engineer at Zetrix AI</strong> with a Bachelor of Computer Science in Data Science from <strong>Monash University Malaysia</strong>. Passionate about exploring autonomous agent architectures, production Agentic RAG workflows, and modular <strong>Agent Skills (<code>SKILL.md</code> / MCP)</strong> with practical harness engineering and systematic evaluation. Frequently serving as the Person-in-Charge (PIC) across key AI initiatives, demonstrating high ownership, technical accountability, and end-to-end responsibility from initial system design to production delivery. Proven expertise in hybrid dense/sparse retrieval, cross-encoder reranking, and full-stack backend development for robust enterprise AI applications.
       </p>
     </section>
 
-    <!-- TECHNICAL SKILLS (STREAMLINED) -->
+    <!-- TECHNICAL SKILLS -->
     <section class="section">
       <div class="section-header">
         <div class="bar"></div>
@@ -395,11 +412,20 @@ def generate_2page_resume():
       </div>
       <div class="section-subtitle">AI application development • RAG • Agentic systems • Backend engineering</div>
 
-      <!-- Combined Project: Personal DeepAgent & Kinetic Portfolio -->
+      <!-- Project 1: Personal DeepAgent & Kinetic Portfolio -->
       <div class="item avoid-break">
         <div class="item-header">
-          <span class="item-title">Personal DeepAgent — Autonomous AI Agent System & Kinetic Portfolio</span>
-          <span class="item-tags">LangGraph • Agent Skills • Hybrid RAG • FastAPI • DuckDB • FlashRank • Next.js • SSE</span>
+          <span class="item-title">Personal DeepAgent — AI Agent System & Kinetic Portfolio</span>
+          <div class="item-tags">
+            <span class="tag-item">LangGraph</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Agent Skills</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Hybrid RAG</span>
+            <span class="tag-item"><span class="tag-sep">•</span>FastAPI</span>
+            <span class="tag-item"><span class="tag-sep">•</span>DuckDB</span>
+            <span class="tag-item"><span class="tag-sep">•</span>FlashRank</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Next.js</span>
+            <span class="tag-item"><span class="tag-sep">•</span>SSE</span>
+          </div>
         </div>
         <ul class="bullets">
           <li>Architected a multi-agent orchestration graph featuring dynamic planning with step-budget guardrails, a ReAct research agent, and modular sub-agent workers with isolated execution.</li>
@@ -413,7 +439,13 @@ def generate_2page_resume():
       <div class="item avoid-break" style="margin-top: 6px;">
         <div class="item-header">
           <span class="item-title">AI Job Search & Resume Agent</span>
-          <span class="item-tags">LangChain • MCP • Qdrant • Hybrid Search • JSearch API</span>
+          <div class="item-tags">
+            <span class="tag-item">LangChain</span>
+            <span class="tag-item"><span class="tag-sep">•</span>MCP</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Qdrant</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Hybrid Search</span>
+            <span class="tag-item"><span class="tag-sep">•</span>JSearch API</span>
+          </div>
         </div>
         <ul class="bullets">
           <li>Designed a multi-agent LLM application automating job discovery, semantic candidate ranking, resume analysis, and personalised email drafting.</li>
@@ -426,7 +458,13 @@ def generate_2page_resume():
       <div class="item avoid-break" style="margin-top: 6px;">
         <div class="item-header">
           <span class="item-title">Smart Expense Tracker by OCR & AI Analytics</span>
-          <span class="item-tags">Kotlin • Firebase • Taggun OCR • Real-Time Database • Mobile Architecture</span>
+          <div class="item-tags">
+            <span class="tag-item">Kotlin</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Firebase</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Taggun OCR</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Real-Time Database</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Mobile Architecture</span>
+          </div>
         </div>
         <ul class="bullets">
           <li>Developed an end-to-end mobile application using Kotlin and Firebase, enabling real-time database synchronization and secure user authentication.</li>
