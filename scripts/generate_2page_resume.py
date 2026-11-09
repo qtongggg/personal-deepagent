@@ -3,7 +3,16 @@ import fitz  # PyMuPDF
 from playwright.sync_api import sync_playwright
 
 def generate_2page_resume():
-    html_content = """<!DOCTYPE html>
+    # Absolute paths
+    docs_dir = r"c:\Users\User\Documents\antigravity\personal-deepagent\docs"
+    html_file = os.path.join(docs_dir, "Mah_Qing_Tong_Resume_2Page.html")
+    pdf_file = os.path.join(docs_dir, "Mah_Qing_Tong_Resume_2Page.pdf")
+    photo_file = os.path.join(docs_dir, "profile_photo.jpg").replace(chr(92), "/")
+    
+    p1_img = r"C:\Users\User\.gemini\antigravity\brain\c39f0747-9fe2-42f7-ba3f-4b04c42cf777\resume_2page_preview_p1.png"
+    p2_img = r"C:\Users\User\.gemini\antigravity\brain\c39f0747-9fe2-42f7-ba3f-4b04c42cf777\resume_2page_preview_p2.png"
+
+    html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,261 +20,280 @@ def generate_2page_resume():
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-    @page {
+    @page {{
       size: A4;
-      margin: 11mm 15mm 11mm 15mm;
-    }
+      margin: 10.5mm 14mm 10.5mm 14mm;
+    }}
 
-    * {
+    * {{
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-    }
+    }}
 
-    body {
+    body {{
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: #0f172a;
       background: #ffffff;
-      font-size: 9.35pt;
-      line-height: 1.44;
+      font-size: 9.25pt;
+      line-height: 1.43;
       -webkit-font-smoothing: antialiased;
-    }
+    }}
 
-    /* Page container */
-    .resume-page {
+    .resume-page {{
       width: 100%;
       box-sizing: border-box;
-    }
+    }}
 
-    .page-break-before {
+    .page-break-before {{
       page-break-before: always;
       padding-top: 4px;
-    }
+    }}
 
-    .avoid-break {
+    .avoid-break {{
       page-break-inside: avoid;
-    }
+    }}
 
     /* Header */
-    .header {
+    .header {{
       border-bottom: 2px solid #881337;
-      padding-bottom: 10px;
-      margin-bottom: 11px;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
-    }
+      align-items: center;
+    }}
 
-    .name-title h1 {
+    .header-left {{
+      flex: 1;
+    }}
+
+    .name-title h1 {{
       font-size: 21pt;
       font-weight: 700;
       color: #0f172a;
       letter-spacing: -0.02em;
       line-height: 1.1;
-    }
+    }}
 
-    .name-title .title {
-      font-size: 10.5pt;
+    .name-title .title {{
+      font-size: 10.2pt;
       font-weight: 600;
       color: #881337;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-top: 3px;
-    }
+      margin-top: 2px;
+    }}
 
-    .contact-info {
-      text-align: right;
-      font-size: 8.6pt;
+    .contact-info {{
+      font-size: 8.5pt;
       color: #475569;
-      line-height: 1.45;
-    }
+      line-height: 1.42;
+      margin-top: 4px;
+    }}
 
-    .contact-info a {
+    .contact-info a {{
       color: #475569;
       text-decoration: none;
-    }
+    }}
 
-    .contact-info a:hover {
+    .contact-info a:hover {{
       color: #881337;
-    }
+    }}
 
-    .contact-info .dot {
+    .contact-info .dot {{
       color: #94a3b8;
       margin: 0 4px;
-    }
+    }}
+
+    .header-photo {{
+      width: 72px;
+      height: 78px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1.5px solid #881337;
+      margin-left: 14px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }}
 
     /* Section Headers */
-    .section {
-      margin-bottom: 11px;
-    }
+    .section {{
+      margin-bottom: 10px;
+    }}
 
-    .section-header {
+    .section-header {{
       display: flex;
       align-items: center;
-      gap: 7px;
-      margin-bottom: 6px;
+      gap: 6px;
+      margin-bottom: 5px;
       padding-bottom: 2px;
       border-bottom: 1px solid #e2e8f0;
-    }
+    }}
 
-    .section-header .bar {
+    .section-header .bar {{
       width: 4px;
-      height: 12.5px;
+      height: 12px;
       background-color: #881337;
       border-radius: 2px;
-    }
+    }}
 
-    .section-header span {
-      font-size: 9.8pt;
+    .section-header span {{
+      font-size: 9.6pt;
       font-weight: 700;
       color: #881337;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-    }
+    }}
+
+    .section-subtitle {{
+      font-size: 8.2pt;
+      color: #64748b;
+      margin-top: -3px;
+      margin-bottom: 5px;
+      font-style: italic;
+    }}
 
     /* Paragraphs and Items */
-    .summary-text {
+    .summary-text {{
       color: #334155;
       text-align: justify;
-      font-size: 9.15pt;
-      line-height: 1.44;
-    }
+      font-size: 9.1pt;
+      line-height: 1.42;
+    }}
 
-    .item {
-      margin-bottom: 8px;
-    }
+    .item {{
+      margin-bottom: 7px;
+    }}
 
-    .item:last-child {
+    .item:last-child {{
       margin-bottom: 0;
-    }
+    }}
 
-    .item-header {
+    .item-header {{
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       margin-bottom: 2px;
-    }
+    }}
 
-    .item-title {
-      font-size: 9.6pt;
+    .item-title {{
+      font-size: 9.5pt;
       font-weight: 700;
       color: #0f172a;
-    }
+    }}
 
-    .item-subtitle {
-      font-size: 9.1pt;
+    .item-subtitle {{
+      font-size: 9.0pt;
       font-weight: 600;
       color: #334155;
-    }
+    }}
 
-    .item-date {
-      font-size: 8.4pt;
+    .item-date {{
+      font-size: 8.3pt;
       font-weight: 600;
       color: #64748b;
       white-space: nowrap;
-    }
+    }}
 
-    .item-tags {
-      font-size: 8.2pt;
+    .item-tags {{
+      font-size: 8.1pt;
       font-family: 'JetBrains Mono', monospace;
       color: #881337;
       font-weight: 500;
-    }
+    }}
 
     /* Bullets */
-    .bullets {
+    .bullets {{
       list-style-type: none;
       padding-left: 0;
       margin-top: 2px;
-    }
+    }}
 
-    .bullets li {
+    .bullets li {{
       position: relative;
-      padding-left: 13px;
-      margin-bottom: 2.5px;
+      padding-left: 12px;
+      margin-bottom: 2.2px;
       color: #334155;
-      font-size: 9.05pt;
-      line-height: 1.40;
+      font-size: 9.0pt;
+      line-height: 1.39;
       text-align: justify;
-    }
+    }}
 
-    .bullets li:last-child {
+    .bullets li:last-child {{
       margin-bottom: 0;
-    }
+    }}
 
-    .bullets li::before {
+    .bullets li::before {{
       content: "•";
       position: absolute;
-      left: 2px;
+      left: 1px;
       color: #881337;
-      font-size: 11pt;
+      font-size: 10.5pt;
       line-height: 1.1;
-    }
+    }}
 
-    .bullets strong {
+    .bullets strong {{
       color: #0f172a;
       font-weight: 600;
-    }
+    }}
 
     /* Skills Grid */
-    .skills-grid {
+    .skills-grid {{
       display: flex;
       flex-direction: column;
-      gap: 5px;
-    }
+      gap: 4.5px;
+    }}
 
-    .skill-row {
+    .skill-row {{
       display: flex;
-      font-size: 9.05pt;
-      line-height: 1.40;
-    }
+      font-size: 8.95pt;
+      line-height: 1.38;
+    }}
 
-    .skill-label {
+    .skill-label {{
       width: 195px;
       font-weight: 600;
       color: #0f172a;
       flex-shrink: 0;
-    }
+    }}
 
-    .skill-list {
+    .skill-list {{
       color: #334155;
       flex-grow: 1;
-    }
-
-    /* Leadership & Awards */
-    .two-col-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+    }}
   </style>
 </head>
 <body>
 
   <!-- ============================================================ -->
-  <!-- PAGE 1: HEADER, SUMMARY, EDUCATION, WORK EXP, FEATURED PROJ  -->
+  <!-- PAGE 1: HEADER (WITH PHOTO), SUMMARY, SKILLS, EXPERIENCE     -->
   <!-- ============================================================ -->
   <div class="resume-page" id="page-1">
 
-    <!-- HEADER -->
+    <!-- HEADER WITH TOP-RIGHT PHOTO -->
     <header class="header">
-      <div class="name-title">
-        <h1>MAH QING TONG</h1>
-        <div class="title">AI / LLM Engineer</div>
-      </div>
-      <div class="contact-info">
-        <div>Subang Jaya, Selangor, Malaysia</div>
-        <div>
-          <span>016-396 0009</span>
-          <span class="dot">•</span>
-          <a href="mailto:smartqingtong@gmail.com">smartqingtong@gmail.com</a>
+      <div class="header-left">
+        <div class="name-title">
+          <h1>MAH QING TONG</h1>
+          <div class="title">LLM ENGINEER | AI ENGINEER</div>
         </div>
-        <div>
-          <a href="https://linkedin.com">linkedin.com/in/qtong</a>
-          <span class="dot">•</span>
-          <a href="https://github.com/qtongggg">github.com/qtongggg</a>
+        <div class="contact-info">
+          <div>
+            <span>Subang Jaya, Selangor, Malaysia</span>
+            <span class="dot">•</span>
+            <span>016-396 0009</span>
+            <span class="dot">•</span>
+            <a href="mailto:smartqingtong@gmail.com">smartqingtong@gmail.com</a>
+          </div>
+          <div>
+            <a href="https://linkedin.com/in/qtong">linkedin.com/in/qtong</a>
+            <span class="dot">•</span>
+            <a href="https://github.com/qtongggg">github.com/qtongggg</a>
+          </div>
         </div>
       </div>
+      <img src="file:///{photo_file}" class="header-photo" alt="Mah Qing Tong" />
     </header>
 
     <!-- PROFESSIONAL SUMMARY -->
@@ -275,38 +303,45 @@ def generate_2page_resume():
         <span>Professional Summary</span>
       </div>
       <p class="summary-text">
-        <strong>AI/LLM Engineer</strong> at Zetrix AI and Computer Science (Data Science) graduate from <strong>Monash University Malaysia</strong>. Experienced in architecting production Agentic RAG workflows, multi-hop retrieval systems, and autonomous agent graphs. Technically proficient in Python, LangGraph, LangChain, Model Context Protocol (MCP), Qdrant, and FastAPI, with a proven track record specializing in hybrid dense/sparse search, cross-encoder reranking, deterministic tool execution, and Human-in-the-Loop orchestration.
+        <strong>LLM Engineer at Zetrix AI</strong> with a Bachelor of Computer Science in Data Science from <strong>Monash University Malaysia</strong>. Experienced in developing AI-powered applications, Retrieval-Augmented Generation (RAG) pipelines, and multi-agent workflows using Python, LangGraph, LangChain, FastAPI, and Qdrant. Hands-on experience in hybrid retrieval, document processing, cross-encoder reranking, tool integration, and backend API development, with a focus on building reliable and practical LLM applications.
       </p>
     </section>
 
-    <!-- EDUCATION -->
+    <!-- TECHNICAL SKILLS -->
     <section class="section">
       <div class="section-header">
         <div class="bar"></div>
-        <span>Education</span>
+        <span>Technical Skills</span>
       </div>
-      <div class="item">
-        <div class="item-header">
-          <div>
-            <span class="item-title">Monash University Malaysia</span>
-            <span class="item-subtitle"> | Bachelor of Computer Science in Data Science</span>
-          </div>
-          <span class="item-date">FEB 2023 – DEC 2025</span>
+      <div class="skills-grid">
+        <div class="skill-row">
+          <span class="skill-label">Programming & Backend:</span>
+          <span class="skill-list">Python, FastAPI, TypeScript, JavaScript, SQL, REST APIs, Next.js, Server-Sent Events (SSE)</span>
         </div>
-        <div style="font-size: 8.9pt; color: #881337; font-weight: 600; margin-bottom: 2px;">
-          Second Upper Honours • CGPA: 3.36 / 4.0
+        <div class="skill-row">
+          <span class="skill-label">LLM & Agentic Systems:</span>
+          <span class="skill-list">LangChain, LangGraph, Model Context Protocol (MCP), Dify, Tool Calling, Agent Orchestration, Human-in-the-Loop (HITL), Prompt & Context Engineering</span>
         </div>
-        <ul class="bullets">
-          <li><strong>Relevant Coursework:</strong> Deep Learning, Algorithms & Data Structures, Big Data Management, Data Visualization, Cybersecurity, Object-Oriented Programming.</li>
-        </ul>
+        <div class="skill-row">
+          <span class="skill-label">RAG & Information Retrieval:</span>
+          <span class="skill-list">Hybrid Search, Dense & Sparse Retrieval, BM25, Qdrant, ChromaDB, Cross-Encoder Reranking, Multi-Hop Retrieval, Document Preprocessing</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">Machine Learning:</span>
+          <span class="skill-list">PyTorch, Hugging Face Transformers, BERT, CNNs, Embeddings, Self-Attention</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">Databases & Engineering Tools:</span>
+          <span class="skill-list">PostgreSQL, DuckDB, MongoDB, Git, Docker, Linux, Pytest, GitHub Actions, CI/CD</span>
+        </div>
       </div>
     </section>
 
-    <!-- WORK EXPERIENCE -->
+    <!-- PROFESSIONAL EXPERIENCE -->
     <section class="section">
       <div class="section-header">
         <div class="bar"></div>
-        <span>Work Experience</span>
+        <span>Professional Experience</span>
       </div>
 
       <!-- Zetrix AI -->
@@ -319,16 +354,16 @@ def generate_2page_resume():
           <span class="item-date">JUN 2024 – PRESENT</span>
         </div>
         <ul class="bullets">
-          <li><strong>Enterprise AI Workflow Automation:</strong> Developed and deployed Dify-based AI workflows for enterprise SOP and knowledge-base retrieval, supporting live customer operations with grounded, hallucination-free LLM responses.</li>
-          <li><strong>Section-Aware RAG Ingestion:</strong> Built automated preprocessing pipelines converting complex unstructured PDF research into clean hierarchical Markdown before chunking, improving downstream retrieval recall by 28%.</li>
-          <li><strong>Agentic RAG & Deterministic Execution:</strong> Architected the i-FIKR Islamic knowledge agent over 870+ records; integrated vector search with custom Python/Pandas sandbox tools to eliminate tally hallucinations and ensure exact multi-criteria filtering.</li>
-          <li><strong>Multi-Hop Retrieval & Sub-Chunk Citations:</strong> Implemented a two-stage retrieval workflow combining catalog-level metadata grounding with targeted document retrieval, enabling cross-document comparisons with verifiable sub-chunk citations.</li>
-          <li><strong>Conversational Booking Agent:</strong> Built an interactive property booking agent supporting real-time availability checks, appointment booking, schedule reviews, and automated Human-in-the-Loop (HITL) handoff.</li>
+          <li><strong>Enterprise AI Workflow Automation:</strong> Developed Dify-based AI workflows for enterprise SOP and knowledge-base retrieval, grounding LLM responses in internal documentation to improve answer relevance and consistency for customer operations.</li>
+          <li><strong>Section-Aware RAG Ingestion:</strong> Built automated preprocessing pipelines to convert unstructured PDF research into hierarchical Markdown before chunking, improving downstream retrieval recall by 28% in measured evaluations.</li>
+          <li><strong>Agentic RAG & Deterministic Execution:</strong> Developed the i-FIKR Islamic knowledge agent over 870+ records, integrating vector search with custom Python and Pandas tools for accurate multi-criteria filtering and tally operations.</li>
+          <li><strong>Multi-Hop Retrieval & Citation Grounding:</strong> Implemented a two-stage retrieval workflow combining catalog-level metadata grounding with targeted document retrieval, enabling cross-document comparisons with verifiable sub-chunk citations.</li>
+          <li><strong>Conversational Booking Agent:</strong> Built an interactive property booking agent supporting real-time availability checks, appointment booking, schedule reviews, and Human-in-the-Loop (HITL) handoffs.</li>
         </ul>
       </div>
 
       <!-- NIQ (NielsenIQ) -->
-      <div class="item" style="margin-top: 8px;">
+      <div class="item" style="margin-top: 7px;">
         <div class="item-header">
           <div>
             <span class="item-title">NIQ (NielsenIQ)</span>
@@ -337,29 +372,9 @@ def generate_2page_resume():
           <span class="item-date">NOV 2024 – FEB 2025</span>
         </div>
         <ul class="bullets">
-          <li><strong>Large-Scale Dataset Validation:</strong> Processed and validated large-scale retail datasets averaging thousands of records per batch to ensure high data consistency and integrity for downstream analytics pipelines.</li>
-          <li><strong>Rule-Based Anomaly Detection:</strong> Applied logic-driven validation techniques to detect and resolve catalog inconsistencies, reducing manual processing errors and improving regional data reliability.</li>
-          <li><strong>Cross-Regional Collaboration:</strong> Collaborated with cross-regional engineering and analytics teams (Malaysia & Vietnam) to debug data issues and standardize pipeline data quality.</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- FEATURED TECHNICAL PROJECT (Fills remainder of Page 1 perfectly) -->
-    <section class="section avoid-break">
-      <div class="section-header">
-        <div class="bar"></div>
-        <span>Featured Technical Project</span>
-      </div>
-      <div class="item">
-        <div class="item-header">
-          <span class="item-title">Personal DeepAgent — Autonomous AI Agent System</span>
-          <span class="item-tags">LangGraph • Hybrid RAG • FastAPI • DuckDB • SSE</span>
-        </div>
-        <ul class="bullets">
-          <li>Architected an autonomous agent system with a 3-agent graph: dynamic orchestrator with step-budget guardrails, ReAct research agent, and specialized sub-agent workers.</li>
-          <li>Built high-recall hybrid retrieval combining dense vector embeddings with sparse BM25 indexing in DuckDB and FlashRank cross-encoder reranking.</li>
-          <li>Engineered deterministic local tool execution (system bash, multi-engine web search, file operations) with automated failure recovery and self-correction loops.</li>
-          <li>Constructed an async streaming backend via FastAPI and Server-Sent Events (SSE) with interactive Human-in-the-Loop (HITL) approval gates.</li>
+          <li><strong>Large-Scale Dataset Validation:</strong> Processed and validated retail datasets containing thousands of records per batch, ensuring data consistency and integrity for downstream analytics.</li>
+          <li><strong>Rule-Based Anomaly Detection:</strong> Applied logic-driven validation techniques to identify catalog inconsistencies and data anomalies, improving regional data reliability.</li>
+          <li><strong>Cross-Regional Collaboration:</strong> Collaborated with Malaysia and Vietnam teams to investigate data issues and standardise data validation practices.</li>
         </ul>
       </div>
     </section>
@@ -367,138 +382,108 @@ def generate_2page_resume():
   </div>
 
   <!-- ============================================================ -->
-  <!-- PAGE 2: TECHNICAL PROJECTS (CONT.), SKILLS, HONORS/AWARDS   -->
+  <!-- PAGE 2: SELECTED TECHNICAL PROJECTS, EDUCATION, HONORS       -->
   <!-- ============================================================ -->
   <div class="resume-page page-break-before" id="page-2">
 
-    <!-- TECHNICAL PROJECTS CONTINUED -->
+    <!-- SELECTED TECHNICAL PROJECTS -->
     <section class="section">
       <div class="section-header">
         <div class="bar"></div>
-        <span>Technical Projects (Continued)</span>
+        <span>Selected Technical Projects</span>
+      </div>
+      <div class="section-subtitle">AI application development • RAG • Agentic systems • Backend engineering</div>
+
+      <!-- Project 1: Personal DeepAgent -->
+      <div class="item avoid-break">
+        <div class="item-header">
+          <span class="item-title">Personal DeepAgent — Autonomous AI Agent System</span>
+          <span class="item-tags">LangGraph • Hybrid RAG • FastAPI • DuckDB • FlashRank</span>
+        </div>
+        <ul class="bullets">
+          <li>Architected a three-agent system comprising a dynamic orchestrator with step-budget guardrails, a ReAct research agent, and specialised sub-agent workers.</li>
+          <li>Implemented hybrid retrieval combining dense vector embeddings with sparse BM25 indexing in DuckDB, followed by FlashRank cross-encoder reranking.</li>
+          <li>Engineered local tool execution for system commands, multi-engine web search, and file operations, with automated failure recovery and self-correction loops.</li>
+          <li>Developed an asynchronous FastAPI backend using Server-Sent Events (SSE) for real-time response streaming and Human-in-the-Loop approval workflows.</li>
+        </ul>
       </div>
 
-      <!-- Project 2: Portfolio Dify RAG Platform -->
-      <div class="item avoid-break">
+      <!-- Project 2: AI Job Search & Resume Agent -->
+      <div class="item avoid-break" style="margin-top: 7px;">
+        <div class="item-header">
+          <span class="item-title">AI Job Search & Resume Agent</span>
+          <span class="item-tags">LangChain • MCP • Qdrant • Hybrid Search • JSearch API</span>
+        </div>
+        <ul class="bullets">
+          <li>Designed a multi-agent LLM application automating job discovery, semantic candidate ranking, resume analysis, and personalised email drafting.</li>
+          <li>Implemented dense and sparse BM25 hybrid retrieval with cross-encoder reranking in Qdrant for resume-to-job matching.</li>
+          <li>Developed an orchestration workflow managing query rewriting, information retrieval, ranking, and final response generation.</li>
+        </ul>
+      </div>
+
+      <!-- Project 3: Portfolio Dify Agentic RAG Platform -->
+      <div class="item avoid-break" style="margin-top: 7px;">
         <div class="item-header">
           <span class="item-title">Portfolio Dify Agentic RAG Platform</span>
           <span class="item-tags">Dify • Next.js • Tailwind CSS • Vector Search</span>
         </div>
         <ul class="bullets">
-          <li>Designed and launched a full-stack personal interactive portfolio powered by Dify Agentic RAG workflows and custom Next.js frontend components.</li>
-          <li>Engineered multi-hop retrieval and document grounding pipelines to provide contextual, accurate responses about past projects, technical stack, and career background.</li>
-          <li>Integrated custom conversational tools and responsive UI components for dynamic chat interactions and resume querying.</li>
-        </ul>
-      </div>
-
-      <!-- Project 3: AI Job Search & Resume Agent -->
-      <div class="item avoid-break" style="margin-top: 8px;">
-        <div class="item-header">
-          <span class="item-title">AI Job Search & Resume Agent</span>
-          <span class="item-tags">LangChain • Model Context Protocol (MCP) • Qdrant • Hybrid Search</span>
-        </div>
-        <ul class="bullets">
-          <li>Designed and implemented a multi-agent LLM pipeline automating job retrieval, semantic candidate ranking, and personalized email drafting integrated with the JSearch API.</li>
-          <li>Engineered dense + sparse BM25 hybrid search with cross-encoder reranking in Qdrant for semantic resume-job matching.</li>
-          <li>Developed a controlled multi-agent orchestration loop managing query rewriting, retrieval, ranking, and final summarization.</li>
+          <li>Developed a full-stack interactive portfolio integrating Dify-powered Agentic RAG workflows with a custom Next.js frontend.</li>
+          <li>Built multi-hop retrieval and document-grounding pipelines to answer contextual questions about projects, technical skills, and professional background.</li>
+          <li>Integrated custom conversational tools and responsive frontend components for interactive portfolio exploration.</li>
         </ul>
       </div>
 
       <!-- Project 4: F1 Data Text-to-SQL Agent -->
-      <div class="item avoid-break" style="margin-top: 8px;">
+      <div class="item avoid-break" style="margin-top: 7px;">
         <div class="item-header">
           <span class="item-title">F1 Data Text-to-SQL Agent</span>
           <span class="item-tags">Python • PostgreSQL • LangGraph • LangChain</span>
         </div>
         <ul class="bullets">
-          <li>Built a workflow-based Text-to-SQL agent converting natural language queries into executable SQL and structured JSON responses with automated database schema inspection and confidence scoring.</li>
-          <li>Implemented dynamic matplotlib chart selection and Formula 1 domain-rule logic for sprint points, race statistics, and standings.</li>
-        </ul>
-      </div>
-
-      <!-- Project 5: Smart Expense Tracker -->
-      <div class="item avoid-break" style="margin-top: 8px;">
-        <div class="item-header">
-          <span class="item-title">Smart Expense Tracker by OCR & AI Analytics</span>
-          <span class="item-tags">Kotlin • Firebase • Taggun OCR • Android</span>
-        </div>
-        <ul class="bullets">
-          <li>Developed an end-to-end mobile application with real-time database synchronization and secure user authentication.</li>
-          <li>Integrated Taggun OCR and AI-driven categorization to automate receipt text extraction and generate real-time financial insights.</li>
+          <li>Built a workflow-based Text-to-SQL agent translating natural-language queries into executable SQL and structured JSON responses, with automated database schema inspection and confidence scoring.</li>
+          <li>Implemented dynamic Matplotlib chart selection and Formula 1 domain-specific logic for sprint points, race statistics, and standings.</li>
         </ul>
       </div>
     </section>
 
-    <!-- TECHNICAL SKILLS -->
+    <!-- EDUCATION -->
     <section class="section avoid-break">
       <div class="section-header">
         <div class="bar"></div>
-        <span>Technical Skills</span>
+        <span>Education</span>
       </div>
-      <div class="skills-grid">
-        <div class="skill-row">
-          <span class="skill-label">Agentic AI & Orchestration:</span>
-          <span class="skill-list">Agentic RAG, LangGraph, LangChain, Model Context Protocol (MCP), Tool Calling, Human-in-the-Loop (HITL), Dify, Prompt & Context Engineering</span>
+      <div class="item">
+        <div class="item-header">
+          <div>
+            <span class="item-title">Monash University Malaysia</span>
+            <span class="item-subtitle"> | Bachelor of Computer Science in Data Science</span>
+          </div>
+          <span class="item-date">FEB 2023 – DEC 2025</span>
         </div>
-        <div class="skill-row">
-          <span class="skill-label">RAG & Information Retrieval:</span>
-          <span class="skill-list">Hybrid Search (Dense + Sparse BM25), Qdrant, ChromaDB, FlashRank Cross-Encoder Reranking, Multi-Hop Retrieval, Document Preprocessing, Needle Evaluation</span>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">Programming & Backend:</span>
-          <span class="skill-list">Python, FastAPI, TypeScript, JavaScript, SQL, Kotlin, R, REST API Architecture, Next.js, Server-Sent Events (SSE)</span>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">Machine Learning & Deep Learning:</span>
-          <span class="skill-list">PyTorch, Transformers, BERT, Self-Attention, Prefix Prompt-Tuning, CNNs, Embeddings</span>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">Databases, Tools & DevOps:</span>
-          <span class="skill-list">DuckDB, PostgreSQL, MongoDB, Git, Docker, Linux, Pytest, CI/CD (GitHub Actions)</span>
+        <div style="font-size: 8.9pt; color: #881337; font-weight: 600; margin-top: 1px;">
+          Second Upper Honours • CGPA: 3.36 / 4.00
         </div>
       </div>
     </section>
 
-    <!-- AWARDS & LEADERSHIP -->
-    <section class="section avoid-break">
-      <div class="two-col-grid">
-        <div>
-          <div class="section-header">
-            <div class="bar"></div>
-            <span>Honors & Competitions</span>
-          </div>
-          <ul class="bullets">
-            <li><strong>Monash Coding League 2024:</strong> Competitive programming challenge.</li>
-            <li><strong>ExxonMobil DataWorks Challenge 2024:</strong> Data analytics competition.</li>
-            <li><strong>Leadership Champ by YCA:</strong> Youth leadership accreditation.</li>
-          </ul>
-        </div>
-
-        <div>
-          <div class="section-header">
-            <div class="bar"></div>
-            <span>Extracurricular Leadership</span>
-          </div>
-          <ul class="bullets">
-            <li><strong>President:</strong> Diabolo Society, Foon Yew (2019 – 2021).</li>
-            <li><strong>Member:</strong> Monash Rock Climbing Club (2024 – 2025).</li>
-            <li><strong>Participant:</strong> Badminton Competition Sport Carnival Monash 2025.</li>
-          </ul>
-        </div>
+    <!-- SELECTED HONORS & COMPETITIONS -->
+    <section class="section avoid-break" style="margin-top: 8px;">
+      <div class="section-header">
+        <div class="bar"></div>
+        <span>Selected Honors & Competitions</span>
       </div>
+      <ul class="bullets">
+        <li><strong>Monash Coding League 2024:</strong> Competitive programming challenge.</li>
+        <li><strong>ExxonMobil DataWorks Challenge 2024:</strong> Data analytics competition.</li>
+        <li><strong>Leadership Champ by YCA:</strong> Youth leadership accreditation.</li>
+      </ul>
     </section>
 
   </div>
 
 </body>
 </html>"""
-
-    out_dir = r"c:\Users\User\Documents\antigravity\personal-deepagent\docs"
-    os.makedirs(out_dir, exist_ok=True)
-    html_file = os.path.join(out_dir, "Mah_Qing_Tong_Resume_2Page.html")
-    pdf_file = os.path.join(out_dir, "Mah_Qing_Tong_Resume_2Page.pdf")
-    p1_img = r"C:\Users\User\.gemini\antigravity\brain\c39f0747-9fe2-42f7-ba3f-4b04c42cf777\resume_2page_preview_p1.png"
-    p2_img = r"C:\Users\User\.gemini\antigravity\brain\c39f0747-9fe2-42f7-ba3f-4b04c42cf777\resume_2page_preview_p2.png"
 
     with open(html_file, "w", encoding="utf-8") as f:
         f.write(html_content)
@@ -513,7 +498,7 @@ def generate_2page_resume():
         page.pdf(
             path=pdf_file,
             format="A4",
-            margin={"top": "11mm", "bottom": "11mm", "left": "15mm", "right": "15mm"},
+            margin={"top": "10.5mm", "bottom": "10.5mm", "left": "14mm", "right": "14mm"},
             print_background=True
         )
 
@@ -534,7 +519,7 @@ def generate_2page_resume():
     print("---------------------------------------------")
     
     assert page_count == 2, f"Expected exactly 2 pages, but got {page_count} pages!"
-    print("SUCCESS: PDF is verified to be EXACTLY 2 pages!")
+    print("SUCCESS: PDF is verified to be EXACTLY 2 pages with top-right photo!")
 
 if __name__ == "__main__":
     generate_2page_resume()
