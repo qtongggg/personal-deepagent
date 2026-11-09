@@ -143,9 +143,10 @@ async def serve_static(file_path: str):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "8000"))
     print("\n" + "=" * 65)
-    print("⚡ QT Portfolio & Resume DeepAgent Server Running!")
-    print(f"👉 Local URL: http://localhost:{port}")
-    print(f"📁 Serving UI From: {NIFTY_DIR}")
-    print("🧠 Engine: Resume DeepAgent (ChromaDB + BM25 + FlashRank)")
+    print(">> QT Portfolio & Resume DeepAgent Server Running!")
+    print(f">> Local URL: http://localhost:{port}")
+    print(f">> Serving UI From: {NIFTY_DIR}")
+    print(">> Engine: Resume DeepAgent (ChromaDB + BM25 + FlashRank)")
     print("=" * 65 + "\n")
     uvicorn.run("src.resume_api:app", host="0.0.0.0", port=port, reload=True)
+    

@@ -10,14 +10,14 @@
 - **GitHub**: https://github.com/qtongggg
 
 ## Professional Summary
-LLM Engineer at Zetrix AI with a Bachelor of Computer Science in Data Science from Monash University Malaysia. Experienced in developing AI-powered applications, Retrieval-Augmented Generation (RAG) pipelines, and multi-agent workflows using Python, LangGraph, LangChain, FastAPI, and Qdrant. Hands-on experience in hybrid retrieval, document processing, cross-encoder reranking, tool integration, and backend API development, with a focus on building reliable and practical LLM applications.
+LLM Engineer at Zetrix AI with a Bachelor of Computer Science in Data Science from Monash University Malaysia. Experienced in architecting production Agentic RAG workflows, autonomous multi-agent systems, and modular Agent Skills (`SKILL.md` / MCP). Specializing in Harness Engineering (step-budget guardrails, context compaction, sandboxed tool execution, automated self-correction) and Rigorous Evaluation (automated Needle-in-a-Haystack benchmarks, retrieval recall, and faithfulness scoring). Hands-on expertise in hybrid vector/BM25 retrieval, cross-encoder reranking, and full-stack backend development for robust enterprise AI applications.
 
 ## Technical Skills
+- **LLM & Agentic Systems**: LangChain, LangGraph, Agent Skills (`SKILL.md`), Model Context Protocol (MCP), Dify, Multi-Agent Orchestration, Human-in-the-Loop (HITL), Prompt Engineering.
+- **Harness Engineering & Evals**: Step-Budget Guardrails, Context Compaction, Sandboxed Execution, Automated Self-Correction Loops, Needle-in-a-Haystack Evals, Faithfulness Benchmarking.
+- **RAG & Information Retrieval**: Hybrid Search, Dense & Sparse Retrieval (BM25), Qdrant, ChromaDB, Cross-Encoder Reranking, Multi-Hop Retrieval, Hierarchical Ingestion.
 - **Programming & Backend**: Python, FastAPI, TypeScript, JavaScript, SQL, REST APIs, Next.js, Server-Sent Events (SSE).
-- **LLM & Agentic Systems**: LangChain, LangGraph, Model Context Protocol (MCP), Dify, Tool Calling, Agent Orchestration, Human-in-the-Loop (HITL), Prompt & Context Engineering.
-- **RAG & Information Retrieval**: Hybrid Search, Dense & Sparse Retrieval, BM25, Qdrant, ChromaDB, Cross-Encoder Reranking, Multi-Hop Retrieval, Document Preprocessing.
-- **Machine Learning**: PyTorch, Hugging Face Transformers, BERT, CNNs, Embeddings, Self-Attention.
-- **Databases & Engineering Tools**: PostgreSQL, DuckDB, MongoDB, Git, Docker, Linux, Pytest, GitHub Actions, CI/CD.
+- **Machine Learning & Tools**: PyTorch, Hugging Face Transformers, BERT Prefix Prompt-Tuning, PostgreSQL, DuckDB, MongoDB, Git, Docker, Linux, Pytest, CI/CD.
 
 ## Professional Experience
 
@@ -42,45 +42,40 @@ LLM Engineer at Zetrix AI with a Bachelor of Computer Science in Data Science fr
 ## Selected Technical Projects
 *AI application development • RAG • Agentic systems • Backend engineering*
 
-### 1. Personal DeepAgent — Autonomous AI Agent System
-- **Stack**: LangGraph, Hybrid RAG, FastAPI, DuckDB, FlashRank
-- **Overview**: An enterprise-grade autonomous AI research and coding agent with self-correcting ingestion, deterministic tool execution, and interactive human oversight.
+### 1. Personal DeepAgent — Autonomous AI Agent System & Kinetic Portfolio
+- **Stack**: LangGraph, Agent Skills (`SKILL.md`), Hybrid RAG, FastAPI, DuckDB, FlashRank, Next.js, SSE
+- **Overview**: An enterprise-grade autonomous AI research and coding agent with self-correcting ingestion, deterministic tool execution, and an interactive full-stack kinetic portfolio.
 - **Key Capabilities**:
-  - Architected a three-agent system comprising a dynamic orchestrator with step-budget guardrails, a ReAct research agent, and specialised sub-agent workers.
-  - Implemented hybrid retrieval combining dense vector embeddings with sparse BM25 indexing in DuckDB, followed by FlashRank cross-encoder reranking.
-  - Engineered local tool execution for system commands, multi-engine web search, and file operations, with automated failure recovery and self-correction loops.
-  - Developed an asynchronous FastAPI backend using Server-Sent Events (SSE) for real-time response streaming and Human-in-the-Loop approval workflows.
+  - Architected a multi-agent orchestration graph featuring dynamic planning with step-budget guardrails, a ReAct research agent, and modular sub-agent workers with isolated execution.
+  - Implemented modular Agent Skills (`SKILL.md` / MCP) and hybrid retrieval combining dense vector embeddings with sparse BM25 indexing in DuckDB and FlashRank cross-encoder reranking.
+  - Engineered deterministic tool execution for system commands, multi-engine web search, and file operations with automated failure recovery and self-correction loops.
+  - Integrated a full-stack kinetic portfolio web interface (Next.js, Tailwind CSS) powered by an asynchronous FastAPI backend with Server-Sent Events (SSE) streaming and Human-in-the-Loop approval workflows.
 
 ### 2. AI Job Search & Resume Agent
 - **Stack**: LangChain, MCP, Qdrant, Hybrid Search, JSearch API
 - **Overview**: Autonomous multi-agent pipeline automating job retrieval, semantic candidate ranking, and personalized email drafting.
 - **Key Capabilities**:
   - Designed a multi-agent LLM application automating job discovery, semantic candidate ranking, resume analysis, and personalised email drafting.
-  - Implemented dense and sparse BM25 hybrid retrieval with cross-encoder reranking in Qdrant for resume-to-job matching.
+  - Implemented dense and sparse BM25 hybrid retrieval with cross-encoder reranking in Qdrant for high-precision resume-to-job matching.
   - Developed an orchestration workflow managing query rewriting, information retrieval, ranking, and final response generation.
 
-### 3. Portfolio Dify Agentic RAG Platform
-- **Stack**: Dify, Next.js, Tailwind CSS, Vector Search
-- **Overview**: Interactive kinetic portfolio and embedded CLI RAG agent providing token-by-token streaming responses over a structured personal knowledge base.
+### 3. Smart Expense Tracker by OCR & AI Analytics
+- **Stack**: Kotlin, Firebase, Taggun OCR, Real-Time Database, Mobile Architecture
+- **Overview**: End-to-end mobile expense management and receipt parsing application.
 - **Key Capabilities**:
-  - Developed a full-stack interactive portfolio integrating Dify-powered Agentic RAG workflows with a custom Next.js frontend.
-  - Built multi-hop retrieval and document-grounding pipelines to answer contextual questions about projects, technical skills, and professional background.
-  - Integrated custom conversational tools and responsive frontend components for interactive portfolio exploration.
-
-### 4. F1 Data Text-to-SQL Agent
-- **Stack**: Python, PostgreSQL, LangGraph, LangChain
-- **Overview**: Workflow-based Text-to-SQL conversational agent translating natural language queries into verified SQL queries and visual charts.
-- **Key Capabilities**:
-  - Built a workflow-based Text-to-SQL agent translating natural-language queries into executable SQL and structured JSON responses, with automated database schema inspection and confidence scoring.
-  - Implemented dynamic Matplotlib chart selection and Formula 1 domain-specific logic for sprint points, race statistics, and standings.
+  - Developed an end-to-end mobile application using Kotlin and Firebase, enabling real-time database synchronization and secure user authentication.
+  - Integrated Taggun OCR and AI-driven categorization to automate receipt text extraction and generate real-time financial insights for users.
 
 ## Education
 - **Institution**: Monash University Malaysia
 - **Degree**: Bachelor of Computer Science in Data Science
 - **Duration**: February 2023 – December 2025
 - **Academic Standing**: Second Upper Honours • CGPA: 3.36 / 4.00
+- **Academic Learnings & Deep Learning Research**:
+  - **Deep Learning & Neural Architectures**: Implemented Multi-Head Self-Attention modules, Position-wise Feed-Forward networks, and Transformer Encoders from scratch in PyTorch; architected Prefix Prompt-Tuning pipelines for BERT adaptation and evaluated RNN/LSTM/GRU sequential models across multi-class benchmarks.
+  - **Computer Science & Data Science Foundations**: Mastered advanced Algorithms & Data Structures, Big Data Management, Data Visualization, Relational & Distributed Databases, Cybersecurity principles, and Object-Oriented Software Engineering.
 
 ## Selected Honors & Competitions
-- **Monash Coding League 2024**: Competitive programming challenge.
-- **ExxonMobil DataWorks Challenge 2024**: Data analytics competition.
+- **Monash Coding League 2024**: Competitive algorithmic programming challenge.
+- **ExxonMobil DataWorks Challenge 2024**: Data analytics and predictive modeling competition.
 - **Leadership Champ by YCA**: Youth leadership accreditation.
