@@ -89,6 +89,7 @@
               <button type="button" class="agent-cmd-chip" data-cmd="projects">🚀 Show Projects</button>
               <button type="button" class="agent-cmd-chip" data-cmd="resume">📄 Download Resume</button>
               <button type="button" class="agent-cmd-chip" data-cmd="architecture">🏗️ Architecture</button>
+              <button type="button" class="agent-cmd-chip" data-cmd="play lofi beats">🎵 Play Lofi Beats</button>
               <button type="button" class="agent-cmd-chip" data-cmd="ask What are QT's core skills and flagship projects?">💬 Ask Skills &amp; Projects</button>
               <button type="button" class="agent-cmd-chip" data-cmd="tour">🎬 Full Showcase Tour</button>
             </div>
@@ -439,7 +440,45 @@
         return;
       }
 
-      // 5. COMMAND: NOTE
+      // 5. COMMAND: YOUTUBE / PLAY MUSIC / SONG
+      if (
+        cmdLower.includes("youtube") ||
+        cmdLower.startsWith("play ") ||
+        cmdLower.includes("play song") ||
+        cmdLower.includes("play music") ||
+        cmdLower.includes("play a song") ||
+        cmdLower.includes("lofi")
+      ) {
+        let songQuery = cmd.trim();
+        songQuery = songQuery.replace(/^(please\s+)?open\s+youtube(\s+and)?\s*/i, "");
+        songQuery = songQuery.replace(/^(please\s+)?play(\s+a|\s+some)?\s*(song|music|track|beats)?\s*/i, "");
+        songQuery = songQuery.replace(/\s*on\s+youtube\s*/i, " ");
+        songQuery = songQuery.replace(/\s*for\s+me\s*/i, " ");
+        songQuery = songQuery.trim();
+
+        // If generic or empty, default to relaxing coding lofi beats
+        if (!songQuery || ["a song", "song", "music", "some music", "something", "track", "beats"].includes(songQuery.toLowerCase())) {
+          songQuery = "lofi hip hop radio beats to relax study to";
+        }
+
+        this.setState("[ 🎵 Launching YouTube Music... ]");
+        this.triggerClickRipple();
+
+        const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(songQuery)}`;
+        try {
+          window.open(targetUrl, "_blank", "noopener,noreferrer");
+        } catch (e) {
+          console.warn("Could not open new window:", e);
+        }
+
+        await this.speak("AGENT DJ 🎧", `Playing "${songQuery}" on YouTube!`, 2800);
+        this.hideSpeech();
+        this.setState(null);
+        this.isRunning = false;
+        return;
+      }
+
+      // 6. COMMAND: NOTE
       if (cmdLower.startsWith("note:") || cmdLower.startsWith("note ") || cmdLower.startsWith("take note")) {
         const noteText = cmd.replace(/^(note:|note\s+|take\s+note:?)/i, "").trim();
         this.setState("[ 📝 Saving Workspace Note... ]");
