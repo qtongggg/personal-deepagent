@@ -316,5 +316,16 @@ async def launch_cross_tab_youtube(song_name: str = "lofi hip hop radio beats to
             }}""")
 
             print(f"[Cross-Tab] Success! '{clean_song}' is now playing in visible Google Chrome.")
+            # Keep Chrome open so the user can listen to their music
+            await asyncio.sleep(3600)
     except Exception as exc:
         print(f"[Cross-Tab] Error during YouTube navigation: {exc}")
+
+
+if __name__ == "__main__":
+    import sys
+    song_query = sys.argv[1] if len(sys.argv) > 1 else "lofi hip hop radio beats to relax study to"
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    asyncio.run(launch_cross_tab_youtube(song_query))
+

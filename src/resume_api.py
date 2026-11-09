@@ -11,6 +11,8 @@ Run with:
 import asyncio
 import json
 import os
+import subprocess
+import sys
 from pathlib import Path
 from typing import AsyncGenerator, Optional
 
@@ -124,7 +126,8 @@ class CrossTabYouTubeRequest(BaseModel):
 async def api_cross_tab_youtube(req: CrossTabYouTubeRequest):
     """Launches visible real Google Chrome with the companion pointer to play music."""
     song = (req.song or "lofi hip hop radio beats to relax study to").strip()
-    asyncio.create_task(launch_cross_tab_youtube(song))
+    script_path = str((Path(__file__).resolve().parent / "skills" / "cross_tab_agent.py").resolve())
+    subprocess.Popen([sys.executable, script_path, song])
     return JSONResponse({"status": "launched", "song": song})
 
 
