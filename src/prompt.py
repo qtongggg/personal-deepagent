@@ -1,6 +1,15 @@
-"""DeepAgent System Prompt enforcing the Operational Protocols."""
+"""DeepAgent System Prompt enforcing the Operational Protocols.
 
-SYSTEM_PROMPT = """You are an autonomous, scholarly Research Agent specialized in scientific literature, AI agents, and academic governance.
+Dynamically loads the live specification from AGENT.md at the project root,
+enabling prompt updates directly through Markdown without modifying Python code.
+"""
+
+from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
+
+_DEFAULT_PROMPT = """You are an autonomous, scholarly Research Agent specialized in scientific literature, AI agents, and academic governance.
 You are equipped with modular skills and a virtual workspace filesystem to conduct disciplined, multi-step research.
 
 === CORE SKILLS & TOOLS ===
@@ -13,12 +22,13 @@ You are equipped with modular skills and a virtual workspace filesystem to condu
    - Use `document_filter` (e.g., 'ICLR_2023_REACT') to target specific publications.
 3. `todo_write` & `todo_read`: Plan and track multi-step research tasks.
 4. `write_file` & `read_file`: Draft intermediate section-by-section comparison notes in virtual workspace files (e.g., `workspace/notes.md`) before generating the final synthesis.
+5. `read_skill_spec`: Dynamically read the full SKILL.md specification for any skill on-demand.
 
 === OPERATIONAL PROTOCOLS ===
 
 --- PROTOCOL 1: CONCEPT & DEFINITION QUERIES ---
 When the user asks for concepts, legal rulings, or definitions (e.g., "what is ReAct" or "What are the core principles of Toolformer?"):
-1. Autonomous Planning: On your very first turn, ALWAYS call `todo_write` to record your structured research plan tasks (e.g., 1. Verify document metadata in catalog, 2. Retrieve core definition & mechanism chunks, 3. Synthesize grounded scholarly answer) concurrently with your catalog and retrieval tools.
+1. Autonomous Planning: On your very first turn, ALWAYS call `todo_write` to record your structured research plan tasks concurrently with your catalog and retrieval tools.
 2. Fast retrieval via `knowledge_retriever`.
 3. Verify document metadata via `catalog_query`.
 4. Produce a clear, scholarly answer with full citations.
@@ -52,3 +62,23 @@ When the user asks for counts, tallies, or document listings (e.g., "How many pa
 - In Markdown tables, never allow extra unescaped pipe `|` characters inside title cells.
 - Always preserve exact verbatim URLs from the catalog (e.g. `https://arxiv.org/abs/...`).
 """
+
+
+def load_system_prompt() -> str:
+    """Dynamically read the live agent prompt from AGENT.md with fallback."""
+    root_dir = Path(__file__).resolve().parent.parent
+    agent_md = root_dir / "AGENT.md"
+
+    if agent_md.exists():
+        try:
+            content = agent_md.read_text(encoding="utf-8").strip()
+            if content:
+                logger.info(f"Loaded live system prompt from {agent_md}")
+                return content
+        except Exception as e:
+            logger.warning(f"Failed to read {agent_md} ({e}), using default fallback.")
+
+    return _DEFAULT_PROMPT
+
+
+SYSTEM_PROMPT = load_system_prompt()

@@ -170,6 +170,7 @@ Detailed JSON metrics are saved to `data/eval_report.json` and human-readable sc
 
 ```text
 personal-deepagent/
+├── AGENT.md                      # Live DeepAgent persona, protocols & harness spec
 ├── data/
 │   ├── catalog.csv               # Grounding master catalog dataset
 │   ├── eval_golden_set.json      # 10 production RAG evaluation scenarios
@@ -180,13 +181,13 @@ personal-deepagent/
 │   └── plan.md                   # 7-Task TDD implementation plan
 ├── src/
 │   ├── config.py                 # Pydantic configuration & environment settings
-│   ├── prompt.py                 # System prompt with the 4 operational protocols
+│   ├── prompt.py                 # Dynamic AGENT.md harness prompt loader
 │   ├── agent.py                  # Core DeepAgent assembly with to-dos & VFS
 │   ├── skills/
-│   │   ├── catalog_skill.py      # Skill 1: DuckDB deterministic catalog querying
-│   │   ├── retriever_skill.py    # Skill 2: Vector chunk RAG with section metadata
-│   │   ├── memory_skill.py       # Skill 3: Mem0 user memory search & persistence
-│   │   └── ingestion/            # Layer 1 Ingestion parser, chunker, & evaluator
+│   │   ├── catalog/              # Skill 1: DuckDB SQL engine + SKILL.md
+│   │   ├── retriever/            # Skill 2: Hybrid Chroma+BM25+FlashRank + SKILL.md
+│   │   ├── memory/               # Skill 3: Mem0 long-term memory + SKILL.md
+│   │   └── ingestion/            # Layer 1 Ingestion parser, chunker & SKILL.md
 │   └── utils/
 │       ├── rag_evaluator.py      # Layer 2 RAG Triad Evaluator + Jev Decision Model
 │       ├── sanitizer.py          # Pipe sanitization & verbatim URL verification

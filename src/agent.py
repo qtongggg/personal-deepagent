@@ -16,9 +16,44 @@ from src.skills.retriever_skill import retriever_tool
 from src.utils.sanitizer import build_final_response
 from src.utils.schemas import AgentResponse
 
+from pathlib import Path
+
 logger = logging.getLogger(__name__)
 
 _TODOS: List[str] = []
+
+SKILL_SPEC_MAP = {
+    "catalog_skill": "src/skills/catalog/SKILL.md",
+    "catalog": "src/skills/catalog/SKILL.md",
+    "retriever_skill": "src/skills/retriever/SKILL.md",
+    "retriever": "src/skills/retriever/SKILL.md",
+    "memory_skill": "src/skills/memory/SKILL.md",
+    "memory": "src/skills/memory/SKILL.md",
+    "ingestion_skill": "src/skills/ingestion/SKILL.md",
+    "ingestion": "src/skills/ingestion/SKILL.md",
+}
+
+
+@tool("read_skill_spec")
+def read_skill_spec(skill_name: str) -> str:
+    """Read the formal SKILL.md specification for any skill on-demand.
+    Available skills: 'catalog_skill', 'retriever_skill', 'memory_skill', 'ingestion_skill'.
+    """
+    key = str(skill_name).strip().lower()
+    rel_path = SKILL_SPEC_MAP.get(key)
+    if not rel_path:
+        avail = ", ".join(sorted(set(SKILL_SPEC_MAP.keys())))
+        return f"Unknown skill '{skill_name}'. Available skills: {avail}"
+
+    root_dir = Path(__file__).resolve().parent.parent
+    file_path = root_dir / rel_path
+    if not file_path.exists():
+        return f"Specification for '{skill_name}' not found at {rel_path}."
+
+    try:
+        return file_path.read_text(encoding="utf-8")
+    except Exception as e:
+        return f"Error reading specification for '{skill_name}': {e}"
 
 
 @tool("todo_write")
@@ -60,6 +95,7 @@ def get_agent_tools() -> List[Any]:
         todo_write,
         write_to_dos,
         todo_read,
+        read_skill_spec,
     ]
 
 
