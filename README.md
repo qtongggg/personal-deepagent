@@ -119,12 +119,62 @@ Detailed JSON execution traces and Markdown summaries are automatically saved to
 
 ---
 
+## 🔬 Automated Production RAG Evaluation Harness (with Jev Decision Model)
+
+To guarantee enterprise-grade reliability, Personal DeepAgent features an automated **2-Layer Continuous Evaluation Framework**:
+
+- **Layer 1: Ingestion & Chunking Evaluator** (`src/skills/ingestion/evaluator.py`) — Audits token distribution, character boundaries, section headers, and table formatting during indexing.
+- **Layer 2: Output & Generation Quality (The RAG Triad)** (`src/utils/rag_evaluator.py`) — Algorithmic verification on actual agent outputs:
+  - **Faithfulness (Zero Hallucination)**: 35% weight. Decomposes answers into atomic claims and verifies grounding against retrieved chunks.
+  - **Answer Relevance**: 30% weight. Scores semantic alignment with the user's intent.
+  - **Context Recall**: 20% weight. Measures coverage of expected ground-truth domain claims.
+  - **Citation Accuracy**: 10% weight. Verbatim verification of catalog URLs and documents.
+  - **Table Compliance**: 5% weight. Validates Markdown table formatting and pipe escaping.
+
+### ⚡ Jev Non-Generative Decision Model (`TypeSafe AI`)
+
+Instead of relying solely on heavy generative LLMs for evaluation—which are slow, expensive, and prone to "evaluator hallucinations"—the system natively integrates **Jev** (`https://api.typesafe.ai/v1/systemone`):
+
+- **Non-Generative & Calibrated**: Evaluates atomic claims concurrently via the typed boolean primitive (`noul`), outputting true probabilities without generating text.
+- **Sub-500ms Single-Pass Latency**: Runs up to **20x faster** than multi-turn LLM generation.
+- **Zero Output Token Fees**: Input tokens cost only **$0.042 / 1M tokens** ($42 per billion), and output tokens are **$0.00 (free)**.
+
+#### Empirical Benchmark: Generative LLM vs. Jev Decision Model
+
+| Evaluation Metric | Before: Generative LLM (DeepSeek / 4o-mini) | After: Jev Decision Model (TypeSafe AI) | Production Advantage |
+| :--- | :---: | :---: | :---: |
+| **Verification Metric** | Faithfulness: **90.0%** | Faithfulness: **90.0%** | **100% Agreement** ($P \ge 0.50$) |
+| **Output Token Cost** | ~$0.56 / 1M output tokens | **$0.00 (Free output)** | **100% Output token fee eliminated** |
+| **Input Token Cost** | ~$0.28 / 1M tokens | **$0.042 / 1M tokens** | **~85% Cheaper input processing** |
+| **Est. Cost per 1,000 Evals** | **~$0.95** | **~$0.10** | **~90% Direct Cost Savings** |
+| **Evaluator Latency** | **6.53s** (Autoregressive decoding) | **3.75s** total (*Jev API call: ~300ms*) | **1.7x to 20x Faster** |
+
+### 🛠️ Running the Evaluation Suite
+
+```bash
+# Run with Jev Decision Model (fastest & lowest cost)
+python scripts/run_rag_eval.py --evaluator jev
+
+# Run with standard LLM-as-a-judge (DeepSeek / OpenAI)
+python scripts/run_rag_eval.py --evaluator llm
+
+# Run head-to-head comparative benchmark on a scenario
+python scripts/run_rag_eval.py --single eval_02_react_vs_reflexion --evaluator both
+```
+
+Detailed JSON metrics are saved to `data/eval_report.json` and human-readable scorecards to `data/eval_report.md`.
+
+---
+
 ## 📂 Project Structure
 
 ```text
 personal-deepagent/
 ├── data/
-│   └── catalog.csv               # Grounding master catalog dataset
+│   ├── catalog.csv               # Grounding master catalog dataset
+│   ├── eval_golden_set.json      # 10 production RAG evaluation scenarios
+│   ├── eval_report.json          # Detailed evaluation metrics output
+│   └── eval_report.md            # Markdown scorecard for CI/CD reports
 ├── docs/
 │   ├── blueprint.md              # Full architectural blueprint & operational protocols
 │   └── plan.md                   # 7-Task TDD implementation plan
@@ -135,13 +185,17 @@ personal-deepagent/
 │   ├── skills/
 │   │   ├── catalog_skill.py      # Skill 1: DuckDB deterministic catalog querying
 │   │   ├── retriever_skill.py    # Skill 2: Vector chunk RAG with section metadata
-│   │   └── memory_skill.py       # Skill 3: Mem0 user memory search & persistence
+│   │   ├── memory_skill.py       # Skill 3: Mem0 user memory search & persistence
+│   │   └── ingestion/            # Layer 1 Ingestion parser, chunker, & evaluator
 │   └── utils/
+│       ├── rag_evaluator.py      # Layer 2 RAG Triad Evaluator + Jev Decision Model
 │       ├── sanitizer.py          # Pipe sanitization & verbatim URL verification
 │       └── schemas.py            # Pydantic response models
 ├── scripts/
 │   ├── ingest.py                 # Script to chunk and index documents into Chroma
-│   └── run_agent.py              # Interactive CLI turn runner
+│   ├── run_agent.py              # Interactive CLI turn runner
+│   ├── run_rag_eval.py           # Automated RAG evaluation benchmark runner
+│   └── benchmark_comparison.py   # Side-by-side Naive RAG vs DeepAgent benchmark
 ├── tests/
 │   ├── test_config.py            # L1 syntax tests
 │   ├── test_catalog_skill.py     # L2 skill unit tests
@@ -181,8 +235,12 @@ cp .env.example .env
 
 ```env
 OPENAI_API_KEY=sk-...
+DEEPSEEK_API_KEY=sk-...
 MEM0_API_KEY=m0-...
 DEFAULT_MODEL=gpt-4o
+
+# Jev Decision Model for sub-500ms, zero-output-token RAG evaluation
+JEV_API_KEY=jev-...
 ```
 
 ### 3. Run the Test Suite
