@@ -3,8 +3,9 @@ name = "personal-deepagent"
 version = "0.1.0"
 description = "Autonomous Research Agent with Skills built with LangChain deepagents and LangGraph"
 authors = [
-    { name = "Your Name", email = "you@example.com" }
+    { name = "Mah Qing Tong (QT)" }
 ]
+license = { text = "All Rights Reserved" }
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

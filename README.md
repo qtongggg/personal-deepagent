@@ -3,7 +3,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![LangChain deepagents](https://img.shields.io/badge/LangChain-deepagents-green.svg)](https://github.com/langchain-ai/deepagents)
 [![LangGraph](https://img.shields.io/badge/State-LangGraph-orange.svg)](https://github.com/langchain-ai/langgraph)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: All Rights Reserved](https://img.shields.io/badge/License-All_Rights_Reserved-red.svg)](LICENSE)
 
 A production-grade, autonomous multi-hop research agent built using **LangChain's `deepagents`** harness and **`LangGraph`**. 
 
@@ -262,4 +262,7 @@ The agent follows 4 strict operational protocols:
 ---
 
 ## 📝 License
-MIT License. Free to use and adapt for academic and personal research projects.
+
+Copyright © 2026 Mah Qing Tong (QT). All Rights Reserved.
+
+This project, along with its source code, documentation, benchmarks, and multi-layer evaluation architectures, is proprietary. No license is granted for public distribution, modification, reverse engineering, commercialization, or sublicensing without explicit prior written authorization from the author. See [LICENSE](LICENSE) for full legal terms.
