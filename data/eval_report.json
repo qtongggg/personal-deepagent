@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-11-15 17:13:24",
+  "model_name": "Comparative Benchmark (Jev vs Generative LLM) (deepseek-chat)",
+  "total_scenarios": 1,
+  "passed_scenarios": 1,
+  "pass_rate_pct": 100.0,
+  "avg_faithfulness": 0.9,
+  "avg_answer_relevance": 1.0,
+  "avg_context_recall": 1.0,
+  "avg_citation_accuracy": 1.0,
+  "avg_table_compliance": 1.0,
+  "avg_composite_score": 0.965,
+  "avg_latency_seconds": 34.92,
+  "scenario_scores": [
+    {
+      "scenario_id": "eval_02_react_vs_reflexion",
+      "category": "multi_hop_comparison",
+      "query": "Compare the core mechanisms of ReAct and Reflexion. How do their reasoning loops and feedback signals differ?",
+      "faithfulness": 0.9,
+      "answer_relevance": 1.0,
+      "context_recall": 1.0,
+      "citation_accuracy": 1.0,
+      "table_compliance": 1.0,
+      "composite_score": 0.965,
+      "latency_seconds": 34.92,
+      "prompt_tokens": 122505,
+      "completion_tokens": 4779,
+      "retrieved_chunks_count": 20,
+      "unsupported_claims": [
+        "ReAct and Reflexion differ along a single dominant axis: the scope of the loop."
+      ],
+      "verdict": "PASS"
+    }
+  ]
+}

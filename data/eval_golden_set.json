@@ -1,0 +1,114 @@
+[
+  {
+    "id": "eval_01_toolformer_apis",
+    "category": "factual_retrieval",
+    "query": "What external tool APIs can Toolformer teach itself to call, and how does it determine which API calls are useful?",
+    "expected_documents": ["ARXIV_TOOLFORMER"],
+    "key_ground_truth_claims": [
+      "Toolformer integrates tools including a calculator, Q&A/Wikipedia search, machine translation (NLLB), and calendar/Python tools.",
+      "Toolformer uses self-supervised loss filtering: an API call is retained only if executing it reduces the perplexity/loss on subsequent tokens."
+    ],
+    "requires_table": false
+  },
+  {
+    "id": "eval_02_react_vs_reflexion",
+    "category": "multi_hop_comparison",
+    "query": "Compare the core mechanisms of ReAct and Reflexion. How do their reasoning loops and feedback signals differ?",
+    "expected_documents": ["ICLR_2023_REACT", "ARXIV_REFLEXION_2023"],
+    "key_ground_truth_claims": [
+      "ReAct interleaves reasoning traces ('Thought') and task-specific actions ('Action') in a step-by-step observation loop.",
+      "Reflexion builds on ReAct by adding episodic memory buffers and verbal reinforcement learning with self-reflection signals.",
+      "Reflexion uses heuristic or scalar evaluation feedback to generate verbal critiques stored in long-term memory for subsequent trials."
+    ],
+    "requires_table": true
+  },
+  {
+    "id": "eval_03_tree_of_thoughts",
+    "category": "methodological_analysis",
+    "query": "How does Tree of Thoughts (ToT) generalize Chain of Thought (CoT), and what search algorithms does it use to explore thought trees?",
+    "expected_documents": ["TREE_OF_THOUGHTS", "NEURIPS_2022_CHAIN_OF_THOUGHT"],
+    "key_ground_truth_claims": [
+      "Tree of Thoughts generalizes Chain of Thought by allowing exploration of multiple reasoning branches rather than a single linear path.",
+      "ToT enables lookahead, self-evaluation of intermediate thoughts, and backtracking.",
+      "ToT utilizes classic search algorithms such as Breadth-First Search (BFS) and Depth-First Search (DFS) to explore the space of thoughts."
+    ],
+    "requires_table": true
+  },
+  {
+    "id": "eval_04_voyager_skills",
+    "category": "embodied_agents",
+    "query": "Explain the architecture of VOYAGER in Minecraft. What are its three main components and how does its skill library work?",
+    "expected_documents": ["VOYAGER"],
+    "key_ground_truth_claims": [
+      "VOYAGER consists of three main components: an automatic curriculum for exploration, an iterative prompting mechanism with execution feedback, and a skill library.",
+      "The skill library stores complex behaviors as executable JavaScript programs (Mineflayer API) that are indexed by embedding descriptions for retrieval and reuse."
+    ],
+    "requires_table": false
+  },
+  {
+    "id": "eval_05_dpo_vs_constitutional",
+    "category": "alignment_preferences",
+    "query": "Compare Direct Preference Optimization (DPO) and Constitutional AI in terms of how they align language models with human preferences.",
+    "expected_documents": ["DPO_2023", "ARXIV_CONSTITUTIONAL_AI"],
+    "key_ground_truth_claims": [
+      "Constitutional AI uses self-critique and revision guided by a set of constitutional principles, applying RLAIF (RL from AI Feedback).",
+      "DPO (Direct Preference Optimization) directly optimizes the policy model on human preference pairs via an exact closed-form objective, bypassing the need for an explicit reward model or complex PPO training."
+    ],
+    "requires_table": true
+  },
+  {
+    "id": "eval_06_generative_agents",
+    "category": "multi_agent_simulation",
+    "query": "In Generative Agents (Simulacra of Human Behavior), what are the three architectural modules used to maintain realistic agent behavior?",
+    "expected_documents": ["UIST_2023_GENERATIVE_AGENTS"],
+    "key_ground_truth_claims": [
+      "Generative Agents architecture centers on three modules: Memory Stream, Reflection, and Planning.",
+      "The Memory Stream is a comprehensive database recording all agent experiences; Reflection periodically synthesizes higher-level abstract thoughts; and Planning translates memories and environment into coherent daily schedules."
+    ],
+    "requires_table": false
+  },
+  {
+    "id": "eval_07_agentbench_dimensions",
+    "category": "agent_benchmarking",
+    "query": "What is AgentBench and across what diverse environments or dimensions does it evaluate LLMs as autonomous agents?",
+    "expected_documents": ["ICLR_2024_AGENTBENCH"],
+    "key_ground_truth_claims": [
+      "AgentBench is a comprehensive benchmark evaluating language models as autonomous agents across diverse interactive environments.",
+      "It tests agents across dimensions including Operating System (OS bash commands), Database (SQL), Knowledge Graph, Digital Card Games, Web Shopping (WebShop), and embodied environments like ALFWorld."
+    ],
+    "requires_table": false
+  },
+  {
+    "id": "eval_08_sql_catalog_counts",
+    "category": "sql_catalog",
+    "query": "How many total documents are in the catalog, and how many of them were published in the year 2023?",
+    "expected_documents": [],
+    "key_ground_truth_claims": [
+      "The master catalog contains 25 documents in total.",
+      "There are 9 documents published in the year 2023."
+    ],
+    "requires_table": false
+  },
+  {
+    "id": "eval_09_self_refine",
+    "category": "iterative_refinement",
+    "query": "How does SELF-REFINE improve LLM outputs without additional training or reinforcement learning?",
+    "expected_documents": ["SELF_REFINE"],
+    "key_ground_truth_claims": [
+      "SELF-REFINE uses an iterative feedback-refinement loop consisting of Generation, Feedback, and Refinement.",
+      "The same language model generates multi-aspect qualitative feedback on its own output, and then refines the text conditioned on that feedback."
+    ],
+    "requires_table": false
+  },
+  {
+    "id": "eval_10_out_of_domain_negative",
+    "category": "out_of_domain",
+    "query": "What is the recommended tire inflation pressure in PSI for a 2024 Honda Civic?",
+    "expected_documents": [],
+    "key_ground_truth_claims": [
+      "The agent should explicitly state that this query is outside the research catalog/knowledge base.",
+      "The agent must not fabricate or hallucinate specific automotive PSI numbers as factual catalog knowledge."
+    ],
+    "requires_table": false
+  }
+]

@@ -1,6 +1,9 @@
 from functools import lru_cache
 from typing import Optional
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -14,6 +17,7 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: Optional[str] = None
     GOOGLE_API_KEY: Optional[str] = None
     DEEPSEEK_API_KEY: Optional[str] = None
+    JEV_API_KEY: Optional[str] = None
 
     DEFAULT_MODEL: str = "gpt-4o"
 
