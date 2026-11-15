@@ -1,15 +1,90 @@
 import json
 import logging
+import os
 import re
+import urllib.request
 import uuid
 from typing import Any, Dict, List, Optional
 import chromadb
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import HumanMessage
+from src.config import get_settings
 from src.utils.models import get_default_model
 from src.skills.ingestion.schemas import EvaluationProbe, EvaluationResult, IngestionChunk
 
 logger = logging.getLogger(__name__)
+
+
+def evaluate_chunk_integrity_jev(
+    chunks: List[IngestionChunk],
+    api_key: Optional[str] = None,
+    threshold: float = 0.50,
+) -> Dict[str, Dict[str, Any]]:
+    """Evaluate candidate chunk boundary integrity and self-containedness using Jev (TypeSafe AI).
+    
+    Sub-500ms parallel evaluation of all chunks concurrently via 'noul' boolean primitives.
+    Zero output token fees ($0.042 / 1M input tokens).
+    """
+    key = api_key or os.environ.get("JEV_API_KEY", "").strip()
+    if not key:
+        try:
+            key = (get_settings().JEV_API_KEY or "").strip()
+        except Exception:
+            pass
+    if not key:
+        raise ValueError("JEV_API_KEY not configured.")
+
+    if not chunks:
+        return {}
+
+    state_blocks = []
+    questions = {}
+    for c in chunks:
+        cid = c.chunk_id
+        snip = c.chunk_content[:800].strip()
+        state_blocks.append(f"[{cid}]\n{snip}")
+        questions[f"{cid}_complete"] = {
+            "type": "noul",
+            "instructions": f"In the passage labeled [{cid}], does the text express a self-contained, meaningful concept without dangling unresolved references?"
+        }
+        questions[f"{cid}_boundary"] = {
+            "type": "noul",
+            "instructions": f"In the passage labeled [{cid}], does the text conclude gracefully at a sentence boundary rather than cutting off abruptly mid-clause?"
+        }
+
+    payload = {
+        "model": "jev-latest",
+        "state": "\n\n---\n\n".join(state_blocks)[:30000],
+        "questions": questions,
+    }
+
+    req = urllib.request.Request(
+        "https://api.typesafe.ai/v1/systemone",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        method="POST"
+    )
+
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        result = json.loads(resp.read().decode("utf-8"))
+
+    answers = result.get("answers", {})
+    chunk_verdicts = {}
+    for c in chunks:
+        cid = c.chunk_id
+        p_complete = float(answers.get(f"{cid}_complete", {}).get("noul", 0.5))
+        p_boundary = float(answers.get(f"{cid}_boundary", {}).get("noul", 0.5))
+        avg_score = round((p_complete + p_boundary) / 2.0, 3)
+        passed = avg_score >= threshold
+        chunk_verdicts[cid] = {
+            "score": avg_score,
+            "completeness": p_complete,
+            "boundary": p_boundary,
+            "passed": passed,
+            "header_path": c.header_path,
+        }
+
+    return chunk_verdicts
 
 
 def generate_section_probes(
@@ -122,8 +197,9 @@ def evaluate_chunks(
     chunks: List[IngestionChunk],
     model: Optional[BaseChatModel] = None,
     threshold: float = 0.8,
+    use_jev: bool = True,
 ) -> EvaluationResult:
-    """Evaluate candidate chunks in an ephemeral staging vector index using paraphrased probes."""
+    """Evaluate candidate chunks in an ephemeral staging vector index using paraphrased probes and Jev."""
     if not chunks:
         return EvaluationResult(
             total_probes=0,
@@ -217,8 +293,24 @@ def evaluate_chunks(
                 if (chunk_hits / len(probes)) < threshold:
                     failing_sections_set.add(chunk.header_path)
 
+        # 6. Jev Chunk Integrity & Boundary Verification (Fast sub-500ms parallel check)
+        if use_jev and (os.environ.get("JEV_API_KEY") or getattr(get_settings(), "JEV_API_KEY", None)):
+            try:
+                jev_verdicts = evaluate_chunk_integrity_jev(chunks)
+                for cid, v in jev_verdicts.items():
+                    if not v["passed"]:
+                        failing_sections_set.add(v["header_path"])
+                        diagnostics.append({
+                            "chunk_id": cid,
+                            "header_path": v["header_path"],
+                            "issue": "Jev flagged fragmented chunk or boundary cutoff",
+                            "jev_score": v["score"],
+                        })
+            except Exception as e:
+                logger.debug(f"Jev chunk integrity check skipped ({e})")
+
         recall_score = round(successful / total_probes, 4) if total_probes > 0 else 0.0
-        passed = recall_score >= threshold
+        passed = (recall_score >= threshold) and (len(failing_sections_set) == 0)
         failing_sections = list(failing_sections_set) if not passed else []
 
         return EvaluationResult(

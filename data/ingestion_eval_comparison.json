@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-11-15 23:37:15",
+  "total_chunks": 4,
+  "llm": {
+    "model": "deepseek-chat",
+    "latency_seconds": 4.246,
+    "prompt_tokens": 701,
+    "completion_tokens": 373,
+    "cost_per_eval": 0.00040516
+  },
+  "jev": {
+    "model": "jev-latest",
+    "latency_seconds": 0.298,
+    "prompt_tokens": 541,
+    "completion_tokens": 0,
+    "cost_per_eval": 2.2722000000000004e-05,
+    "speedup_factor": 14.2,
+    "verdicts": {
+      "chk_01_toolformer": {
+        "score": 0.905,
+        "completeness": 0.88,
+        "boundary": 0.93,
+        "passed": true,
+        "header_path": "METHOD > 3.1 Approach Overview"
+      },
+      "chk_02_react": {
+        "score": 0.895,
+        "completeness": 0.84,
+        "boundary": 0.95,
+        "passed": true,
+        "header_path": "FRAMEWORK > 2.2 Synergistic Reasoning and Acting"
+      },
+      "chk_03_reflexion": {
+        "score": 0.915,
+        "completeness": 0.88,
+        "boundary": 0.95,
+        "passed": true,
+        "header_path": "ARCHITECTURE > 3.2 Episodic Memory"
+      },
+      "chk_04_fragmented": {
+        "score": 0.095,
+        "completeness": 0.07,
+        "boundary": 0.12,
+        "passed": false,
+        "header_path": "DISCUSSION > 4.1 Limitations"
+      }
+    }
+  }
+}
