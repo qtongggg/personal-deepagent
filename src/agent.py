@@ -9,6 +9,7 @@ import deepagents
 from src.config import get_settings
 from src.prompt import SYSTEM_PROMPT
 from src.utils.models import get_default_model
+from src.skills.registry import get_skill_registry
 from src.skills.catalog_skill import catalog_tool
 from src.skills.ingestion.pipeline import ingest_document_tool
 from src.skills.memory_skill import add_memory_tool, search_memory_tool
@@ -22,38 +23,48 @@ logger = logging.getLogger(__name__)
 
 _TODOS: List[str] = []
 
-SKILL_SPEC_MAP = {
-    "catalog_skill": "src/skills/catalog/SKILL.md",
-    "catalog": "src/skills/catalog/SKILL.md",
-    "retriever_skill": "src/skills/retriever/SKILL.md",
-    "retriever": "src/skills/retriever/SKILL.md",
-    "memory_skill": "src/skills/memory/SKILL.md",
-    "memory": "src/skills/memory/SKILL.md",
-    "ingestion_skill": "src/skills/ingestion/SKILL.md",
-    "ingestion": "src/skills/ingestion/SKILL.md",
-}
+
+@tool("list_available_skills")
+def list_available_skills() -> str:
+    """List all modular skills available to Personal DeepAgent with triggers and tool names.
+    Call this tool when planning tasks or when determining which specialized skill can fulfill the user's intent.
+    """
+    registry = get_skill_registry()
+    manifest = registry.get_skill_manifest()
+    lines = ["# Available Modular Skills\n"]
+    for s in manifest:
+        lines.append(f"### Skill: `{s['name']}`")
+        lines.append(f"- **Description**: {s['description']}")
+        lines.append(f"- **Tools Provided**: {', '.join(s['tools'])}")
+        if s.get("triggers"):
+            lines.append(f"- **Sample Triggers**: {', '.join(repr(t) for t in s['triggers'][:3])}")
+        if s.get("cli_commands"):
+            lines.append(f"- **CLI Command**: `{s['cli_commands'][0]}`")
+        lines.append("")
+    return "\n".join(lines).strip()
 
 
 @tool("read_skill_spec")
 def read_skill_spec(skill_name: str) -> str:
-    """Read the formal SKILL.md specification for any skill on-demand.
-    Available skills: 'catalog_skill', 'retriever_skill', 'memory_skill', 'ingestion_skill'.
+    """Read the full formal SKILL.md specification and operational rules for any skill on-demand.
+    Use this to inspect exact tool schemas, SQL database columns, and invariants before executing actions.
+    Available skills include: 'catalog_skill', 'retriever_skill', 'memory_skill', 'ingestion_skill'.
     """
-    key = str(skill_name).strip().lower()
-    rel_path = SKILL_SPEC_MAP.get(key)
-    if not rel_path:
-        avail = ", ".join(sorted(set(SKILL_SPEC_MAP.keys())))
-        return f"Unknown skill '{skill_name}'. Available skills: {avail}"
+    registry = get_skill_registry()
+    return registry.get_skill_spec(skill_name)
 
-    root_dir = Path(__file__).resolve().parent.parent
-    file_path = root_dir / rel_path
-    if not file_path.exists():
-        return f"Specification for '{skill_name}' not found at {rel_path}."
 
-    try:
-        return file_path.read_text(encoding="utf-8")
-    except Exception as e:
-        return f"Error reading specification for '{skill_name}': {e}"
+@tool("execute_skill_tool")
+def execute_skill_tool(tool_name: str, parameters: Any = None) -> str:
+    """Dynamically execute a tool discovered from a SKILL.md specification.
+    Pass the tool_name (e.g. 'catalog_query', 'knowledge_retriever', 'search_memory') and its parameters.
+    """
+    registry = get_skill_registry()
+    params = parameters or {}
+    res = registry.execute_tool(tool_name, params)
+    if isinstance(res, (dict, list)):
+        return json.dumps(res, indent=2, default=str)
+    return str(res)
 
 
 @tool("todo_write")
@@ -85,27 +96,37 @@ def todo_read() -> str:
 
 
 
-def get_agent_tools() -> List[Any]:
-    return [
-        catalog_tool,
-        retriever_tool,
-        search_memory_tool,
-        add_memory_tool,
-        ingest_document_tool,
+def get_agent_tools(mode: str = "hybrid") -> List[Any]:
+    meta_tools = [
+        list_available_skills,
+        read_skill_spec,
+        execute_skill_tool,
         todo_write,
         write_to_dos,
         todo_read,
-        read_skill_spec,
     ]
+    if mode == "dynamic":
+        # Pure Paradigm 2: Meta-tools only, zero domain tool schema bloat
+        return meta_tools
+    else:
+        # Hybrid Paradigm 1.5/2: Meta-tools + pre-bound domain tools (100% backward compatible)
+        return meta_tools + [
+            catalog_tool,
+            retriever_tool,
+            search_memory_tool,
+            add_memory_tool,
+            ingest_document_tool,
+        ]
 
 
 def create_deep_research_agent(
     model: Optional[BaseChatModel] = None,
     tools: Optional[List[Any]] = None,
+    mode: str = "hybrid",
 ):
     """Compile and assemble the autonomous DeepAgent with its skill suite."""
     active_model = model or get_default_model()
-    active_tools = tools if tools is not None else get_agent_tools()
+    active_tools = tools if tools is not None else get_agent_tools(mode=mode)
 
     agent = deepagents.create_deep_agent(
         model=active_model,
@@ -120,10 +141,11 @@ def run_agent_turn(
     user_id: str = "default_user",
     agent: Optional[Any] = None,
     model: Optional[BaseChatModel] = None,
+    mode: str = "hybrid",
 ) -> AgentResponse:
     """Run an autonomous DeepAgent turn, applying post-synthesis invariants."""
     if agent is None:
-        agent = create_deep_research_agent(model=model)
+        agent = create_deep_research_agent(model=model, mode=mode)
 
     user_prompt = f"[User Context: user_id={user_id}]\n{query}"
     state = agent.invoke({"messages": [{"role": "user", "content": user_prompt}]})
