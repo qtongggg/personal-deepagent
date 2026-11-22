@@ -57,11 +57,12 @@ flowchart TD
     Sanitizer --> Output(["Final Scholarly Response with Table & Citations"])
 ```
 
-1. **Active Task Planning**: The agent maintains a persistent `to_dos` checklist inside its LangGraph state, ensuring disciplined multi-hop execution without skipping steps.
-2. **Virtual Filesystem (VFS) Context Management**: Large chunk text is automatically offloaded to virtual scratchpad files (`/workspace/notes.md`) to prevent token window dilution during multi-document comparisons.
-3. **Deterministic Catalog Skill**: Uses DuckDB over CSV for zero-hallucination inventory counts and exact metadata verification.
-4. **Autonomous Long-Term Memory**: Automatically persists user identity, academic constraints, and investigated research topics into Mem0 without needing explicit trigger words.
-5. **Defensive Formatting Guardrails**: Built-in pipe sanitizers (`|` $\to$ `—`) ensure Markdown tables never break column alignment, while verbatim catalog URLs are preserved character-for-character.
+1. **Paradigm 2 On-Demand Skill Discovery**: Replaced monolithic tool bloat with a dynamic `SkillRegistry`. The agent uses meta-tools (`list_available_skills`, `read_skill_spec`, `execute_skill_tool`) to inspect `SKILL.md` packages just-in-time, keeping context windows lean.
+2. **Active Task Planning**: The agent maintains a persistent `to_dos` checklist inside its LangGraph state, ensuring disciplined multi-hop execution without skipping steps.
+3. **Virtual Filesystem (VFS) Context Management**: Large chunk text is automatically offloaded to virtual scratchpad files (`/workspace/notes.md`) to prevent token window dilution during multi-document comparisons.
+4. **Deterministic Catalog Skill**: Uses DuckDB over CSV for zero-hallucination inventory counts and exact metadata verification.
+5. **Autonomous Long-Term Memory**: Automatically persists user identity, academic constraints, and investigated research topics into Mem0 without needing explicit trigger words.
+6. **Defensive Formatting Guardrails**: Built-in pipe sanitizers (`|` $\to$ `—`) ensure Markdown tables never break column alignment, while verbatim catalog URLs are preserved character-for-character.
 
 ---
 
@@ -225,6 +226,7 @@ personal-deepagent/
 │   ├── prompt.py                 # Dynamic AGENT.md harness prompt loader
 │   ├── agent.py                  # Core DeepAgent assembly with to-dos & VFS
 │   ├── skills/
+│   │   ├── registry.py           # Paradigm 2 dynamic skill discovery & tool dispatcher
 │   │   ├── catalog/              # Skill 1: DuckDB SQL engine + SKILL.md
 │   │   ├── retriever/            # Skill 2: Hybrid Chroma+BM25+FlashRank + SKILL.md
 │   │   ├── memory/               # Skill 3: Mem0 long-term memory + SKILL.md

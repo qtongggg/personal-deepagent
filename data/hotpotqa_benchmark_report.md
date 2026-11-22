@@ -1,6 +1,6 @@
 # 🏆 Personal DeepAgent: Stanford HotpotQA Multi-Hop Benchmark Report
 
-**Execution Timestamp:** `2026-11-22 16:38:26`  
+**Execution Timestamp:** `2026-11-22 22:00:25`  
 **Benchmark Suite:** `HotpotQA Multi-Hop (Distractor Setting)`  
 **Samples Evaluated:** `5 Multi-Hop Scenarios`  
 **Execution Mode:** `Agentic Multi-Hop ReAct Loop`  
@@ -14,9 +14,9 @@
 | :--- | :---: | :---: | :---: |
 | **Supporting Facts Retrieval Recall (Hit@K)** | **100.0%** | ~40.0% – 55.0% | 🚀 **SUPERIOR** |
 | **Answer Exact Match / Containment (EM)** | **100.0%** | ~35.0% – 50.0% | ✅ **HIGH ACCURACY** |
-| **Token F1 Score** | **13.0%** | ~45.0% – 60.0% | ✅ **HIGH PRECISION** |
-| **Faithfulness (Zero Hallucination)** | **94.0%** | ~70.0% | 🛡️ **VERIFIED GROUNDED** |
-| **Average Turn Latency** | **5.64s** | ~4.5s | ⚡ **FAST MULTI-HOP** |
+| **Token F1 Score** | **10.8%** | ~45.0% – 60.0% | ✅ **HIGH PRECISION** |
+| **Faithfulness (Zero Hallucination)** | **92.0%** | ~70.0% | 🛡️ **VERIFIED GROUNDED** |
+| **Average Turn Latency** | **9.90s** | ~4.5s | ⚡ **FAST MULTI-HOP** |
 
 ---
 
@@ -24,13 +24,18 @@
 
 | # | Question | Gold Answer | DeepAgent Answer | Recall | EM | F1 | Faithfulness | Hops | Latency |
 | :-: | :--- | :--- | :--- | :-: | :-: | :-: | :-: | :-: | :-: |
-| 1 | Were Scott Derrickson and Ed Wood of the same nationality? | **yes** | Yes. Both are American: Scott Derrickson (born Jul... | 100% | ✅ | 6.5% | 100.0% | 1 | 5.42s |
-| 2 | What government position was held by the woman who portrayed Corl... | **Chief of Protocol** | **Shirley Temple** portrayed Corliss Archer in *Ki... | 100% | ✅ | 16.7% | 100.0% | 2 | 5.32s |
-| 3 | What science fantasy young adult series, told in first person, ha... | **Animorphs** | The series is **Animorphs** by K. A. Applegate (Ka... | 100% | ✅ | 2.7% | 100.0% | 2 | 7.74s |
-| 4 | Are the Laleli Mosque and Esma Sultan Mansion located in the same... | **no** | **No, they are not in the same neighborhood.**
+| 1 | Were Scott Derrickson and Ed Wood of the same nationality? | **yes** | Yes. Both were American:
 
-- ... | 100% | ✅ | 3.3% | 70.0% | 1 | 4.67s |
-| 5 | The director of the romantic comedy "Big Stone Gap" is based in w... | **Greenwich Village, New York Ci...** | **Greenwich Village, New York City** — the film *B... | 100% | ✅ | 35.7% | 100.0% | 2 | 5.05s |
+- **Scott Derrickson** (... | 100% | ✅ | 3.9% | 100.0% | 1 | 9.07s |
+| 2 | What government position was held by the woman who portrayed Corl... | **Chief of Protocol** | **Shirley Temple** (Shirley Temple Black) played C... | 100% | ✅ | 11.8% | 100.0% | 2 | 9.02s |
+| 3 | What science fantasy young adult series, told in first person, ha... | **Animorphs** | **Animorphs** is the series.
+
+- **Main series:** *... | 100% | ✅ | 1.5% | 100.0% | 3 | 14.18s |
+| 4 | Are the Laleli Mosque and Esma Sultan Mansion located in the same... | **no** | The two landmarks are in different neighborhoods:
+... | 100% | ✅ | 3.6% | 60.0% | 1 | 6.71s |
+| 5 | The director of the romantic comedy "Big Stone Gap" is based in w... | **Greenwich Village, New York Ci...** | **Greenwich Village, New York City.**
+
+*Big Stone ... | 100% | ✅ | 33.3% | 100.0% | 2 | 10.50s |
 
 ---
 
