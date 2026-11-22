@@ -66,6 +66,89 @@ flowchart TD
 
 ---
 
+## 🏛️ Paradigm 2: Skill-Driven Agent Harness Architecture
+
+Personal DeepAgent natively implements the **Skill-Driven Agent Harness pattern (Paradigm 2)**, transitioning away from traditional monolithic tool injection (Paradigm 1).
+
+### 🔄 The Paradigm Shift: Why Paradigm 1 Fails at Scale
+
+| Dimension | Paradigm 1: Monolithic Tool-Bound Agent | Paradigm 2: Skill-Driven Agent Harness (Personal DeepAgent) |
+| :--- | :--- | :--- |
+| **Tool Loading** | **Eager**: Injects 15–30 raw JSON schemas directly into every turn's prompt context. | **Just-In-Time (JIT)**: Discovers packages dynamically and reads specifications on-demand. |
+| **Context Window Overhead** | **High & Wasteful**: 4,000–8,000 tokens burned on tool schemas alone before user query. | **Ultra-Lean**: Only 3 lightweight meta-tools loaded initially (~250 tokens total). |
+| **LLM "Tool Confusion"** | **Frequent**: Hallucinated arguments, overlapping tools, wrong selections. | **Zero**: The agent reads the exact Standard Operating Procedure (SOP) before executing. |
+| **Extensibility** | **Rigid**: Adding a tool requires modifying core agent initialization and prompt code. | **Plug-and-Play**: Drop a new folder with `SKILL.md` into `src/skills/` — auto-discovered instantly. |
+| **Interface Decoupling** | **Coupled**: Tools are locked inside agent runtimes, unusable by developers or CI. | **Dual-Interface**: Same capability runs as an Agent Tool and as a developer CLI script. |
+
+---
+
+### ⚡ Dynamic Skill Discovery & Execution Sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Researcher / User
+    participant Agent as Personal DeepAgent Core
+    participant Registry as SkillRegistry (src/skills/registry.py)
+    participant SkillSpec as SKILL.md (Catalog / Retriever / Memory / Ingestion)
+    participant Tool as In-Process Tool Execution
+
+    User->>Agent: "Compare ReAct vs Reflexion and verify paper counts"
+    
+    rect rgb(240, 248, 255)
+        note over Agent,Registry: Phase 1: Dynamic Discovery (Zero Schema Bloat)
+        Agent->>Registry: list_available_skills()
+        Registry-->>Agent: ["catalog", "retriever", "memory", "ingestion"]
+    end
+
+    rect rgb(245, 255, 245)
+        note over Agent,SkillSpec: Phase 2: On-Demand SOP Ingestion (Catalog Verification)
+        Agent->>Registry: read_skill_spec("catalog")
+        Registry->>SkillSpec: Read YAML Frontmatter & Latency Guard SOP
+        SkillSpec-->>Agent: Return query_catalog_sql schema + operational rules
+        Agent->>Registry: execute_skill_tool("catalog", "query_catalog_sql", {"query": "SELECT COUNT(*) FROM catalog..."})
+        Registry->>Tool: Execute DuckDB query over catalog.csv
+        Tool-->>Agent: "Exact match: 2 papers verified"
+    end
+
+    rect rgb(255, 250, 240)
+        note over Agent,SkillSpec: Phase 3: Multi-Hop Retrieval via Retriever SOP
+        Agent->>Registry: read_skill_spec("retriever")
+        Registry->>SkillSpec: Read 2-Hop Protocol & Hybrid Rerank SOP
+        SkillSpec-->>Agent: Return retrieve_knowledge_chunks schema
+        Agent->>Registry: execute_skill_tool("retriever", "retrieve_knowledge_chunks", {"query": "ReAct vs Reflexion..."})
+        Registry->>Tool: Hybrid ChromaDB + BM25 + FlashRank ONNX Rerank
+        Tool-->>Agent: Ranked chunks with /SECTION/ breadcrumbs
+    end
+
+    rect rgb(248, 248, 255)
+        note over Agent,User: Phase 4: Scratchpad Offloading & Grounded Synthesis
+        Agent->>Agent: Offload long context to /workspace/notes.md
+        Agent->>Agent: Apply Pipe Sanitizer & Verbatim URL Restorer
+        Agent-->>User: Grounded 11-dimension comparison matrix + verified catalog citations
+    end
+```
+
+---
+
+### 🧩 The Modular Skills Suite
+
+Each skill in `src/skills/` is a self-contained, documented capability package adhering to the `SKILL.md` specification standard:
+
+| Skill Package | Core Engine | Dynamic Agent Tool | Equivalent Developer CLI Script | Key Responsibility & Invariants |
+| :--- | :--- | :--- | :--- | :--- |
+| **`catalog`** | In-Process DuckDB SQL | `query_catalog_sql` | `scripts/benchmark_comparison.py` | Zero-hallucination inventory counts, author stats, and canonical `source_url` verification. |
+| **`retriever`** | Hybrid Chroma + BM25 + FlashRank | `retrieve_knowledge_chunks` | `scripts/run_industry_benchmark.py` | Two-stage hybrid search with ONNX cross-encoder reranking and breadcrumb preservation. |
+| **`memory`** | Mem0 Semantic Memory Client | `search_memory`, `add_memory` | `scripts/run_agent.py` | Autonomous cross-session persistence of user identity, academic constraints, and topics. |
+| **`ingestion`** | PyMuPDF4LLM + Jev Decision Model | `ingest_pdf_document` | `scripts/ingest_doc.py` | Layer 1 semantic PDF parsing, chunk health audits, and quarantine self-healing gate. |
+
+#### 🔌 Dual-Interface Architecture Pattern
+Every capability in Personal DeepAgent follows the **Dual-Interface Principle**:
+1. **Agent Interface (`@tool`)**: Exposed to the LLM agent via `SkillRegistry` with clear descriptions, arguments, and return contracts.
+2. **Developer Interface (`scripts/`)**: Exposed as a standalone CLI script with `argparse` flags for terminal workflows, automated CI/CD pipelines, and evaluation benchmarks.
+
+---
+
 ## 📊 Benchmark: DeepAgent with Skills vs. Standard Naive RAG
 
 How does **Personal DeepAgent with Skills** compare against traditional **Standard Naive RAG** (fixed chunking, top-k vector retrieval, and raw prompt concatenation)?
@@ -292,14 +375,19 @@ JEV_API_KEY=jev-...
 ### 3. Run the Test Suite
 
 ```bash
+# Run complete test suite (unit, integration & E2E)
 pytest -v
+
+# Verify Paradigm 2 Skill Registry and Dynamic Execution specifically
+pytest tests/test_skill_registry.py tests/test_paradigm2_agent.py -v
 ```
 
 ---
 
 ## 📖 Operational Protocols
 
-The agent follows 4 strict operational protocols:
+The agent follows 5 strict operational protocols:
+- **Paradigm 2 SOP Execution**: Dynamic workflow: `list_available_skills` $\to$ `read_skill_spec("<skill>")` $\to$ `execute_skill_tool("<skill>", "<tool>", ...)` $\to$ `todo_write` / scratchpad notes $\to$ Sanitized synthesis.
 - **Concept & Definition**: Fast single-hop vector retrieval + catalog metadata verification + autonomous memory commit.
 - **2-Hop Paper Comparison**: Hop 1 structural overview (`/INTRODUCTION`) $\to$ Hop 2 surgical body dive $\to$ Virtual scratchpad drafting $\to$ Phase 3.5 `add_memory` $\to$ Cross-Paper Synthesis Matrix table.
 - **Pure Counts & Listings**: Catalog tool only (bypasses vector DB and Mem0), returning direct numbers and verified catalog URLs.
