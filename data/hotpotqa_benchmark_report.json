@@ -1,0 +1,157 @@
+{
+  "timestamp": "2026-11-22 16:38:26",
+  "total_samples": 5,
+  "avg_retrieval_recall": 1.0,
+  "avg_exact_match": 1.0,
+  "avg_f1_score": 0.1298,
+  "avg_faithfulness": 0.9400000000000001,
+  "mode": "Agentic Multi-Hop (ReAct)",
+  "avg_latency": 5.64,
+  "items": [
+    {
+      "id": "5a8b57f25542995d1e6f1371",
+      "question": "Were Scott Derrickson and Ed Wood of the same nationality?",
+      "gold_answer": "yes",
+      "predicted_answer": "Yes. Both are American: Scott Derrickson (born July 16, 1966) is an American director, screenwriter, and producer, and Edward Davis Wood Jr. (1924\u20131978) was an American filmmaker, actor, writer, producer, and director.",
+      "gold_supporting_titles": [
+        "Scott Derrickson",
+        "Ed Wood"
+      ],
+      "retrieved_titles": [
+        "Ed Wood (film)",
+        "Conrad Brooks",
+        "Adam Collis",
+        "Scott Derrickson",
+        "Woodson, Arkansas",
+        "Sinister (film)",
+        "Tyler Bates",
+        "Ed Wood"
+      ],
+      "hit_titles": [
+        "Scott Derrickson",
+        "Ed Wood"
+      ],
+      "retrieval_recall": 1.0,
+      "exact_match": true,
+      "f1_score": 0.065,
+      "faithfulness": 1.0,
+      "latency_seconds": 5.42,
+      "tool_calls_count": 1
+    },
+    {
+      "id": "5a8c7595554299585d9e36b6",
+      "question": "What government position was held by the woman who portrayed Corliss Archer in the film Kiss and Tell?",
+      "gold_answer": "Chief of Protocol",
+      "predicted_answer": "**Shirley Temple** portrayed Corliss Archer in *Kiss and Tell* (1945). As an adult, she became a **diplomat** \u2014 serving as **United States Ambassador to Ghana** and to **Czechoslovakia**, and as **Chief of Protocol of the United States**.",
+      "gold_supporting_titles": [
+        "Shirley Temple",
+        "Kiss and Tell (1945 film)"
+      ],
+      "retrieved_titles": [
+        "Janet Waldo",
+        "Shirley Temple",
+        "Meet Corliss Archer (TV series)",
+        "Kiss and Tell (1945 film)",
+        "Secretary of State for Constitutional Affairs",
+        "A Kiss for Corliss"
+      ],
+      "hit_titles": [
+        "Kiss and Tell (1945 film)",
+        "Shirley Temple"
+      ],
+      "retrieval_recall": 1.0,
+      "exact_match": true,
+      "f1_score": 0.167,
+      "faithfulness": 1.0,
+      "latency_seconds": 5.32,
+      "tool_calls_count": 2
+    },
+    {
+      "id": "5a85ea095542994775f606a8",
+      "question": "What science fantasy young adult series, told in first person, has a set of companion books narrating the stories of enslaved worlds and alien species?",
+      "gold_answer": "Animorphs",
+      "predicted_answer": "The series is **Animorphs** by K. A. Applegate (Katherine Applegate and Michael Grant), published by Scholastic.\n\n- It's described as a **science fantasy young adult series told in first person**, with the six main characters taking turns narrating.\n- Its **companion books** (the \"Chronicles\" \u2014 e.g., *The Andalite Chronicles*, *The Hork-Bajir Chronicles*, *The Ellimist Chronicles*) narrate the histories of enslaved worlds and alien species; *The Hork-Bajir Chronicles*, for instance, tells how the Yeerks enslaved the Hork-Bajir, with narration from Aldrea the Andalite, Dak Hamee the Hork-Bajir, and the Yeerk Esplin 9466.",
+      "gold_supporting_titles": [
+        "The Hork-Bajir Chronicles",
+        "Animorphs"
+      ],
+      "retrieved_titles": [
+        "Victoria Hanley",
+        "Etiquette &amp; Espionage",
+        "The Hork-Bajir Chronicles",
+        "Shadowshaper",
+        "Andre Norton Award",
+        "List of Square Enix companion books",
+        "The Divide trilogy",
+        "Animorphs"
+      ],
+      "hit_titles": [
+        "The Hork-Bajir Chronicles",
+        "Animorphs"
+      ],
+      "retrieval_recall": 1.0,
+      "exact_match": true,
+      "f1_score": 0.027,
+      "faithfulness": 1.0,
+      "latency_seconds": 7.74,
+      "tool_calls_count": 2
+    },
+    {
+      "id": "5adbf0a255429947ff17385a",
+      "question": "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?",
+      "gold_answer": "no",
+      "predicted_answer": "**No, they are not in the same neighborhood.**\n\n- **Laleli Mosque** is located in the **Laleli** neighborhood of the **Fatih** district, on the historic peninsula of Istanbul.\n- **Esma Sultan Mansion** is a waterside yal\u0131 located on the **Bosphorus** in the **Ortak\u00f6y** neighborhood of Istanbul.\n\nThese are two distinct neighborhoods on opposite sides of the city's historic core \u2014 Fatih (European side, historic peninsula) versus Ortak\u00f6y (further north along the Bosphorus).",
+      "gold_supporting_titles": [
+        "Esma Sultan Mansion",
+        "Laleli Mosque"
+      ],
+      "retrieved_titles": [
+        "Esma Sultan Mansion",
+        "Sultan Ahmed Mosque",
+        "Esma Sultan",
+        "Esma Sultan (daughter of Abd\u00fclaziz)",
+        "Laleli Mosque",
+        "Djama\u00e2 el Kebir",
+        "Esma Sultan (daughter of Ahmed III)"
+      ],
+      "hit_titles": [
+        "Esma Sultan Mansion",
+        "Laleli Mosque"
+      ],
+      "retrieval_recall": 1.0,
+      "exact_match": true,
+      "f1_score": 0.033,
+      "faithfulness": 0.7,
+      "latency_seconds": 4.67,
+      "tool_calls_count": 1
+    },
+    {
+      "id": "5a8e3ea95542995a26add48d",
+      "question": "The director of the romantic comedy \"Big Stone Gap\" is based in what New York city?",
+      "gold_answer": "Greenwich Village, New York City",
+      "predicted_answer": "**Greenwich Village, New York City** \u2014 the film *Big Stone Gap* was directed by **Adriana Trigiani**, who is based in Greenwich Village, New York City.",
+      "gold_supporting_titles": [
+        "Adriana Trigiani",
+        "Big Stone Gap (film)"
+      ],
+      "retrieved_titles": [
+        "I Love NY (2015 film)",
+        "Big Stone Gap (film)",
+        "Adriana Trigiani",
+        "Nola (film)",
+        "Hamish and Andy's Gap Year",
+        "New York Society of Model Engineers"
+      ],
+      "hit_titles": [
+        "Adriana Trigiani",
+        "Big Stone Gap (film)"
+      ],
+      "retrieval_recall": 1.0,
+      "exact_match": true,
+      "f1_score": 0.357,
+      "faithfulness": 1.0,
+      "latency_seconds": 5.05,
+      "tool_calls_count": 2
+    }
+  ]
+}

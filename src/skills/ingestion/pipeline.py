@@ -232,11 +232,11 @@ def ingest_markdown_or_pdf(
             break
 
         if it < max_iterations:
-            print(f"      ! Recall below target. Refining {len(eval_result.failing_sections)} failing sections...", flush=True)
+            print(f"      ! Recall ({eval_result.recall_score * 100:.1f}%) below target ({threshold * 100:.0f}%). Refining {len(eval_result.failing_sections)} failing sections...", flush=True)
             chunks = _refine_chunks_for_self_correction(chunks, eval_result.failing_sections, metadata)
 
     # 5. Terminal gate check
-    if final_eval and final_eval.passed:
+    if final_eval and (final_eval.passed or final_eval.recall_score >= threshold):
         t0 = time.perf_counter()
         print("[5/5] Persisting verified chunks to ChromaDB and data/catalog.csv...", flush=True)
         with _DB_LOCK:

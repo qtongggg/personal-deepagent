@@ -37,9 +37,15 @@ def _resolve_document_name(document_filter: str) -> Optional[str]:
 
 def _get_collection(collection_name: str = "document_knowledge"):
     global _CLIENT, _COLLECTION
-    if _COLLECTION is None:
+    if _CLIENT is None:
         _CLIENT = get_chroma_client()
-        _COLLECTION = _CLIENT.get_or_create_collection(collection_name)
+    try:
+        if _COLLECTION is not None and _COLLECTION.name == collection_name:
+            _COLLECTION.count()  # Validate existing handle
+            return _COLLECTION
+    except Exception:
+        _COLLECTION = None
+    _COLLECTION = _CLIENT.get_or_create_collection(collection_name)
     return _COLLECTION
 
 
@@ -68,9 +74,10 @@ def retrieve_knowledge_chunks(
     query: str,
     top_k: int = 4,
     document_filter: Optional[str] = None,
+    collection_name: str = "document_knowledge",
 ) -> List[Dict[str, Any]]:
     """Retrieve document chunks using a two-stage Hybrid (Dense + BM25) + FlashRank Reranker pipeline."""
-    collection = _get_collection()
+    collection = _get_collection(collection_name)
     total_count = collection.count()
     if total_count == 0:
         return []

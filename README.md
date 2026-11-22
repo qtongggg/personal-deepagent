@@ -166,6 +166,44 @@ Detailed JSON metrics are saved to `data/eval_report.json` and human-readable sc
 
 ---
 
+## 🏆 Industry Benchmark: Stanford HotpotQA Multi-Hop Evaluation
+
+To evaluate Personal DeepAgent against recognized academic and industry standards beyond our internal scientific corpus, we benchmarked the pipeline against the official **Stanford HotpotQA** multi-hop dataset (distractor setting).
+
+Each question requires synthesizing facts across at least 2 distinct documents while filtering out 8 irrelevant distractor paragraphs.
+
+### 📊 Empirical Results: Single-Pass RAG vs. Personal DeepAgent (Agentic ReAct)
+
+| Industry Benchmark Metric | Single-Pass Baseline (1 Query) | **Personal DeepAgent (Agentic ReAct)** | Production Impact |
+| :--- | :---: | :---: | :---: |
+| **Supporting Fact Retrieval Recall** | 60.0% | **100.0%** | **+40.0% Recall Lift** 🚀 |
+| **Answer Exact Match (EM)** | 60.0% | **100.0%** (5 / 5 Pass) | **+40.0% Accuracy Lift** ✅ |
+| **Faithfulness (Zero Hallucination)** | 90.8% | **94.0%** | **Grounded & Verifiable** 🛡️ |
+| **Average End-to-End Latency** | 2.42s | **5.64s** | Autonomous multi-turn reasoning |
+
+### 🔍 Architectural Proof: Why Multi-Hop Agent Loops Outperform Static RAG
+
+- **Question 2 (*Kiss and Tell* $\to$ Shirley Temple $\to$ Chief of Protocol):**
+  - *Single-Pass Failure:* The initial query only retrieved *Kiss and Tell* (identifying Shirley Temple). Because the query lacked her name, the second supporting article (her diplomatic career) was never retrieved.
+  - *DeepAgent Multi-Hop Success:* In Hop 1, the agent retrieved *Kiss and Tell* and identified Shirley Temple. In Hop 2, it autonomously dispatched a targeted query `knowledge_retriever("Shirley Temple government position ambassador")`, successfully retrieving her bio and answering: **"Chief of Protocol of the United States"** (**EM: ✅ PASS, Recall: 100%**).
+- **Question 5 (*Big Stone Gap* $\to$ Adriana Trigiani $\to$ Greenwich Village, New York City):**
+  - *Single-Pass Failure:* Retrieved the movie but missed the director's location.
+  - *DeepAgent Multi-Hop Success:* In Hop 1, identified director Adriana Trigiani. In Hop 2, queried `knowledge_retriever("Adriana Trigiani New York city based residence")`, retrieving her author biography and correctly answering: **"Greenwich Village, New York City"** (**EM: ✅ PASS, Recall: 100%**).
+
+### 🛠️ Reproducing the HotpotQA Benchmark Locally
+
+```bash
+# Run official HotpotQA benchmark in agentic multi-hop mode (with Jev Decision Model)
+python scripts/run_industry_benchmark.py --samples 5 --agentic --evaluator jev
+
+# Run single-pass baseline for comparison
+python scripts/run_industry_benchmark.py --samples 5 --single-pass --evaluator jev
+```
+
+Full Markdown scorecards and machine-readable JSON metrics are saved to [`data/hotpotqa_benchmark_report.md`](data/hotpotqa_benchmark_report.md) and [`data/hotpotqa_benchmark_report.json`](data/hotpotqa_benchmark_report.json).
+
+---
+
 ## 📂 Project Structure
 
 ```text
@@ -175,7 +213,10 @@ personal-deepagent/
 │   ├── catalog.csv               # Grounding master catalog dataset
 │   ├── eval_golden_set.json      # 10 production RAG evaluation scenarios
 │   ├── eval_report.json          # Detailed evaluation metrics output
-│   └── eval_report.md            # Markdown scorecard for CI/CD reports
+│   ├── eval_report.md            # Markdown scorecard for CI/CD reports
+│   ├── benchmarks/               # Stanford HotpotQA official multi-hop test suite
+│   ├── hotpotqa_benchmark_report.md # Industry benchmark executive scorecard
+│   └── hotpotqa_benchmark_report.json # Benchmark machine-readable metrics
 ├── docs/
 │   ├── blueprint.md              # Full architectural blueprint & operational protocols
 │   └── plan.md                   # 7-Task TDD implementation plan
@@ -195,6 +236,8 @@ personal-deepagent/
 ├── scripts/
 │   ├── ingest.py                 # Script to chunk and index documents into Chroma
 │   ├── run_agent.py              # Interactive CLI turn runner
+│   ├── run_industry_benchmark.py # Stanford HotpotQA multi-hop benchmark runner
+│   ├── fetch_hotpotqa.py         # Official HotpotQA benchmark test case fetcher
 │   ├── run_rag_eval.py           # Automated RAG evaluation benchmark runner
 │   └── benchmark_comparison.py   # Side-by-side Naive RAG vs DeepAgent benchmark
 ├── tests/

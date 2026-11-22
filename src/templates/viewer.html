@@ -937,12 +937,18 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || "Ingestion failed");
 
-        logContent.innerText += `\n[PASS] Status: ${data.status}\nDocument: [${data.document_metadata.document_name}] ${data.document_metadata.title}\nChunks: ${data.total_chunks} | Final Recall: ${(data.final_recall_score * 100).toFixed(1)}%\nReloading documents...`;
-        
-        setTimeout(() => {
-          closeIngestModal();
-          loadDocuments();
-        }, 2000);
+        if (data.status === "SUCCESS") {
+          logContent.innerText += `\n[PASS] Status: SUCCESS\nDocument: [${data.document_metadata.document_name}] ${data.document_metadata.title}\nChunks: ${data.total_chunks} | Final Recall: ${(data.final_recall_score * 100).toFixed(1)}%\nReloading documents...`;
+          setTimeout(() => {
+            closeIngestModal();
+            loadDocuments();
+          }, 2000);
+        } else {
+          logContent.innerText += `\n[QUARANTINED] Status: ${data.status}\nDocument: [${data.document_metadata?.document_name || 'N/A'}] ${data.document_metadata?.title || ''}\nFinal Recall: ${((data.final_recall_score || 0) * 100).toFixed(1)}%\nReason: ${data.quarantine_reason || 'Failed quality threshold.'}\nDocument was saved to quarantine log and not committed.`;
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Close";
+          submitBtn.onclick = () => { closeIngestModal(); submitBtn.innerText = "Run Ingestion"; submitBtn.onclick = submitIngestion; };
+        }
       } catch (err) {
         logContent.innerText += `\n[ERROR] Ingestion failed: ${err.message}`;
         submitBtn.disabled = false;

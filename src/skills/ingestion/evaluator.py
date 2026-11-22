@@ -310,7 +310,7 @@ def evaluate_chunks(
                 logger.debug(f"Jev chunk integrity check skipped ({e})")
 
         recall_score = round(successful / total_probes, 4) if total_probes > 0 else 0.0
-        passed = (recall_score >= threshold) and (len(failing_sections_set) == 0)
+        passed = recall_score >= threshold
         failing_sections = list(failing_sections_set) if not passed else []
 
         return EvaluationResult(

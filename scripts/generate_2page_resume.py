@@ -305,7 +305,7 @@ def generate_2page_resume():
             <a href="mailto:smartqingtong@gmail.com">smartqingtong@gmail.com</a>
           </div>
           <div>
-            <a href="https://linkedin.com/in/qtong">linkedin.com/in/qtong</a>
+            <a href="https://www.linkedin.com/in/qing-tong-mah-611a18276">linkedin.com/in/qing-tong-mah-611a18276</a>
             <span class="dot">•</span>
             <a href="https://github.com/qtongggg">github.com/qtongggg</a>
           </div>
@@ -321,7 +321,7 @@ def generate_2page_resume():
         <span>Professional Summary</span>
       </div>
       <p class="summary-text">
-        <strong>LLM Engineer at Zetrix AI</strong> with a Bachelor of Computer Science in Data Science from <strong>Monash University Malaysia</strong>. Passionate about exploring autonomous agent architectures, production Agentic RAG workflows, and modular <strong>Agent Skills (<code>SKILL.md</code> / MCP)</strong> with practical harness engineering and systematic evaluation. Frequently serving as the Person-in-Charge (PIC) across key AI initiatives, demonstrating high ownership, technical accountability, and end-to-end responsibility from initial system design to production delivery. Proven expertise in hybrid dense/sparse retrieval, cross-encoder reranking, and full-stack backend development for robust enterprise AI applications.
+        <strong>Solutions-driven LLM Engineer at Zetrix AI</strong> with a Bachelor of Computer Science in Data Science from <strong>Monash University Malaysia</strong>. Proven track record in designing client-centric AI solutions, production Agentic RAG workflows, and modular Agent Skills (<code>SKILL.md</code> / MCP). Frequently serving as the Person-in-Charge (PIC) across key AI initiatives, adept at bridging business requirements with robust technical architecture to lead projects from initial scoping to production delivery. Proven expertise in hybrid dense/sparse retrieval, cross-encoder reranking, and full-stack backend development for robust enterprise AI applications.
       </p>
     </section>
 
@@ -334,7 +334,7 @@ def generate_2page_resume():
       <div class="skills-grid">
         <div class="skill-row">
           <span class="skill-label">LLM & Agentic Systems:</span>
-          <span class="skill-list">LangChain, LangGraph, Agent Skills (SKILL.md), Model Context Protocol (MCP), Dify, Multi-Agent Orchestration, Human-in-the-Loop (HITL), Prompt Engineering</span>
+          <span class="skill-list">LangGraph, LangChain, Dify (Agent Workflows & Knowledge Bases), Model Context Protocol (MCP), Agent Skills (SKILL.md), Multi-Agent Orchestration, Human-in-the-Loop (HITL), Prompt Engineering</span>
         </div>
         <div class="skill-row">
           <span class="skill-label">RAG & Information Retrieval:</span>
@@ -372,7 +372,7 @@ def generate_2page_resume():
           <span class="item-date">JUN 2026 – PRESENT</span>
         </div>
         <ul class="bullets">
-          <li><strong>Enterprise AI Workflow Automation:</strong> Developed Dify-based AI workflows for enterprise SOP and knowledge-base retrieval, grounding LLM responses in internal documentation to improve answer relevance and consistency for customer operations.</li>
+          <li><strong>Enterprise AI Workflows & Automated QA Agent:</strong> Architected Dify-based AI workflows for enterprise SOP retrieval and developed an automated batch QA evaluation agent, slashing manual regression testing time by over 70% while guaranteeing multi-turn accuracy.</li>
           <li><strong>Section-Aware RAG Ingestion:</strong> Built automated preprocessing pipelines to convert unstructured PDF research into hierarchical Markdown before chunking, improving downstream retrieval recall by 28% in measured evaluations.</li>
           <li><strong>Agentic RAG & Deterministic Execution:</strong> Developed the i-FIKR Islamic knowledge agent over 870+ records, integrating vector search with custom Python and Pandas tools for accurate multi-criteria filtering and tally operations.</li>
           <li><strong>Multi-Hop Retrieval & Citation Grounding:</strong> Implemented a two-stage retrieval workflow combining catalog-level metadata grounding with targeted document retrieval, enabling cross-document comparisons with verifiable sub-chunk citations.</li>
@@ -412,26 +412,26 @@ def generate_2page_resume():
       </div>
       <div class="section-subtitle">AI application development • RAG • Agentic systems • Backend engineering</div>
 
-      <!-- Project 1: Personal DeepAgent & Kinetic Portfolio -->
+      <!-- Project 1: Personal DeepAgent -->
       <div class="item avoid-break">
         <div class="item-header">
-          <span class="item-title">Personal DeepAgent — AI Agent System & Kinetic Portfolio</span>
+          <span class="item-title">Personal DeepAgent — AI Agent System</span>
           <div class="item-tags">
             <span class="tag-item">LangGraph</span>
             <span class="tag-item"><span class="tag-sep">•</span>Agent Skills</span>
             <span class="tag-item"><span class="tag-sep">•</span>Hybrid RAG</span>
+            <span class="tag-item"><span class="tag-sep">•</span>Jev Decision Model</span>
             <span class="tag-item"><span class="tag-sep">•</span>FastAPI</span>
             <span class="tag-item"><span class="tag-sep">•</span>DuckDB</span>
             <span class="tag-item"><span class="tag-sep">•</span>FlashRank</span>
-            <span class="tag-item"><span class="tag-sep">•</span>Next.js</span>
             <span class="tag-item"><span class="tag-sep">•</span>SSE</span>
           </div>
         </div>
         <ul class="bullets">
-          <li>Architected a multi-agent orchestration graph featuring dynamic planning with step-budget guardrails, a ReAct research agent, and modular sub-agent workers with isolated execution.</li>
-          <li>Implemented modular Agent Skills (<code>SKILL.md</code> / MCP) and hybrid retrieval combining dense vector embeddings with sparse BM25 indexing in DuckDB and FlashRank cross-encoder reranking.</li>
-          <li>Engineered deterministic tool execution for system commands, multi-engine web search, and file operations with automated failure recovery and self-correction loops.</li>
-          <li>Integrated a full-stack kinetic portfolio web interface (Next.js, Tailwind CSS) powered by an asynchronous FastAPI backend with Server-Sent Events (SSE) streaming and Human-in-the-Loop approval workflows.</li>
+          <li>Architected a <strong>multi-agent orchestration graph</strong> featuring <strong>dynamic planning</strong> with step-budget guardrails, a <strong>ReAct research agent</strong>, and modular sub-agent workers with isolated execution.</li>
+          <li>Implemented modular <strong>Agent Skills (<code>SKILL.md</code> / MCP)</strong> and two-stage <strong>hybrid retrieval</strong> combining dense vector embeddings with sparse BM25 indexing in <strong>DuckDB</strong> and <strong>FlashRank cross-encoder reranking</strong>.</li>
+          <li>Integrated the <strong>Jev non-generative decision model (TypeSafe AI)</strong> into a <strong>2-layer RAG evaluation harness</strong> for sub-500ms atomic claim verification, cutting evaluation costs by <strong>90%</strong> with zero output token fees.</li>
+          <li>Built an interactive web interface powered by an asynchronous <strong>FastAPI backend</strong> with <strong>Server-Sent Events (SSE) streaming</strong> and <strong>Human-in-the-Loop (HITL)</strong> approval workflows.</li>
         </ul>
       </div>
 
@@ -448,9 +448,9 @@ def generate_2page_resume():
           </div>
         </div>
         <ul class="bullets">
-          <li>Designed a multi-agent LLM application automating job discovery, semantic candidate ranking, resume analysis, and personalised email drafting.</li>
-          <li>Implemented dense and sparse BM25 hybrid retrieval with cross-encoder reranking in Qdrant for high-precision resume-to-job matching.</li>
-          <li>Developed an orchestration workflow managing query rewriting, information retrieval, ranking, and final response generation.</li>
+          <li>Designed a <strong>multi-agent LLM application</strong> automating job discovery, semantic candidate ranking, resume analysis, and personalised email drafting.</li>
+          <li>Implemented dense and sparse BM25 <strong>hybrid retrieval with cross-encoder reranking</strong> in <strong>Qdrant</strong> for high-precision resume-to-job matching.</li>
+          <li>Developed an <strong>orchestration workflow</strong> managing query rewriting, information retrieval, ranking, and final response generation.</li>
         </ul>
       </div>
 
@@ -488,7 +488,7 @@ def generate_2page_resume():
           <span class="item-date">FEB 2023 – DEC 2025</span>
         </div>
         <div style="font-size: 8.9pt; color: #881337; font-weight: 600; margin-top: 1px; margin-bottom: 2px;">
-          Second Upper Honours • CGPA: 3.36 / 4.00
+          CGPA: 3.36 / 4.00
         </div>
         <ul class="bullets">
           <li><strong>Deep Learning & Neural Architectures:</strong> Implemented Multi-Head Self-Attention modules, Position-wise Feed-Forward networks, and Transformer Encoders from scratch in PyTorch; architected Prefix Prompt-Tuning pipelines for BERT adaptation and evaluated RNN/LSTM/GRU sequential models across multi-class benchmarks.</li>
