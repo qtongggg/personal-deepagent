@@ -31,7 +31,7 @@ Traditional RAG simply retrieves top-$k$ text chunks and dumps them into an LLM 
 2. **Active Task Planning**: Maintains an explicit `to_dos` checklist in graph state to systematically plan and execute multi-hop investigations without skipping steps.
 3. **Virtual Scratchpad Workspace**: Offloads long retrieved chunks into virtual scratchpad files (`/workspace/notes.md`), keeping prompt memory focused and preventing context dilution.
 4. **Two-Stage Hybrid Retrieval & Cross-Encoder**: Fuses dense vector cosine search with sparse Okapi BM25, reranked by a local FlashRank ONNX cross-encoder.
-5. **Deterministic Catalog Engine**: Queries structured metadata via in-process DuckDB SQL over `catalog.csv` for zero-hallucination inventory counts.
+5. **Deterministic Catalog Engine**: Queries structured metadata via in-process DuckDB SQL over `catalog.csv` for deterministic, exact inventory counts.
 6. **Autonomous Long-Term Memory**: Proactively persists user identity, research constraints, and investigated topics across sessions via Mem0.
 7. **Defensive Guardrails**: Automatically sanitizes table pipes (`|` $\to$ `—`) and verifies canonical URLs verbatim against catalog metadata.
 
@@ -65,7 +65,7 @@ flowchart LR
 | **Reasoning & Planning** | **Single-Pass Blind Hop**: Sends one query to vector search and immediately attempts to answer. | **Active Multi-Hop ReAct**: Decomposes goals into a dynamic `to_dos` plan, querying iteratively across multiple hops. | **Zero Skipped Steps** 🎯 |
 | **Context Management** | **Prompt Stuffed**: Dumps 5–10 raw chunks directly into prompt, causing attention dilution. | **Virtual Workspace (VFS)**: Offloads working notes to `/workspace/notes.md`, keeping prompt context focused. | **High Needle-in-Haystack Recall** 🧠 |
 | **Document Retrieval** | **Dense Vector Only**: Fails on exact technical acronyms and complex multi-paper relationships. | **Two-Stage Hybrid + Rerank**: Dense Cosine + Sparse BM25 fused via RRF, reranked by local FlashRank cross-encoder. | **+40.0% Fact Recall** 🚀 |
-| **Metadata & Counts** | **Hallucinated Vector Estimates**: Tries to estimate paper inventories by counting retrieved text chunks ($\\pm 50\\%$ error). | **Deterministic DuckDB SQL**: Executes ANSI SQL over structured metadata (`catalog.csv`) for exact counts in sub-10ms. | **Zero Hallucination** 🛡️ |
+| **Metadata & Counts** | **Hallucinated Vector Estimates**: Tries to estimate paper inventories by counting retrieved text chunks ($\\pm 50\\%$ error). | **Deterministic DuckDB SQL**: Executes ANSI SQL over structured metadata (`catalog.csv`) for exact counts in sub-10ms. | **Deterministic Exact Counts** 🛡️ |
 | **Session Memory** | **Stateless**: Forgets user identity, past queries, and research constraints across sessions. | **Long-Term Memory (Mem0)**: Autonomously persists user role, preferences, and findings cross-session. | **Cross-Session Continuity** 💾 |
 | **Output Integrity** | **Table Breakage Risk**: Unescaped pipe characters (`|`) corrupt markdown comparison columns. | **Pipe & Citation Sanitizers**: Built-in guardrails preserve column alignment and verify verbatim canonical URLs. | **Clean Markdown Tables** 📊 |
 
@@ -95,12 +95,12 @@ To validate Personal DeepAgent against traditional RAG architectures, we tested 
 ### 4. Deterministic Inventory Counts (*SQL vs. Vector Hallucination*)
 - **Test Objective**: Answer exact corpus count queries (*"How many papers on Waqf were published in 2020 in the catalog?"*).
 - **Before (Vector RAG)**: **FAILED**. Vector DB returned 5 random chunks mentioning Waqf and guessed "approximately 5 papers" or hallucinated numbers.
-- **After (Personal DeepAgent)**: **PASSED (Sub-10ms)**. Recognized the count intent, bypassed vector DB, executed ANSI SQL (`SELECT COUNT(*) FROM catalog WHERE lower(title) LIKE '%waqf%' AND year = 2020`) via DuckDB, and returned the verified exact count and canonical URLs with zero hallucination.
+- **After (Personal DeepAgent)**: **PASSED (Sub-10ms)**. Recognized the count intent, bypassed vector DB, executed ANSI SQL (`SELECT COUNT(*) FROM catalog WHERE lower(title) LIKE '%waqf%' AND year = 2020`) via DuckDB, and returned the verified exact count and canonical URLs with deterministic SQL accuracy.
 
 ### 5. Automated 2-Layer Evaluation Harness (with Jev Decision Model)
 - **Test Objective**: Benchmark evaluation cost, latency, and faithfulness using the **Jev Non-Generative Decision Model (`TypeSafe AI`)** against traditional LLM-as-a-judge.
 - **Results**:
-  - **Faithfulness Score**: **94.0%** (Zero hallucination verified against source chunks).
+  - **Faithfulness Score**: **94.0%** (High factual grounding verified against retrieved source chunks).
   - **Supporting Fact Recall Lift**: **+40.0%** over single-pass RAG (from 60.0% to **100.0%**).
   - **Latency**: Sub-500ms single pass (vs. 6.5s LLM autoregressive decoding).
   - **Cost**: **~90% Direct Cost Savings** ($0.042 / 1M input tokens, free output tokens).
@@ -112,7 +112,7 @@ To validate Personal DeepAgent against traditional RAG architectures, we tested 
 | **HotpotQA Fact Recall** | 60.0% | **100.0%** | **+40.0% Recall Lift** 🚀 |
 | **HotpotQA Exact Match (EM)** | 60.0% | **100.0%** (5 / 5) | **+40.0% Accuracy Lift** ✅ |
 | **Multi-Hop Cross-Paper Matrix** | FAILED (Missed Reflexion) | **SUCCESS (11 Dimensions)** | Complete Cross-Paper Matrix |
-| **Inventory Counts (SQL vs Vector)** | Hallucinated / Approximate | **100% Exact (DuckDB)** | Zero-Hallucination Inventory |
+| **Inventory Counts (SQL vs Vector)** | Hallucinated / Approximate | **100% Exact (DuckDB)** | Deterministic Exact Inventory |
 | **Automated Test Suite** | — | **66 / 66 Passed (100%)** | Full Unit & Integration Coverage |
 
 ---
