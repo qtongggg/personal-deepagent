@@ -7,6 +7,10 @@ triggers:
   - "Evaluate chunk quality..."
 tools:
   - ingest_document_tool
+cli_commands:
+  - "python scripts/ingest_doc.py <pdf_path_or_url> --threshold 0.8"
+  - "python scripts/ingest_personal_rag.py"
+  - "python scripts/batch_ingest_parallel.py"
 ---
 
 # 📥 Ingestion Skill Specification

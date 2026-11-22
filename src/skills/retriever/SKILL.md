@@ -8,6 +8,9 @@ triggers:
   - "How does the algorithm work..."
 tools:
   - knowledge_retriever
+cli_commands:
+  - "python scripts/run_industry_benchmark.py --samples 5 --agentic --evaluator jev"
+  - "python scripts/benchmark_comparison.py"
 ---
 
 # 🔍 Retriever Skill Specification

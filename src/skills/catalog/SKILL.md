@@ -8,6 +8,8 @@ triggers:
   - "Verify publication metadata..."
 tools:
   - catalog_query
+cli_commands:
+  - "python -c \"from src.skills.catalog_skill import query_catalog_sql; print(query_catalog_sql('SELECT COUNT(*) FROM catalog'))\""
 ---
 
 # 📚 Catalog Skill Specification

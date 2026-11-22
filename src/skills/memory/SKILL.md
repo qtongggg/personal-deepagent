@@ -8,6 +8,8 @@ triggers:
 tools:
   - search_memory
   - add_memory
+cli_commands:
+  - "python -c \"from src.skills.memory_skill import search_memory; print(search_memory('research focus'))\""
 ---
 
 # 🧠 Memory Skill Specification
