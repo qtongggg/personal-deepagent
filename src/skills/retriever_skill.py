@@ -1,3 +1,5 @@
+import os
+import urllib.request
 from collections import defaultdict
 import json
 import logging
@@ -70,11 +72,120 @@ def _get_bm25_for_data(data: Dict[str, Any]) -> Optional[BM25Okapi]:
     return BM25Okapi(tokenized_corpus)
 
 
+def _rerank_with_jev(
+    query: str,
+    candidates: List[Dict[str, Any]],
+    top_k: int = 4,
+    threshold: float = 0.40,
+    api_key: Optional[str] = None,
+) -> Optional[List[Dict[str, Any]]]:
+    """Rerank and noise-prune candidates using Jev's System-1 3-way 'choice' rubric.
+    
+    Evaluates:
+      - 'strong': Directly provides empirical evidence, benchmarks, or definitions answering the query.
+      - 'partial': Mentions the entity or topic in passing without specific details.
+      - 'wrong': Unrelated topic, distractor, or incidental match.
+    
+    Pruning Gate: Drops candidates with score = P(strong) + 0.5 * P(partial) < threshold.
+    """
+    key = api_key or os.environ.get("JEV_API_KEY", "").strip()
+    if not key:
+        try:
+            from src.config import get_settings
+            key = (get_settings().JEV_API_KEY or "").strip()
+        except Exception:
+            pass
+    if not key:
+        return None
+
+    if not candidates:
+        return []
+
+    # Limit pool size to top 15 candidates to keep API state concise and fast
+    pool = candidates[:15]
+
+    state_parts = [f"USER QUERY: {query.strip()}\n\nCANDIDATE PASSAGES:"]
+    questions = {}
+    for idx, c in enumerate(pool):
+        cid = c.get("chunk_id", f"doc_{idx}")
+        doc_name = c.get("document_name", "Doc")
+        text_snippet = c.get("chunk_content", "")[:700].strip()
+        state_parts.append(f"[{cid}] (from {doc_name}):\n{text_snippet}")
+
+        questions[f"cand_{idx}"] = {
+            "type": "choice",
+            "options": ["strong", "partial", "wrong"],
+            "instructions": f"How well does passage [{cid}] provide factual evidence to answer: '{query[:200]}'? 'strong': directly answers core question with facts/numbers; 'partial': related topic or background without specifics; 'wrong': irrelevant or incidental match."
+        }
+
+    payload = {
+        "model": "jev-latest",
+        "state": "\n\n---\n\n".join(state_parts)[:30000],
+        "questions": questions,
+    }
+
+    try:
+        req = urllib.request.Request(
+            "https://api.typesafe.ai/v1/systemone",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+
+        answers = result.get("answers", {})
+        scored_candidates = []
+        for idx, c in enumerate(pool):
+            ans = answers.get(f"cand_{idx}", {})
+            probs = ans.get("distribution") or ans.get("choice_probabilities") or {}
+            if not probs and "choice" in ans:
+                choice_str = ans["choice"]
+                probs = {choice_str: 1.0}
+
+            p_strong = float(probs.get("strong", 0.0))
+            p_partial = float(probs.get("partial", 0.0))
+            p_wrong = float(probs.get("wrong", 0.0))
+
+            if p_strong == 0.0 and p_partial == 0.0 and p_wrong == 0.0:
+                choice_str = ans.get("choice", "partial")
+                p_strong = 1.0 if choice_str == "strong" else 0.0
+                p_partial = 1.0 if choice_str == "partial" else 0.0
+                p_wrong = 1.0 if choice_str == "wrong" else 0.0
+
+            calc_score = round(p_strong + 0.5 * p_partial, 3)
+
+            chunk_copy = dict(c)
+            chunk_copy["rerank_score"] = calc_score
+            chunk_copy["rerank_rubric"] = ans.get("choice", "strong" if calc_score >= 0.7 else "partial")
+            chunk_copy["reranker_engine"] = "jev_system_one"
+
+            # Noise pruning gate: drop if score < threshold
+            if calc_score >= threshold:
+                scored_candidates.append(chunk_copy)
+
+        # Sort descending by score
+        scored_candidates.sort(key=lambda x: x["rerank_score"], reverse=True)
+
+        # If pruning was too aggressive and left 0 candidates, return the top from pool with scores
+        if not scored_candidates and pool:
+            for idx, c in enumerate(pool[:top_k]):
+                c_copy = dict(c)
+                c_copy["rerank_score"] = 0.35
+                scored_candidates.append(c_copy)
+
+        return scored_candidates[:top_k]
+    except Exception as e:
+        logger.warning(f"Jev decision reranking encountered exception, falling back to FlashRank: {e}")
+        return None
+
+
 def retrieve_knowledge_chunks(
     query: str,
     top_k: int = 4,
     document_filter: Optional[str] = None,
     collection_name: str = "document_knowledge",
+    reranker: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Retrieve document chunks using a two-stage Hybrid (Dense + BM25) + FlashRank Reranker pipeline."""
     collection = _get_collection(collection_name)
@@ -206,8 +317,16 @@ def retrieve_knowledge_chunks(
         return []
 
     # -------------------------------------------------------------
-    # Stage 2: Precision FlashRank Cross-Encoder Reranking
+    # Stage 2: Precision Reranking (Jev Decision Reranker with FlashRank Fallback)
     # -------------------------------------------------------------
+    # Use Jev Decision Reranker if explicitly requested or enabled in environment
+    should_use_jev = (reranker == "jev") or (reranker is None and os.environ.get("USE_JEV_RERANKER") == "1")
+    if should_use_jev:
+        jev_reranked = _rerank_with_jev(query=query, candidates=fused_candidates, top_k=top_k)
+        if jev_reranked is not None:
+            return jev_reranked
+
+    # Fallback / Default: local FlashRank cross-encoder
     ranker = _get_ranker()
     if ranker and len(fused_candidates) > 0:
         try:

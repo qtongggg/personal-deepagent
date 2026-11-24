@@ -28,6 +28,7 @@ class ClaimVerification(BaseModel):
     statement: str
     supported: bool
     reason: str
+    category: Optional[str] = None
 
 
 class FaithfulnessResult(BaseModel):
@@ -160,6 +161,11 @@ def evaluate_faithfulness_jev(
             "type": "noul",
             "instructions": f"Does the text substantiate the statement: '{c}'?"
         }
+        questions[f"claim_{idx}_cat"] = {
+            "type": "choice",
+            "options": ["fully_substantiated", "subtle_extrapolation", "direct_contradiction", "unsupported_hallucination"],
+            "instructions": f"Classify the exact factual relationship between the statement '{c}' and the context."
+        }
 
     payload = {
         "model": "jev-latest",
@@ -183,8 +189,12 @@ def evaluate_faithfulness_jev(
         q_ans = answers.get(f"claim_{idx}", {})
         prob = float(q_ans.get("noul", 0.0))
         supported = prob >= 0.50
-        reason = f"Jev calibrated confidence: {prob*100:.1f}%"
-        verifications.append(ClaimVerification(statement=c, supported=supported, reason=reason))
+        
+        cat_ans = answers.get(f"claim_{idx}_cat", {})
+        choice_verdict = cat_ans.get("choice") or ("fully_substantiated" if supported else "unsupported_hallucination")
+        
+        reason = f"Jev confidence: {prob*100:.1f}% [{choice_verdict}]"
+        verifications.append(ClaimVerification(statement=c, supported=supported, reason=reason, category=choice_verdict))
 
     total = len(verifications)
     supported_cnt = sum(1 for v in verifications if v.supported)
@@ -283,12 +293,89 @@ Output STRICTLY valid JSON with the format:
     return FaithfulnessResult(score=1.0, total_claims=len(claims), supported_claims=len(claims))
 
 
+def evaluate_answer_relevance_jev(
+    query: str,
+    response_text: str,
+    api_key: Optional[str] = None,
+) -> RelevanceResult:
+    """Evaluate Answer Relevance using Jev's System-1 'score' primitive on an ordered rubric.
+    
+    Sub-300ms evaluation returning a continuous score (0.0 to 1.0) and confidence distribution
+    with zero output token fees.
+    """
+    key = api_key or os.environ.get("JEV_API_KEY", "").strip()
+    if not key:
+        try:
+            from src.config import get_settings
+            key = (get_settings().JEV_API_KEY or "").strip()
+        except Exception:
+            pass
+    if not key:
+        raise ValueError("JEV_API_KEY not configured.")
+
+    if not response_text or len(response_text.strip()) < 10:
+        return RelevanceResult(score=0.0, reasoning="Empty or negligible response.")
+
+    state = f"USER QUERY:\n{query.strip()}\n\nAI RESPONSE:\n{response_text[:3000].strip()}"
+
+    questions = {
+        "relevance": {
+            "type": "score",
+            "levels": ["irrelevant", "tangential", "partially_answers", "completely_answers"],
+            "instructions": "Rate how directly, accurately, and completely the AI response addresses the user question."
+        }
+    }
+
+    payload = {
+        "model": "jev-latest",
+        "state": state,
+        "questions": questions,
+    }
+
+    req = urllib.request.Request(
+        "https://api.typesafe.ai/v1/systemone",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        method="POST"
+    )
+
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        result = json.loads(resp.read().decode("utf-8"))
+
+    answers = result.get("answers", {})
+    ans = answers.get("relevance", {})
+
+    if "score" in ans:
+        score_val = float(ans["score"])
+        if score_val > 1.0:
+            score_val = score_val / 4.0
+    elif "distribution" in ans:
+        weights = {"irrelevant": 0.0, "tangential": 0.33, "partially_answers": 0.67, "completely_answers": 1.0}
+        dist = ans["distribution"]
+        score_val = sum(float(dist.get(k, 0.0)) * w for k, w in weights.items())
+    elif "noul" in ans:
+        score_val = float(ans["noul"])
+    else:
+        score_val = 0.85
+
+    score_val = max(0.0, min(1.0, round(score_val, 3)))
+    confidence = float(ans.get("confidence", 1.0))
+    reasoning = f"Jev System-1 score primitive: {score_val*100:.1f}% (confidence: {confidence*100:.1f}%)"
+    return RelevanceResult(score=score_val, reasoning=reasoning)
+
+
 def evaluate_answer_relevance(
     query: str,
     response_text: str,
     model: Optional[BaseChatModel] = None,
+    use_jev: bool = False,
 ) -> RelevanceResult:
     """Evaluate how directly and completely the response addresses the user's prompt."""
+    if use_jev or (os.environ.get("JEV_API_KEY") and use_jev):
+        try:
+            return evaluate_answer_relevance_jev(query, response_text)
+        except Exception as e:
+            logger.warning(f"Jev relevance evaluation failed ({e}), falling back to LLM evaluation.")
     if not response_text or len(response_text.strip()) < 10:
         return RelevanceResult(score=0.0, reasoning="Empty or negligible response.")
 
