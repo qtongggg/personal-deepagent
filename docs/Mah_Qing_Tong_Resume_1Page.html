@@ -280,7 +280,7 @@
       </div>
       <div class="skill-row">
         <span class="skill-label">RAG & Retrieval:</span>
-        <span class="skill-list">Hybrid Search, Dense & Sparse Retrieval (BM25), Qdrant, ChromaDB, Cross-Encoder Reranking, Multi-Hop Retrieval, Document Preprocessing</span>
+        <span class="skill-list">Hybrid Search, Dense & Sparse Retrieval (BM25), Qdrant, ChromaDB, Decision Rerankers (Jev / System-1), Cross-Encoder Reranking, Multi-Hop Retrieval, Document Preprocessing</span>
       </div>
       <div class="skill-row">
         <span class="skill-label">Programming & Backend:</span>
@@ -306,20 +306,19 @@
         <span class="item-title">Personal DeepAgent — AI Agent System</span>
         <div class="item-tags">
           <span class="tag-item">LangGraph</span>
-          <span class="tag-item"><span class="tag-sep">•</span>Agent Skills</span>
+          <span class="tag-item"><span class="tag-sep">•</span>Skill-Driven (P2)</span>
           <span class="tag-item"><span class="tag-sep">•</span>Hybrid RAG</span>
-          <span class="tag-item"><span class="tag-sep">•</span>Jev Decision Model</span>
-          <span class="tag-item"><span class="tag-sep">•</span>FastAPI</span>
+          <span class="tag-item"><span class="tag-sep">•</span>Decision Reranker</span>
+          <span class="tag-item"><span class="tag-sep">•</span>Jev System-1</span>
           <span class="tag-item"><span class="tag-sep">•</span>DuckDB</span>
-          <span class="tag-item"><span class="tag-sep">•</span>FlashRank</span>
-          <span class="tag-item"><span class="tag-sep">•</span>SSE</span>
+          <span class="tag-item"><span class="tag-sep">•</span>FastAPI</span>
         </div>
       </div>
       <ul class="bullets">
-        <li>Architected a <strong>multi-agent orchestration graph</strong> featuring <strong>dynamic planning</strong> with step-budget guardrails, a <strong>ReAct research agent</strong>, and modular sub-agent workers with isolated execution.</li>
-        <li>Implemented modular <strong>Agent Skills (<code>SKILL.md</code> / MCP)</strong> and two-stage <strong>hybrid retrieval</strong> combining dense vector embeddings with sparse BM25 indexing in <strong>DuckDB</strong> and <strong>FlashRank cross-encoder reranking</strong>.</li>
-        <li>Integrated the <strong>Jev non-generative decision model (TypeSafe AI)</strong> into a <strong>2-layer RAG evaluation harness</strong> for sub-500ms atomic claim verification, cutting evaluation costs by <strong>90%</strong> with zero output token fees.</li>
-        <li>Built an interactive web interface powered by an asynchronous <strong>FastAPI backend</strong> with <strong>Server-Sent Events (SSE) streaming</strong> and <strong>Human-in-the-Loop (HITL)</strong> approval workflows.</li>
+        <li>Architected a <strong>Skill-Driven Agent Harness (Paradigm 2)</strong> in LangGraph featuring <strong>just-in-time SOP discovery</strong> via <code>SKILL.md</code>, active task planning (<code>to_dos</code>), and virtual scratchpad context management.</li>
+        <li>Implemented two-stage <strong>hybrid retrieval</strong> (ChromaDB + BM25) and a <strong>System-1 Decision Reranker (TypeSafe AI)</strong> with 3-way <code>choice</code> rubrics and noise-pruning gates to eliminate distractor chunks prior to synthesis.</li>
+        <li>Engineered an automated <strong>2-layer RAG evaluation harness</strong> utilizing Jev decision models (<code>score</code>, <code>choice</code>, <code>noul</code>) for sub-300ms chunk boundary audits and answer relevance grading, slashing eval costs by <strong>90%</strong> ($0 output token fees).</li>
+        <li>Built an interactive web arena powered by an asynchronous <strong>FastAPI backend</strong> with <strong>Server-Sent Events (SSE) streaming</strong>, deterministic DuckDB SQL metadata verification, and post-synthesis defensive guardrails.</li>
       </ul>
     </div>
 
