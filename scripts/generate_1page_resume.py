@@ -274,7 +274,7 @@ def generate_1page_resume():
       <span>Professional Summary</span>
     </div>
     <p class="summary-text">
-      <strong>Solutions-driven LLM Engineer at Zetrix AI</strong> (BCompSc Data Science, <strong>Monash University Malaysia</strong>). Proven track record in architecting production Agentic RAG systems (Hybrid Search & System-1 Decision Rerankers) and modular Agent Skills (<code>SKILL.md</code> / MCP). Frequently serving as Person-in-Charge (PIC) across key AI initiatives, bridging business requirements with robust technical architecture from initial scoping to production delivery.
+      <strong>Solutions-driven LLM Engineer at Zetrix AI</strong> (BCompSc Data Science, <strong>Monash University Malaysia</strong>). Proven track record in architecting production Agentic RAG systems (Hybrid Search, System-1 Decision Rerankers & Jev Evaluation) and modular Agent Skills (<code>SKILL.md</code> / MCP). Frequently serving as Person-in-Charge (PIC) across key AI initiatives, bridging business requirements with robust technical architecture from initial scoping to production delivery.
     </p>
   </section>
 
